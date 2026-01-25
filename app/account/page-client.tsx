@@ -110,7 +110,7 @@ export default function AccountPageClient({ user, authority }: AccountPageClient
                             <span className="text-sm text-neutral-500 font-medium">Entrusted to your care</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                             {/* Platform Overview - Featured */}
                             <ScopeCard
                                 href="/markets/admin"
@@ -183,7 +183,7 @@ export default function AccountPageClient({ user, authority }: AccountPageClient
                             <span className="text-sm text-neutral-500 font-medium">Your market presence</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                             <ScopeCard
                                 href="/markets/vendor/dashboard"
                                 title="Business Hub"
@@ -260,7 +260,7 @@ export default function AccountPageClient({ user, authority }: AccountPageClient
 function ScopeCard({ href, title, description, icon, color, featured = false }: { href: string, title: string, description: string, icon: React.ReactNode, color: string, featured?: boolean }) {
     return (
         <Link href={href} className="block group h-full">
-            <div className={`bg-white h-full p-6 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col ${featured ? 'md:col-span-2 lg:col-span-1' : ''}`}>
+            <div className={`bg-white h-full p-4 md:p-5 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col ${featured ? 'md:col-span-2 lg:col-span-1' : ''}`}>
                 <div className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-500`}>
                     {icon}
                 </div>

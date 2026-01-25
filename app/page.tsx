@@ -103,10 +103,10 @@ export default async function Home() {
       </section>
 
       {/* Why Trust Us - Human Connection */}
-      <section className="py-20 lg:py-24 bg-white">
+      <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               {/* Sam's Photo */}
               <div className="relative order-2 lg:order-1">
                 <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary-200 shadow-2xl relative">
@@ -124,35 +124,35 @@ export default async function Home() {
 
               {/* Story */}
               <div className="order-1 lg:order-2">
-                <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 mb-6 leading-tight">
+                <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4 lg:mb-6 leading-tight">
                   Why Trust Asia Insights?
                 </h2>
-                <p className="text-xl text-neutral-700 mb-6 leading-relaxed">
+                <p className="text-lg text-neutral-700 mb-6 leading-relaxed">
                   "I moved to Da Nang in 2018 and built this platform to help others do the same.
                   We're not a faceless corporation — we're expats who've walked this path."
                 </p>
-                <p className="text-lg text-neutral-600 mb-8 font-semibold">
+                <p className="text-base text-neutral-600 mb-8 font-semibold">
                   — Sam, Founder
                 </p>
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700 text-lg">7+ years of local expertise in Southeast Asia</span>
+                    <span className="text-neutral-700 text-base lg:text-lg">7+ years of local expertise in Southeast Asia</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700 text-lg">Verified businesses & trusted local partners</span>
+                    <span className="text-neutral-700 text-base lg:text-lg">Verified businesses & trusted local partners</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700 text-lg">Real community, not algorithms</span>
+                    <span className="text-neutral-700 text-base lg:text-lg">Real community, not algorithms</span>
                   </div>
                 </div>
 
                 <Link
                   href="/meet-the-team"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl text-lg"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl text-base"
                 >
                   Meet Our Team
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,38 +165,33 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* PHASE 2: Section Hub Overview - Visual Elevation Pass
-          INTENT: Match Markets confidence level with larger typography, more spacing, clearer CTAs
-          CHANGES: Increased card padding, stronger shadows, more prominent typography, clearer hover states
-          FIX: Centered grid with proper spacing - using justify-items-center for better card alignment
-          PHASE 1: Added id="explore-asia-insights" for hero CTA scroll target
-      */}
-      <section id="explore-asia-insights" className="py-20 bg-white">
+      {/* PHASE 2: Section Hub Overview - Visual Elevation Pass */}
+      <section id="explore-asia-insights" className="section-padding bg-white">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 mb-4">
+          <div className="max-w-3xl mx-auto text-center mb-8 lg:mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4">
               Explore Asia Insights
             </h2>
-            <p className="text-xl lg:text-2xl text-neutral-600 font-medium leading-relaxed">
+            <p className="text-lg lg:text-xl text-neutral-600 font-medium leading-relaxed">
               Discover our sections, each designed to support different aspects of life in Southeast Asia
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-6xl mx-auto justify-items-center">
             {/* Events - Equal Spoke */}
             <Link
               href="/markets/discovery"
-              className="w-full bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-lg hover:shadow-xl hover:scale-105 transition-transform opacity-100 group"
+              className="w-full bg-white rounded-2xl p-6 border-2 border-primary-500 shadow-md hover:shadow-lg hover:scale-105 transition-transform opacity-100 group"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-2">Events</h3>
-              <p className="text-neutral-600 mb-4 leading-relaxed">Discover festivals, markets, and community gatherings</p>
-              <span className="text-primary-600 font-semibold group-hover:text-primary-700 inline-flex items-center gap-2">
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">Events</h3>
+              <p className="text-neutral-600 mb-4 text-sm leading-relaxed">Discover festivals, markets, and community gatherings</p>
+              <span className="text-primary-600 font-semibold text-sm group-hover:text-primary-700 inline-flex items-center gap-2">
                 Explore Events
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -205,18 +200,18 @@ export default async function Home() {
             {/* Businesses - Equal Spoke */}
             <Link
               href="/businesses"
-              className="w-full bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-lg hover:shadow-xl hover:scale-105 transition-transform opacity-100 group"
+              className="w-full bg-white rounded-2xl p-6 border-2 border-primary-500 shadow-md hover:shadow-lg hover:scale-105 transition-transform opacity-100 group"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-2">Businesses</h3>
-              <p className="text-neutral-600 mb-4 leading-relaxed">Discover local businesses, services, and professional networks</p>
-              <span className="text-primary-600 font-semibold group-hover:text-primary-700 inline-flex items-center gap-2">
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">Businesses</h3>
+              <p className="text-neutral-600 mb-4 text-sm leading-relaxed">Discover local businesses, services, and professional networks</p>
+              <span className="text-primary-600 font-semibold text-sm group-hover:text-primary-700 inline-flex items-center gap-2">
                 Explore Businesses
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -225,18 +220,18 @@ export default async function Home() {
             {/* Markets - Equal Spoke */}
             <Link
               href="/markets"
-              className="w-full bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-lg hover:shadow-xl hover:scale-105 transition-transform opacity-100 group"
+              className="w-full bg-white rounded-2xl p-6 border-2 border-primary-500 shadow-md hover:shadow-lg hover:scale-105 transition-transform opacity-100 group"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-2">Markets</h3>
-              <p className="text-neutral-600 mb-4 leading-relaxed">Experience our weekly events bringing together vendors and community</p>
-              <span className="text-primary-600 font-semibold group-hover:text-primary-700 inline-flex items-center gap-2">
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">Markets</h3>
+              <p className="text-neutral-600 mb-4 text-sm leading-relaxed">Experience our weekly events bringing together vendors and community</p>
+              <span className="text-primary-600 font-semibold text-sm group-hover:text-primary-700 inline-flex items-center gap-2">
                 Explore Markets
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -245,18 +240,18 @@ export default async function Home() {
             {/* Stays - Equal Spoke */}
             <Link
               href="/properties"
-              className="w-full bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-lg hover:shadow-xl hover:scale-105 transition-transform opacity-100 group"
+              className="w-full bg-white rounded-2xl p-6 border-2 border-primary-500 shadow-md hover:shadow-lg hover:scale-105 transition-transform opacity-100 group"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-2">Stays</h3>
-              <p className="text-neutral-600 mb-4 leading-relaxed">Find villas, apartments, and event venues across the region</p>
-              <span className="text-primary-600 font-semibold group-hover:text-primary-700 inline-flex items-center gap-2">
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">Stays</h3>
+              <p className="text-neutral-600 mb-4 text-sm leading-relaxed">Find villas, apartments, and event venues across the region</p>
+              <span className="text-primary-600 font-semibold text-sm group-hover:text-primary-700 inline-flex items-center gap-2">
                 Explore Stays
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -265,18 +260,18 @@ export default async function Home() {
             {/* Concierge - Equal Spoke */}
             <Link
               href="/concierge"
-              className="w-full bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-lg hover:shadow-xl hover:scale-105 transition-transform opacity-100 group"
+              className="w-full bg-white rounded-2xl p-6 border-2 border-primary-500 shadow-md hover:shadow-lg hover:scale-105 transition-transform opacity-100 group"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-200 transition-colors">
+                <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-neutral-900 mb-2">Concierge</h3>
-              <p className="text-neutral-600 mb-4 leading-relaxed">Get personalized support for your Southeast Asia journey</p>
-              <span className="text-primary-600 font-semibold group-hover:text-primary-700 inline-flex items-center gap-2">
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">Concierge</h3>
+              <p className="text-neutral-600 mb-4 text-sm leading-relaxed">Get personalized support for your Southeast Asia journey</p>
+              <span className="text-primary-600 font-semibold text-sm group-hover:text-primary-700 inline-flex items-center gap-2">
                 Explore Concierge
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
@@ -286,15 +281,12 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* PHASE 4: New in Town - Featured Businesses
-          INTENT: Elevate Business Hub discoverability on the homepage
-          DATA: Fails gracefully if businesses aren't available
-      */}
-      <section className="py-24 bg-neutral-50 overflow-hidden">
+      {/* PHASE 4: New in Town - Featured Businesses */}
+      <section className="section-padding bg-neutral-50 overflow-hidden">
         <div className="container-custom">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-black text-neutral-900 mb-4 tracking-tight">
+              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
                 New in Town
               </h2>
               <p className="text-lg text-neutral-600 font-medium">
@@ -312,7 +304,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {(businesses.length > 0 ? businesses : [
               {
                 id: 'dddddddd-dddd-dddd-dddd-dddddddddddd',
@@ -371,7 +363,7 @@ export default async function Home() {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
                           {biz.category}
@@ -380,7 +372,7 @@ export default async function Home() {
                           <ShieldCheck className="w-4 h-4 text-primary-400" />
                         )}
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
+                      <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
                         {biz.name}
                       </h3>
                       <p className="text-white/70 text-sm line-clamp-1">
@@ -396,16 +388,16 @@ export default async function Home() {
       </section>
 
       {/* NEW: Top Stays & Spaces Elevation */}
-      <section className="py-24 bg-neutral-50/50 relative overflow-hidden">
+      <section className="section-padding bg-neutral-50/50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-primary-50/10 to-transparent rounded-full blur-3xl -mr-16 -mt-16" />
         <div className="container-custom relative">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-primary-600 font-bold text-sm uppercase tracking-wider mb-4">
                 <ShieldCheck className="w-4 h-4 text-primary-600" />
                 <span>Premium Stays</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight">
+              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
                 Top Stays & <span className="text-primary-600">Spaces.</span>
               </h2>
               <p className="text-lg text-neutral-600 mt-4 leading-relaxed">
@@ -421,7 +413,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {(properties.length > 0 ? properties : [
               {
                 id: '11111111-1111-1111-1111-111111111111',
@@ -484,10 +476,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* PHASE 4: Cross-Platform Stats - Social Proof without the Noise
-          INTENT: Show platform reach and activity without gamification
-      */}
-      <section className="py-20 bg-white border-y border-neutral-100">
+      {/* PHASE 4: Cross-Platform Stats - Social Proof without the Noise */}
+      <section className="section-padding bg-white border-y border-neutral-100">
         <div className="container-custom">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {[
