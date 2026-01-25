@@ -156,10 +156,11 @@ export default function AdminDashboardClient() {
 
         {/* Statistics Cards */}
         {statsError && (
-          <div className="mb-6 bg-warning-50 border border-warning-200 rounded-xl p-4">
-            <p className="text-sm text-warning-800 mb-2">{statsError}</p>
-            <p className="text-xs text-warning-700">
-              Run <code className="bg-warning-100 px-2 py-1 rounded">supabase/add_admin_rls_policies.sql</code> in Supabase SQL Editor to fix this.
+          <div className="mb-6 bg-neutral-50 border border-neutral-200 rounded-xl p-4">
+            {/* STEWARDSHIP GUARDRAIL: Never expose technical implementation details to users */}
+            <p className="text-sm text-neutral-600 mb-2">We’re unable to load community stats right now. Your space is safe — please refresh to try again.</p>
+            <p className="text-xs text-neutral-400">
+              If this persists, our support team is standing by to help.
             </p>
           </div>
         )}
@@ -234,7 +235,7 @@ export default function AdminDashboardClient() {
             </Link>
             <Link
               href="/markets/admin/vendors/create"
-              className="bg-white rounded-2xl shadow-soft p-6 hover:shadow-soft-lg transition-all group block border-2 border-dashed border-primary-200 hover:border-primary-400"
+              className="bg-white rounded-2xl shadow-soft p-6 hover:shadow-soft-lg transition-all group block"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center group-hover:bg-primary-100 transition-colors">

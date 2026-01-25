@@ -172,8 +172,9 @@ export default async function VendorDashboardPage() {
             <div className="text-3xl font-bold text-success-600">{stats.activeProducts}</div>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
-            <div className="text-sm text-neutral-600 mb-1">Pending Orders</div>
-            <div className="text-3xl font-bold text-warning-600">{stats.pendingOrders}</div>
+            {/* VENDOR VOICE: Ownership, service, and purpose — never urgency or control */}
+            <div className="text-sm text-neutral-600 mb-1">Orders to Fulfill</div>
+            <div className="text-3xl font-bold text-neutral-900">{stats.pendingOrders}</div>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
             <div className="text-sm text-neutral-600 mb-1">Total Sales</div>
@@ -209,7 +210,7 @@ export default async function VendorDashboardPage() {
                         <div className="font-bold text-neutral-900 mb-1">${order.total}</div>
                         <span
                           className={`inline-block px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${order.status === 'pending'
-                            ? 'bg-warning-50 text-warning-700'
+                            ? 'bg-primary-50 text-primary-700'
                             : 'bg-success-50 text-success-700'
                             }`}
                         >
