@@ -37,6 +37,9 @@
   "exclude": [
     "node_modules",
     "supabase",
-    "hostinger-deploy"
+    "hostinger-deploy",
+    "playwright.config.ts",
+    "jest.config.js",
+    "tests"
   ]
 }
