@@ -262,7 +262,7 @@ function Header({ className }: HeaderProps) {
     if (!isAccountMenuOpen) return
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-      if (!target.closest('.account-menu-container') && !target.closest('[class*="z-[10000]"]')) {
+      if (!target.closest('.account-menu-container') && !target.closest('[class*="z-dropdown"]')) {
         setIsAccountMenuOpen(false)
       }
     }
@@ -360,12 +360,12 @@ function Header({ className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'sticky top-0 left-0 right-0 z-[9999] w-full bg-white/98 backdrop-blur-md border-b border-neutral-200/80 transition-shadow duration-200',
-          isScrolled && 'shadow-lg bg-white/100',
+          'sticky top-0 left-0 right-0 z-header w-full bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm transition-all duration-300 supports-[backdrop-filter]:bg-white/60',
+          isScrolled && 'shadow-md bg-white/95 backdrop-blur-md',
           className
         )}
         role="banner"
-        style={{ willChange: 'transform', zIndex: 9999 }}
+        style={{ willChange: 'transform' }}
       >
         <div className="container-custom">
           <div className={cn(
@@ -427,7 +427,7 @@ function Header({ className }: HeaderProps) {
                         {isOpen && typeof window !== 'undefined' && menuPosition && (
                           <div
                             ref={menuRef}
-                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-neutral-200/50 py-3 z-[10001] min-w-[220px] overflow-hidden"
+                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-neutral-200/50 py-3 z-dropdown min-w-[220px] overflow-hidden"
                             style={{
                               top: `${menuPosition.top}px`,
                               left: `${menuPosition.left}px`,
@@ -542,7 +542,7 @@ function Header({ className }: HeaderProps) {
                   </button>
                   {isAccountMenuOpen && typeof window !== 'undefined' && accountMenuPosition && (
                     <div
-                      className="fixed w-56 bg-white rounded-xl shadow-xl border border-neutral-200 py-2 z-[10000]"
+                      className="fixed w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/60 py-2 z-dropdown"
                       style={{
                         top: `${accountMenuPosition.top}px`,
                         right: `${accountMenuPosition.right}px`,
@@ -559,7 +559,7 @@ function Header({ className }: HeaderProps) {
                             {user.email?.[0].toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors">
+                            <div className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors truncate max-w-[150px]">
                               {vendor ? vendor.name : 'My Account'}
                             </div>
                             <div className="text-xs text-neutral-500 font-medium group-hover:text-primary-600/70">

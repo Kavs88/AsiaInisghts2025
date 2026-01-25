@@ -135,6 +135,18 @@ module.exports = {
         'soft': '0 2px 8px rgba(0, 0, 0, 0.08)',
         'soft-lg': '0 4px 16px rgba(0, 0, 0, 0.1)',
       },
+      // Z-Index Scale - Robust layering system
+      zIndex: {
+        'base': '1',
+        'stripe': '200',  // VendorStripe (below header)
+        'tabs': '300',    // Profile Tabs (below stripe)
+        'sticky': '900',  // Generic sticky elements
+        'header': '1000', // Main Header
+        'dropdown': '1100', // Dropdowns
+        'modal-backdrop': '2000',
+        'modal': '2100',
+        'toast': '3000',
+      },
     },
   },
   plugins: [],

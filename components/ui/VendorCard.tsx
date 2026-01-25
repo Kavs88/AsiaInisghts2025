@@ -84,7 +84,7 @@ function VendorCard({
         aria-label={`Visit ${name} seller profile`}
       >
         {/* Hero Image Container - Fixed aspect ratio */}
-        <div className="relative h-48 sm:h-52 bg-neutral-100 overflow-hidden">
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-neutral-100 overflow-hidden">
           {(heroImageUrl && typeof heroImageUrl === 'string' && !imgError) ? (
             <Image
               src={heroImageUrl}
