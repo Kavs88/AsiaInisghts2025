@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getVendorProducts, getCustomerOrderIntents } from '@/lib/supabase/queries'
 
 export const metadata = {
-  title: 'Vendor Dashboard - AI Markets',
+  title: 'Business Hub',
   description: 'Manage your products and orders',
 }
 

@@ -7,7 +7,7 @@ import Footer from '@/components/ui/Footer'
 import { AppProviders } from '@/components/providers/AppProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap', // Prevents invisible text during font load
   preload: true,
@@ -16,9 +16,13 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'AI Markets - Multi-Vendor Marketplace',
+  // SOVEREIGN IDENTITY: Asia Insights is the city. Markets is a district.
+  title: {
+    default: 'Asia Insights - Community & Commerce',
+    template: '%s · Asia Insights',
+  },
   description: 'Discover artisan vendors, shop local products, and visit our real-world markets',
-  keywords: 'marketplace, artisan, local, vendors, AI Markets, handmade, local produce',
+  keywords: 'marketplace, artisan, local, vendors, asia insights, handmade, local produce',
   icons: {
     icon: [
       { url: '/icon.png', sizes: '32x32', type: 'image/png' },
@@ -34,7 +38,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'AI Markets',
+    title: 'Asia Insights',
   },
   other: {
     'mobile-web-app-capable': 'yes',

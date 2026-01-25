@@ -1,6 +1,6 @@
 {
-  "name": "AI Markets - Multi-Vendor Marketplace",
-  "short_name": "AI Markets",
+  "name": "Asia Insights",
+  "short_name": "Asia Insights",
   "description": "Discover artisan vendors, shop local products, and visit our real-world markets",
   "start_url": "/",
   "display": "standalone",
@@ -21,4 +21,3 @@
     }
   ]
 }
-
