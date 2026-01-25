@@ -1,0 +1,23 @@
+
+> sunday-market@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.33
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/markets/sellers/[slug]/page.tsx:101:24
+Type error: Binding element 'data' implicitly has an 'any' type.
+
+[0m [90m  99 |[39m         [33m.[39mselect([32m'market_day_id, market_days!inner(market_date)'[39m[33m,[39m { count[33m:[39m [32m'exact'[39m[33m,[39m head[33m:[39m [36mfalse[39m })[0m
+[0m [90m 100 |[39m         [33m.[39meq([32m'vendor_id'[39m[33m,[39m vendor[33m.[39mid)[0m
+[0m[31m[1m>[22m[39m[90m 101 |[39m         [33m.[39mthen([36masync[39m ({ data[33m,[39m count }) [33m=>[39m {[0m
+[0m [90m     |[39m                        [31m[1m^[22m[39m[0m
+[0m [90m 102 |[39m           [36mconst[39m pastMarkets [33m=[39m data[33m?[39m[33m.[39mfilter((stall[33m:[39m any) [33m=>[39m [0m
+[0m [90m 103 |[39m             [36mnew[39m [33mDate[39m(stall[33m.[39mmarket_days[33m.[39mmarket_date) [33m<[39m [36mnew[39m [33mDate[39m()[0m
+[0m [90m 104 |[39m           )[33m.[39mlength [33m||[39m [35m0[39m[0m
+Next.js build worker exited with code: 1 and signal: null

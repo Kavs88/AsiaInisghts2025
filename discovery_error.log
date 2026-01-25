@@ -1,0 +1,12 @@
+Dynamic server usage: Route /api/discovery couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+Error: Dynamic server usage: Route /api/discovery couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\admin\Sunday Market Project\.next\server\chunks\8948.js:1:37220)
+    at f (C:\Users\admin\Sunday Market Project\.next\server\chunks\1615.js:1:1692)
+    at s (C:\Users\admin\Sunday Market Project\.next\server\app\api\events\[id]\intent\route.js:1:3082)
+    at async l (C:\Users\admin\Sunday Market Project\.next\server\app\api\discovery\route.js:1:859)
+    at async C:\Users\admin\Sunday Market Project\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38411
+    at async e_.execute (C:\Users\admin\Sunday Market Project\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:27880)
+    at async e_.handle (C:\Users\admin\Sunday Market Project\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:39943)
+    at async exportAppRoute (C:\Users\admin\Sunday Market Project\node_modules\next\dist\export\routes\app-route.js:77:26)
+    at async exportPageImpl (C:\Users\admin\Sunday Market Project\node_modules\next\dist\export\worker.js:175:20)
+    at async Span.traceAsyncFn (C:\Users\admin\Sunday Market Project\node_modules\next\dist\trace\trace.js:154:20)

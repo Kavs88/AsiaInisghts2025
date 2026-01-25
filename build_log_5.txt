@@ -1,0 +1,23 @@
+
+> sunday-market@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.33
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/markets/sellers/[slug]/page.tsx:109:22
+Type error: Binding element 'count' implicitly has an 'any' type.
+
+[0m [90m 107 |[39m             [33m.[39mselect([32m'id'[39m[33m,[39m { count[33m:[39m [32m'exact'[39m[33m,[39m head[33m:[39m [36mtrue[39m })[0m
+[0m [90m 108 |[39m             [33m.[39mor([32m`vendor_id.eq.${vendor.id},and(host_id.eq.${vendor.id},host_type.eq.vendor)`[39m)[0m
+[0m[31m[1m>[22m[39m[90m 109 |[39m             [33m.[39mthen(({ count }) [33m=>[39m count [33m||[39m [35m0[39m)[0m
+[0m [90m     |[39m                      [31m[1m^[22m[39m[0m
+[0m [90m 110 |[39m           [36mreturn[39m {[0m
+[0m [90m 111 |[39m             pastMarkets[33m,[39m[0m
+[0m [90m 112 |[39m             totalEvents[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null

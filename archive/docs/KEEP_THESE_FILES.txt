@@ -1,0 +1,77 @@
+KEEP THESE FILES - Essential Only
+==================================
+
+SUPABASE SQL FILES (Keep 4):
+✅ supabase/schema_safe.sql
+✅ supabase/functions.sql
+✅ supabase/seed_data.sql
+✅ supabase/drop-all-tables.sql (useful for reset)
+
+SUPABASE EDGE FUNCTIONS (Keep 4):
+✅ supabase/functions/send-vendor-email/index.ts
+✅ supabase/functions/send-customer-email/index.ts
+✅ supabase/functions/send-vendor-whatsapp/index.ts
+✅ supabase/functions/send-vendor-zalo/index.ts
+
+DOCUMENTATION (Keep 7):
+✅ README.md
+✅ NEXT_STEPS_REQUIRED.md
+✅ EXTERNAL_INTEGRATIONS_REVIEW.md
+✅ DATABASE_SETUP_COMPLETE.md
+✅ WHATSAPP_ZALO_SETUP.md
+✅ ENV_SETUP.md
+✅ SETUP_SUPABASE.md
+
+REMOVE THESE (Old/Duplicate):
+❌ supabase/schema.sql (old - use schema_safe.sql)
+❌ supabase/migrations.sql (already in schema_safe.sql)
+❌ supabase/order_intents_schema.sql (already in schema_safe.sql)
+❌ supabase/vendor_notifications_migration.sql (already in schema_safe.sql)
+❌ supabase/add_declined_status.sql (already in schema_safe.sql)
+❌ supabase/temporary_public_update_policy.sql (already applied)
+❌ supabase/order_intent_notification_trigger.sql (already in schema_safe.sql)
+❌ supabase/vendor_signup_policies.sql (old version)
+❌ supabase/vendor_signup_policies_fixed.sql (old version)
+❌ supabase/verify_migrations.sql (verification only)
+❌ supabase/verify_seed_data.sql (verification only)
+❌ supabase/analytics_queries.sql (optional - keep if you need it)
+
+REMOVE THESE DOCS (Duplicates/Old):
+❌ CREATE_ENV_FILE.md
+❌ COPY_TO_ENV_LOCAL.txt
+❌ ENV_LOCAL_CONTENT.txt
+❌ FIND_SERVICE_ROLE_KEY.md
+❌ HOW_TO_FIX_ENV_LOCAL.md
+❌ HOW_TO_FIX_SCHEMA_ERROR.md
+❌ QUICK_SETUP.md
+❌ QUICK_START.md
+❌ SETUP_INSTRUCTIONS.txt
+❌ YOUR_SETUP_COMPLETE.md
+❌ DATABASE_SETUP_NOW.md
+❌ SCHEMA_SETUP_COMPLETE.md
+❌ NEXT_STEP_FUNCTIONS.md
+❌ YOU_ARE_READY.md
+❌ QUICK_VERIFY.md
+❌ STAGE_6_VERIFICATION.md
+❌ STAGE_8_IMPLEMENTATION_COMPLETE.md
+❌ FULL_CHANGES_SINCE_STAGE_6.md
+❌ PROJECT_STATUS_UPDATE.md
+❌ PROJECT_STATUS_OVERVIEW.md
+❌ DEPLOYMENT_STAGE_8.md
+❌ VENDOR_ACCOUNT_NAVIGATION_FIX.md
+❌ MESSAGING_FIX.md
+❌ NAVIGATION_FIX.md
+❌ NAVIGATION_FIX_REPORT.md
+❌ FIXES_APPLIED.md
+❌ FIXES_APPLIED_CONSOLE_ERRORS.md
+❌ SCHEMA_FIX.md
+❌ BRANDING_UPDATE.md
+
+KEEP ALL APPLICATION CODE:
+✅ Everything in app/
+✅ Everything in components/
+✅ Everything in lib/
+✅ Everything in contexts/
+✅ Everything in types/
+✅ All config files (next.config.js, package.json, etc.)
+

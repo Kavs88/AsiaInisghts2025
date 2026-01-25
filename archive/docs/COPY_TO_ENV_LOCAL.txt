@@ -1,0 +1,16 @@
+Copy this entire content into your .env.local file:
+
+NEXT_PUBLIC_SUPABASE_URL=https://hkssuvamxdnqptyprsom.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_onOg2F-nuzyQAS5SkSvOcA_EqC2WVgk
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+Instructions:
+1. Open .env.local file (should be in your project root folder)
+2. Delete everything in it if there's any text
+3. Copy all 4 lines above (starting with NEXT_PUBLIC_...)
+4. Paste into .env.local
+5. Replace "your-service-role-key-here" with your actual service role key
+6. Save the file
+
+

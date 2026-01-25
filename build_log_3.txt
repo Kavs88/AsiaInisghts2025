@@ -1,0 +1,23 @@
+
+> sunday-market@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.33
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/markets/sellers/[slug]/page-client.tsx:418:32
+Type error: Cannot find name 'Link'.
+
+[0m [90m 416 |[39m                             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[0m
+[0m [90m 417 |[39m                             {deal[33m.[39mevent_id [33m&&[39m ([0m
+[0m[31m[1m>[22m[39m[90m 418 |[39m                               [33m<[39m[33mLink[39m[0m
+[0m [90m     |[39m                                [31m[1m^[22m[39m[0m
+[0m [90m 419 |[39m                                 href[33m=[39m{[32m`/markets/market-days`[39m}[0m
+[0m [90m 420 |[39m                                 className[33m=[39m[32m"text-xs text-primary-600 hover:text-primary-700 font-medium"[39m[0m
+[0m [90m 421 |[39m                               [33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null

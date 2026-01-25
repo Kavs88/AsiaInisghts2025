@@ -1,0 +1,378 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/components/contexts/AuthContext'
+import { isAdminOrSuperUser } from '@/lib/auth/admin'
+import Link from 'next/link'
+
+export default function EditMarketDayPageClient() {
+  const router = useRouter()
+  const params = useParams()
+  const { user, loading: authLoading } = useAuth()
+  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = useState(true)
+  const [marketDay, setMarketDay] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+
+  const [formData, setFormData] = useState({
+    market_date: '',
+    location_name: '',
+    location_address: '',
+    start_time: '',
+    end_time: '',
+    is_published: false,
+    host_id: '',
+  })
+
+  const [hosts, setHosts] = useState<any[]>([])
+  const [loadingHosts, setLoadingHosts] = useState(false)
+
+  useEffect(() => {
+    const checkAdminAndLoad = async () => {
+      if (authLoading) return
+
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+
+      try {
+        const adminStatus = await isAdminOrSuperUser()
+        setIsAdminUser(adminStatus)
+        setIsChecking(false)
+
+        if (!adminStatus) {
+          return
+        }
+
+        // Fetch hosts and market day
+        const { createClient } = await import('@/lib/supabase/client')
+        const supabase = createClient()
+
+        // Load hosts
+        setLoadingHosts(true)
+        const { getAllHosts } = await import('@/lib/supabase/queries')
+        const hostsList = await getAllHosts()
+        setHosts(hostsList)
+        setLoadingHosts(false)
+
+        const { data, error: marketDayError } = await supabase
+          .from('market_days')
+          .select('*')
+          .eq('id', params.id as string)
+          .single()
+
+        if (marketDayError) {
+          setError(marketDayError.message)
+        } else if (data) {
+          setMarketDay(data as any)
+          // Format date for input (YYYY-MM-DD)
+          const date = new Date((data as any).market_date)
+          const formattedDate = date.toISOString().split('T')[0]
+
+          // Format time for input (HH:MM)
+          const formatTimeForInput = (timeStr: string | null) => {
+            if (!timeStr) return ''
+            return timeStr.substring(0, 5) // Extract HH:MM from HH:MM:SS
+          }
+
+          setFormData({
+            market_date: formattedDate,
+            location_name: (data as any).location_name || '',
+            location_address: (data as any).location_address || '',
+            start_time: formatTimeForInput((data as any).start_time),
+            end_time: formatTimeForInput((data as any).end_time),
+            is_published: (data as any).is_published || false,
+            host_id: (data as any).host_id || '',
+          })
+        }
+      } catch (err: any) {
+        console.error('[EditMarketDay] Error:', err)
+        setIsAdminUser(false)
+        setIsChecking(false)
+        setError(err.message)
+      }
+    }
+
+    checkAdminAndLoad()
+  }, [user, authLoading, router, params.id])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setSuccess(false)
+    setLoading(true)
+
+    try {
+      if (!formData.market_date || !formData.location_name) {
+        setError('Please fill in all required fields')
+        setLoading(false)
+        return
+      }
+
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+
+      const { error: updateError } = await supabase
+        .from('market_days')
+        // @ts-ignore
+        .update({
+          market_date: formData.market_date,
+          location_name: formData.location_name,
+          location_address: formData.location_address || null,
+          start_time: formData.start_time || null,
+          end_time: formData.end_time || null,
+          is_published: formData.is_published,
+          host_id: formData.host_id || null,
+          updated_at: new Date().toISOString(),
+        } as any)
+        .eq('id', params.id as string)
+
+      if (updateError) {
+        setError(updateError.message)
+      } else {
+        setSuccess(true)
+        setTimeout(() => {
+          router.push('/admin/market-days')
+        }, 2000)
+      }
+    } catch (err: any) {
+      console.error('[EditMarketDay] Error:', err)
+      setError(err.message || 'Unexpected error updating market day')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  if (authLoading || isChecking) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="container-custom py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-neutral-600">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (!user || !isAdminUser) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="container-custom py-8">
+          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
+            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
+            <Link href="/admin/market-days" className="text-primary-600 hover:underline">
+              ← Back to Market Days
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (error && !marketDay) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="container-custom py-8">
+          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-error-900 mb-2">Error</h2>
+            <p className="text-error-800 mb-4">{error}</p>
+            <Link href="/admin/market-days" className="text-primary-600 hover:underline">
+              ← Back to Market Days
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (success) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="container-custom py-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-success-50 border border-success-200 rounded-xl p-8">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-success-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-success-900">Market Day Updated!</h2>
+                  <p className="text-success-700">Redirecting to market days list...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (!marketDay) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="container-custom py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-neutral-600">Loading market day...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-neutral-50">
+      <div className="container-custom py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-neutral-900 mb-2">Edit Market Day</h1>
+              <p className="text-neutral-600">Update market day and venue information</p>
+            </div>
+            <Link
+              href="/admin/market-days"
+              className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
+            >
+              ← Back to Market Days
+            </Link>
+          </div>
+
+          {error && (
+            <div className="mb-6 bg-error-50 border border-error-200 rounded-xl p-4">
+              <p className="text-sm text-error-800">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-soft p-8">
+            <div className="space-y-8">
+              {/* Basic Information */}
+              <div>
+                <h2 className="text-2xl font-bold text-neutral-900 mb-4">Basic Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-900 mb-2">
+                      Market Date <span className="text-error-600">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={formData.market_date}
+                      onChange={(e) => setFormData({ ...formData, market_date: e.target.value })}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-900 mb-2">
+                      Location Name <span className="text-error-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.location_name}
+                      onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-900 mb-2">Location Address</label>
+                    <input
+                      type="text"
+                      value={formData.location_address}
+                      onChange={(e) => setFormData({ ...formData, location_address: e.target.value })}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-900 mb-2">Start Time</label>
+                      <input
+                        type="time"
+                        value={formData.start_time}
+                        onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-900 mb-2">End Time</label>
+                      <input
+                        type="time"
+                        value={formData.end_time}
+                        onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="is_published"
+                      checked={formData.is_published}
+                      onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 border-neutral-300 rounded focus:ring-primary-500"
+                    />
+                    <label htmlFor="is_published" className="text-sm font-medium text-neutral-900">
+                      Publish (visible on site)
+                    </label>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-neutral-900 mb-2">Host / Venue</label>
+                    {loadingHosts ? (
+                      <div className="px-4 py-2 text-sm text-neutral-500">Loading hosts...</div>
+                    ) : (
+                      <select
+                        value={formData.host_id}
+                        onChange={(e) => setFormData({ ...formData, host_id: e.target.value })}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      >
+                        <option value="">No host selected (optional)</option>
+                        {hosts.map((host) => (
+                          <option key={host.id} value={host.id}>
+                            {host.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Select a host/venue for this market day. Create hosts in the admin dashboard first.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-3 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Updating...' : 'Update Market Day'}
+                </button>
+                <Link
+                  href="/admin/market-days"
+                  className="px-6 py-3 bg-neutral-100 text-neutral-900 font-medium rounded-xl hover:bg-neutral-200 transition-colors"
+                >
+                  Cancel
+                </Link>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  )
+}
+

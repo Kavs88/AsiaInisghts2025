@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 140 82 255; /* #8c52ff - AI Markets Purple */
+    --color-secondary: 217 70 239;
+  }
+
+  html {
+    overflow-x: hidden;
+    /* scroll-smooth removed to prevent scroll jump on page load
+       Smooth scrolling is handled by Next.js router for hash navigation */
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900 antialiased;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+
+  /* Skip to content link (hidden until focused) */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg;
+  }
+}
+
+@layer components {
+  /* 
+   * Z-INDEX SCALE (Documented for consistency)
+   * 
+   * Use these values to prevent z-index conflicts:
+   * - z-10: Card overlays, badges, tooltips
+   * - z-20: Product card hover overlays
+   * - z-30: Interactive elements within cards
+   * - z-40: Sticky elements (VendorStripe, filters)
+   * - z-50: MegaMenu, Modal backdrop, Toast
+   * - z-[9998]: Cart drawer backdrop
+   * - z-[9999]: Main header, Cart drawer, SearchBar overlay
+   * - z-[10000]: Dropdowns, Account menu, SearchBar results
+   * - z-[10001]: Modal content, CustomerInfoModal, SubmitOrderModal
+   * 
+   * CRITICAL: Never exceed z-[10001] without documenting why.
+   */
+  
+  /* Reusable component classes */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-3 sm:px-4 lg:px-6;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    /* 
+     * GUARDRAIL: This overflow-x: hidden prevents horizontal scroll.
+     * Action buttons/CTAs that need to extend beyond container must be
+     * placed OUTSIDE this container (see app/sellers/[slug]/page.tsx for example).
+     */
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-soft p-6;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-neutral-100 text-neutral-900 px-6 py-3 rounded-xl font-medium hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors;
+  }
+
+  /* Entrance Animations */
+  .animate-fade-up {
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+

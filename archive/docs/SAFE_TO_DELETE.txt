@@ -1,0 +1,56 @@
+SAFE TO DELETE - These are old/duplicate files
+================================================
+
+These files are safe to delete because:
+- They're already merged into schema_safe.sql
+- They're duplicate documentation
+- They're old status files
+
+SUPABASE SQL (Old Migrations - Already in schema_safe.sql):
+- supabase/schema.sql
+- supabase/migrations.sql
+- supabase/order_intents_schema.sql
+- supabase/vendor_notifications_migration.sql
+- supabase/add_declined_status.sql
+- supabase/temporary_public_update_policy.sql
+- supabase/order_intent_notification_trigger.sql
+- supabase/vendor_signup_policies.sql
+- supabase/vendor_signup_policies_fixed.sql
+- supabase/verify_migrations.sql
+- supabase/verify_seed_data.sql
+
+DOCUMENTATION (Duplicates/Old):
+- CREATE_ENV_FILE.md
+- COPY_TO_ENV_LOCAL.txt
+- ENV_LOCAL_CONTENT.txt
+- FIND_SERVICE_ROLE_KEY.md
+- HOW_TO_FIX_ENV_LOCAL.md
+- HOW_TO_FIX_SCHEMA_ERROR.md
+- QUICK_SETUP.md
+- QUICK_START.md
+- SETUP_INSTRUCTIONS.txt
+- YOUR_SETUP_COMPLETE.md
+- DATABASE_SETUP_NOW.md
+- SCHEMA_SETUP_COMPLETE.md
+- NEXT_STEP_FUNCTIONS.md
+- YOU_ARE_READY.md
+- QUICK_VERIFY.md
+- STAGE_6_VERIFICATION.md
+- STAGE_8_IMPLEMENTATION_COMPLETE.md
+- FULL_CHANGES_SINCE_STAGE_6.md
+- PROJECT_STATUS_UPDATE.md
+- PROJECT_STATUS_OVERVIEW.md
+- DEPLOYMENT_STAGE_8.md
+- VENDOR_ACCOUNT_NAVIGATION_FIX.md
+- MESSAGING_FIX.md
+- NAVIGATION_FIX.md
+- NAVIGATION_FIX_REPORT.md
+- FIXES_APPLIED.md
+- FIXES_APPLIED_CONSOLE_ERRORS.md
+- SCHEMA_FIX.md
+- BRANDING_UPDATE.md
+
+OPTIONAL (Keep if useful):
+- supabase/analytics_queries.sql (keep if you need analytics)
+- supabase/drop-all-tables.sql (keep if you want to reset DB)
+

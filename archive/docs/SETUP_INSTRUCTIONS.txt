@@ -1,0 +1,50 @@
+═══════════════════════════════════════════════════════════════
+  SUNDAY MARKET - QUICK SETUP INSTRUCTIONS
+═══════════════════════════════════════════════════════════════
+
+You have your Supabase credentials! Here's what to do:
+
+STEP 1: Create .env.local file
+───────────────────────────────────────────────────────────────
+Create a file named ".env.local" in your project root with:
+
+NEXT_PUBLIC_SUPABASE_URL=https://hkssuvamxdnqptyprsom.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_onOg2F-nuzyQAS5SkSvOcA_EqC2WVgk
+SUPABASE_SERVICE_ROLE_KEY=GET_THIS_FROM_SUPABASE_DASHBOARD
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+STEP 2: Get Service Role Key
+───────────────────────────────────────────────────────────────
+1. Open: https://supabase.com/dashboard/project/hkssuvamxdnqptyprsom/settings/api
+2. Find "service_role" section (scroll down)
+3. Click the eye icon to reveal
+4. Copy the key
+5. Paste it in .env.local replacing GET_THIS_FROM_SUPABASE_DASHBOARD
+
+STEP 3: Set Up Database Tables
+───────────────────────────────────────────────────────────────
+1. Open: https://supabase.com/dashboard/project/hkssuvamxdnqptyprsom/editor
+2. Click "SQL Editor" → "New Query"
+3. Open supabase/schema.sql from your project
+4. Copy ALL contents and paste in SQL Editor
+5. Click "Run" (or Cmd/Ctrl + Enter)
+6. Repeat for supabase/functions.sql
+
+STEP 4: Start the App
+───────────────────────────────────────────────────────────────
+Run: npm run dev
+
+Open: http://localhost:3000
+
+═══════════════════════════════════════════════════════════════
+
+That's it! The app should now connect to your Supabase database.
+
+For detailed help, see:
+- QUICK_SETUP.md
+- ENV_SETUP.md
+- SETUP_SUPABASE.md
+
+═══════════════════════════════════════════════════════════════
+
+
