@@ -52,3 +52,7 @@ docs/reference/WP_EXPORT_EXTRACTED/database.sql
 hostinger-deploy-final
 *.tar.gz
 create_clean_package.ps1
+
+# logs
+*.log
+process_investigation.txt
