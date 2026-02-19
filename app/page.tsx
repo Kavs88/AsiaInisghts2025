@@ -4,19 +4,14 @@ import HeroSearchBar from '@/components/ui/HeroSearchBar'
 import { ShieldCheck, Building2 } from 'lucide-react'
 import { getBusinesses } from '@/lib/actions/businesses'
 import { getProperties } from '@/lib/actions/properties'
+import { getNextMarketDay } from '@/lib/actions/markets'
 import PropertyCard from '@/components/ui/PropertyCard'
 
-// QA FIX: Hub → Markets Decoupling
-// REMOVED: Direct Markets data fetching (getVendors, getProducts, getUpcomingMarketDays)
-// REASON: Hub must not depend on Markets internals to maintain section independence
-// RESULT: Hub is now section-agnostic and will not fail if Markets database is unavailable
-// NOTE: Markets content section below is preserved for SEO but uses static/optional content
 export default async function Home() {
-  // Fetch new/featured businesses and properties for the homepage
-  // Use Promise.all for parallel fetching
-  const [businesses, properties] = await Promise.all([
+  const [businesses, properties, nextMarketDay] = await Promise.all([
     getBusinesses(undefined, 4),
-    getProperties({ limit: 4 })
+    getProperties({ limit: 4 }),
+    getNextMarketDay()
   ])
 
   return (
@@ -75,32 +70,44 @@ export default async function Home() {
       </section>
 
       {/* Next Market Widget - Drives real-world attendance */}
-      <section className="py-8 bg-primary-50 border-y border-primary-100">
-        <div className="container-custom">
-          <Link
-            href="/markets/market-days"
-            className="flex flex-col sm:flex-row items-center justify-between gap-4 group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      {nextMarketDay && (
+        <section className="py-8 bg-primary-50 border-y border-primary-100">
+          <div className="container-custom">
+            <Link
+              href="/markets/market-days"
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-primary-600">Next Market</div>
+                  <div className="text-xl sm:text-2xl font-bold text-neutral-900">
+                    {new Date(nextMarketDay.market_date + 'T00:00:00').toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </div>
+                  {nextMarketDay.location_name && (
+                    <div className="text-sm text-neutral-500 mt-0.5">{nextMarketDay.location_name}</div>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-primary-600 font-semibold group-hover:gap-3 transition-all">
+                <span>View All Market Days</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
-              <div>
-                <div className="text-sm font-medium text-primary-600">Next Market</div>
-                <div className="text-xl sm:text-2xl font-bold text-neutral-900">December 17, 2024</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-primary-600 font-semibold group-hover:gap-3 transition-all">
-              <span>View All Market Days</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
-        </div>
-      </section>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Why Trust Us - Human Connection */}
       <section className="section-padding bg-white">
@@ -281,227 +288,137 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* PHASE 4: New in Town - Featured Businesses */}
-      <section className="section-padding bg-neutral-50 overflow-hidden">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
-            <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
-                New in Town
-              </h2>
-              <p className="text-lg text-neutral-600 font-medium">
-                Support local businesses and discover top-rated services, retail, and venues in your community.
-              </p>
+      {/* New in Town - Featured Businesses (only rendered when data exists) */}
+      {businesses.length > 0 && (
+        <section className="section-padding bg-neutral-50 overflow-hidden">
+          <div className="container-custom">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
+              <div className="max-w-2xl">
+                <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
+                  New in Town
+                </h2>
+                <p className="text-lg text-neutral-600 font-medium">
+                  Support local businesses and discover top-rated services, retail, and venues in your community.
+                </p>
+              </div>
+              <Link
+                href="/businesses"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-neutral-200 rounded-xl font-bold text-neutral-900 hover:bg-neutral-100 transition-all shadow-sm hover:shadow-md shrink-0"
+              >
+                Browse Directory
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
             </div>
-            <Link
-              href="/businesses"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-neutral-200 rounded-xl font-bold text-neutral-900 hover:bg-neutral-100 transition-all shadow-sm hover:shadow-md shrink-0"
-            >
-              Browse Directory
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {(businesses.length > 0 ? businesses : [
-              {
-                id: 'dddddddd-dddd-dddd-dddd-dddddddddddd',
-                name: 'Danang Luxury Stays',
-                slug: 'danang-luxury-stays',
-                category: 'service',
-                description: 'Premium property management and luxury stays in Da Nang.',
-                address: '123 Vo Nguyen Giap, Da Nang',
-                logo_url: 'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80',
-                is_verified: true
-              },
-              {
-                id: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
-                name: 'Hoi An Heritage stays',
-                slug: 'hoi-an-heritage',
-                category: 'service',
-                description: 'Authentic heritage stays and cultural experiences in Hoi An.',
-                address: '45 Tran Phu, Hoi An',
-                logo_url: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80',
-                is_verified: true
-              },
-              {
-                id: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
-                name: 'Marble Mountains Events',
-                slug: 'marble-mountains',
-                category: 'venue',
-                description: 'Premier event spaces and coordination in the Ngu Hanh Son area.',
-                address: 'Hoa Hai, Ngu Hanh Son, Da Nang',
-                logo_url: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80',
-                is_verified: true
-              },
-              {
-                id: '99999999-9999-9999-9999-999999999999',
-                name: 'Dragon Bridge Tech',
-                slug: 'dragon-bridge',
-                category: 'service',
-                description: 'Modern urban apartments and smart home services.',
-                address: '88 Bach Dang, Da Nang',
-                logo_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
-                is_verified: false
-              }
-            ]).map((biz: any) => (
-              <div key={biz.id} className="group relative">
-                <Link href={`/businesses/${biz.slug}`} className="block">
-                  <div className="aspect-[4/5] relative rounded-3xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-500 bg-neutral-100">
-                    {biz.logo_url ? (
-                      <Image
-                        src={biz.logo_url}
-                        alt={biz.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 text-neutral-300">
-                        <Building2 className="w-12 h-12" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              {businesses.map((biz: any) => (
+                <div key={biz.id} className="group relative">
+                  <Link href={`/businesses/${biz.slug}`} className="block">
+                    <div className="aspect-[4/5] relative rounded-3xl overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-500 bg-neutral-100">
+                      {biz.logo_url ? (
+                        <Image
+                          src={biz.logo_url}
+                          alt={biz.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 text-neutral-300">
+                          <Building2 className="w-12 h-12" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
+                            {biz.category}
+                          </span>
+                          {biz.is_verified && (
+                            <ShieldCheck className="w-4 h-4 text-primary-400" />
+                          )}
+                        </div>
+                        <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
+                          {biz.name}
+                        </h3>
+                        <p className="text-white/70 text-sm line-clamp-1">
+                          {biz.address}
+                        </p>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
-                          {biz.category}
-                        </span>
-                        {biz.is_verified && (
-                          <ShieldCheck className="w-4 h-4 text-primary-400" />
-                        )}
-                      </div>
-                      <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
-                        {biz.name}
-                      </h3>
-                      <p className="text-white/70 text-sm line-clamp-1">
-                        {biz.address}
-                      </p>
                     </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* NEW: Top Stays & Spaces Elevation */}
-      <section className="section-padding bg-neutral-50/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-primary-50/10 to-transparent rounded-full blur-3xl -mr-16 -mt-16" />
-        <div className="container-custom relative">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 text-primary-600 font-bold text-sm uppercase tracking-wider mb-4">
-                <ShieldCheck className="w-4 h-4 text-primary-600" />
-                <span>Premium Stays</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
-                Top Stays & <span className="text-primary-600">Spaces.</span>
-              </h2>
-              <p className="text-lg text-neutral-600 mt-4 leading-relaxed">
-                Handpicked villas, apartments, and event venues managed by the region's top local agencies.
-              </p>
+                  </Link>
+                </div>
+              ))}
             </div>
-            <Link
-              href="/properties"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white border border-neutral-200 hover:border-primary-200 text-neutral-900 hover:text-primary-600 font-bold rounded-2xl transition-all shadow-sm hover:shadow-md group"
-            >
-              Browse All Properties
-              <div className="w-5 h-5 group-hover:translate-x-1 transition-transform">→</div>
-            </Link>
           </div>
+        </section>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {(properties.length > 0 ? properties : [
-              {
-                id: '11111111-1111-1111-1111-111111111111',
-                address: 'My Khe Beach Villa',
-                type: 'villa' as const,
-                property_type: 'rental' as const,
-                price: 2500,
-                bedrooms: 4,
-                bathrooms: 4,
-                images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80'],
-                businesses: { name: 'Danang Luxury Stays', slug: 'danang-luxury-stays' }
-              },
-              {
-                id: '22222222-2222-2222-2222-222222222222',
-                address: 'Hoi An Riverside Studio',
-                type: 'apartment' as const,
-                property_type: 'rental' as const,
-                price: 800,
-                bedrooms: 1,
-                bathrooms: 1,
-                images: ['https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80'],
-                businesses: { name: 'Hoi An Heritage stays', slug: 'hoi-an-heritage' }
-              },
-              {
-                id: '33333333-3333-3333-3333-333333333333',
-                address: 'The Grand Ballroom',
-                type: 'commercial' as const,
-                property_type: 'event_space' as const,
-                capacity: 300,
-                images: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'],
-                businesses: { name: 'Marble Mountains Events', slug: 'marble-mountains' }
-              },
-              {
-                id: '44444444-4444-4444-4444-444444444444',
-                address: 'Penthouse with City View',
-                type: 'condo' as const,
-                property_type: 'rental' as const,
-                price: 1800,
-                bedrooms: 2,
-                bathrooms: 2,
-                images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80'],
-                businesses: { name: 'Dragon Bridge Tech', slug: 'dragon-bridge' }
-              }
-            ]).map((property: any) => (
-              <PropertyCard
-                key={property.id}
-                id={property.id}
-                address={property.address}
-                type={property.type}
-                property_type={property.property_type}
-                price={property.price}
-                bedrooms={property.bedrooms}
-                bathrooms={property.bathrooms}
-                capacity={property.capacity}
-                images={property.images}
-                businesses={property.businesses}
-              />
-            ))}
+      {/* Top Stays & Spaces (only rendered when data exists) */}
+      {properties.length > 0 && (
+        <section className="section-padding bg-neutral-50/50 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-primary-50/10 to-transparent rounded-full blur-3xl -mr-16 -mt-16" />
+          <div className="container-custom relative">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-primary-600 font-bold text-sm uppercase tracking-wider mb-4">
+                  <ShieldCheck className="w-4 h-4 text-primary-600" />
+                  <span>Curated Stays</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
+                  Top Stays & <span className="text-primary-600">Spaces.</span>
+                </h2>
+                <p className="text-lg text-neutral-600 mt-4 leading-relaxed">
+                  Handpicked villas, apartments, and event venues managed by the region's top local agencies.
+                </p>
+              </div>
+              <Link
+                href="/properties"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white border border-neutral-200 hover:border-primary-200 text-neutral-900 hover:text-primary-600 font-bold rounded-2xl transition-all shadow-sm hover:shadow-md group"
+              >
+                Browse All Properties
+                <div className="w-5 h-5 group-hover:translate-x-1 transition-transform">→</div>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              {properties.map((property: any) => (
+                <PropertyCard
+                  key={property.id}
+                  id={property.id}
+                  address={property.address}
+                  type={property.type}
+                  property_type={property.property_type}
+                  price={property.price}
+                  bedrooms={property.bedrooms}
+                  bathrooms={property.bathrooms}
+                  capacity={property.capacity}
+                  images={property.images}
+                  businesses={property.businesses}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* PHASE 4: Cross-Platform Stats - Social Proof without the Noise */}
+      {/* Community Trust Banner */}
       <section className="section-padding bg-white border-y border-neutral-100">
         <div className="container-custom">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { label: 'Local Businesses', value: 'Growing', sub: 'Verified profiles' },
-              { label: 'Weekly Events', value: 'Regular', sub: 'Discovery engine' },
-              { label: 'Active Sellers', value: 'Expanding', sub: 'Market network' },
-              { label: 'Properties', value: 'Available', sub: 'Synergy listings' },
-            ].map((stat, i) => (
-              <div key={i} className="text-center md:text-left">
-                <div className="text-3xl md:text-4xl lg:text-5xl font-black text-neutral-900 mb-2">{stat.value}</div>
-                <div className="text-sm font-bold text-primary-600 uppercase tracking-widest mb-1">{stat.label}</div>
-                <div className="text-xs text-neutral-500 font-medium">{stat.sub}</div>
-              </div>
-            ))}
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-xl md:text-2xl font-bold text-neutral-900 leading-snug mb-4">
+              We're still early — and that's the point.
+            </p>
+            <p className="text-base md:text-lg text-neutral-600 leading-relaxed">
+              Asia Insights was built by people who moved here, not investors who read a report about it.
+              Every business, property, and event on this platform has been reviewed by someone who knows this region personally.
+              No filler. No algorithms. Just a community that looks out for each other.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* QA FIX: Markets content section removed for hub independence
-          REMOVED: Featured from Markets, Upcoming Market Preview, Featured Sellers, Featured Products, Markets CTA
-          REASON: Hub must not depend on Markets data to maintain section independence
-          RESULT: Hub is now section-agnostic and will not fail if Markets database is unavailable
-          NOTE: Users can access Markets content via /markets route or section card
-      */}
     </main>
   )
 }

@@ -26,7 +26,7 @@ export async function getBusinesses(category?: string, limit?: number) {
         query = query.limit(limit)
     }
 
-    const { data, error } = await query.order('name')
+    const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) {
         console.error('[getBusinesses] Error fetching businesses:', error)

@@ -62,9 +62,6 @@ export default function EventCard({
   const day = startDate.toLocaleDateString('en-US', { day: 'numeric' })
   const time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 
-  // Mock attendee count if 0 (for demo vibes)
-  const displayAttendees = attendee_count > 0 ? attendee_count : Math.floor(Math.random() * 40) + 12
-
   return (
     <>
       <div
@@ -157,10 +154,10 @@ export default function EventCard({
                 )}
               </div>
 
-              {/* Action/Attendees Snippet */}
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-semibold text-neutral-400 group-hover:text-primary-500 transition-colors">
-                  View
+              {/* Action affordance */}
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-50 group-hover:bg-primary-50 transition-colors">
+                <span className="text-[10px] font-bold text-neutral-500 group-hover:text-primary-600 transition-colors uppercase tracking-wide">
+                  Details
                 </span>
               </div>
             </div>

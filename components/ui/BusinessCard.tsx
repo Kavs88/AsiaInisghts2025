@@ -23,6 +23,11 @@ interface BusinessCardProps {
 }
 
 export default function BusinessCard({ business, className }: BusinessCardProps) {
+    // Normalise sentinel values that leak from the database
+    const phone = business.contact_phone && business.contact_phone !== 'No Phone'
+        ? business.contact_phone
+        : null
+
     return (
         <Link
             href={`/businesses/${business.slug}`}
@@ -85,10 +90,10 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
                     )}
 
                     <div className="flex items-center justify-between mt-2">
-                        {business.contact_phone && business.contact_phone !== 'No Phone' ? (
+                        {phone ? (
                             <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
                                 <Phone className="w-3 h-3 text-neutral-400 shrink-0" />
-                                <span>{business.contact_phone}</span>
+                                <span>{phone}</span>
                             </div>
                         ) : (
                             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">View Details</span>

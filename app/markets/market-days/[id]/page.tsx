@@ -29,7 +29,7 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
     `)
     .eq('id', params.id)
     .eq('is_published', true)
-    .single() as any
+    .maybeSingle() as any
 
   if (error || !marketDay) {
     notFound()

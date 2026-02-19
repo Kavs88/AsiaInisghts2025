@@ -106,7 +106,7 @@ export async function getProductBySlug(slug: string) {
     .select('*, vendors(*)')
     .eq('slug', slug)
     .eq('is_available', true)
-    .single()
+    .maybeSingle()
 
   if (error) throw error
   return data

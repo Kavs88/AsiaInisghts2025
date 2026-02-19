@@ -131,10 +131,12 @@ export default function PropertyCard({
                         <h3 className="text-xl font-black text-neutral-900 truncate group-hover:text-primary-600 transition-colors leading-tight">
                             {address}
                         </h3>
-                        <div className="flex items-center gap-1.5 text-neutral-500 mt-2">
-                            <MapPin className="w-3.5 h-3.5" />
-                            <span className="text-xs font-bold truncate">Premium Location</span>
-                        </div>
+                        {property_type === 'event_space' && (
+                            <div className="flex items-center gap-1.5 text-neutral-500 mt-2">
+                                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                                <span className="text-xs font-medium">Event Space</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Host Avatar - Link clickable separately due to pointer-events-auto */}
