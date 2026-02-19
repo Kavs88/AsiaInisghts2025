@@ -8,9 +8,6 @@ export async function getProperties(options: {
     const supabase = await createClient()
     if (!supabase) return []
 
-    // Select all fields needed by components
-    // Include business_id for the join to work properly
-    // Note: property_type may be NULL for older properties (added in migration 015)
     let query = supabase
         .from('properties')
         .select(`
@@ -33,13 +30,7 @@ export async function getProperties(options: {
             contact_email,
             business_id,
             availability,
-            created_at,
-            businesses (
-                id,
-                name,
-                slug,
-                logo_url
-            )
+            created_at
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false })
@@ -56,23 +47,43 @@ export async function getProperties(options: {
         query = query.limit(options.limit)
     }
 
-    const { data, error } = await query
+    const { data: properties, error } = await query
 
     if (error) {
         console.error('[getProperties] Query error:', error.message)
         return []
     }
 
-    return data || []
+    if (!properties || properties.length === 0) return []
+
+    // Fetch associated businesses separately (no FK constraint in schema)
+    const businessIds = [...new Set(
+        properties.map((p: any) => p.business_id).filter(Boolean)
+    )]
+
+    let businessMap: Record<string, any> = {}
+    if (businessIds.length > 0) {
+        const { data: businesses } = await supabase
+            .from('businesses')
+            .select('id, name, slug, logo_url')
+            .in('id', businessIds)
+
+        if (businesses) {
+            businessMap = Object.fromEntries(businesses.map((b: any) => [b.id, b]))
+        }
+    }
+
+    return properties.map((p: any) => ({
+        ...p,
+        businesses: p.business_id ? (businessMap[p.business_id] ?? null) : null
+    }))
 }
 
 export async function getPropertyById(id: string) {
     const supabase = await createClient()
     if (!supabase) return null
 
-    // Select all fields needed by components
-    // Include business_id for the join to work properly
-    const { data, error } = await supabase
+    const { data: property, error } = await supabase
         .from('properties')
         .select(`
             id,
@@ -93,16 +104,7 @@ export async function getPropertyById(id: string) {
             contact_phone,
             contact_email,
             business_id,
-            created_at,
-            businesses (
-                id,
-                name,
-                slug,
-                description,
-                logo_url,
-                address,
-                contact_phone
-            )
+            created_at
         `)
         .eq('id', id)
         .maybeSingle()
@@ -112,7 +114,20 @@ export async function getPropertyById(id: string) {
         return null
     }
 
-    return data
+    if (!property) return null
+
+    // Fetch associated business separately (no FK constraint in schema)
+    let businesses = null
+    if ((property as any).business_id) {
+        const { data: biz } = await supabase
+            .from('businesses')
+            .select('id, name, slug, description, logo_url, address, contact_phone')
+            .eq('id', (property as any).business_id)
+            .maybeSingle()
+        businesses = biz ?? null
+    }
+
+    return { ...property, businesses }
 }
 
 export async function getPropertiesByBusiness(businessId: string) {
