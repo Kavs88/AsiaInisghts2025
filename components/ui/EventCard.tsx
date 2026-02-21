@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import EventIntentButtons from './EventIntentButtons'
 import EventDetailModal from './EventDetailModal'
 import { MapPin, Clock } from 'lucide-react'
 import Badge from './Badge'
+import { SaveButton } from './SoftActionButtons'
 
 interface EventCardProps {
   id: string
@@ -62,22 +64,24 @@ export default function EventCard({
   const day = startDate.toLocaleDateString('en-US', { day: 'numeric' })
   const time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 
-  // Mock attendee count if 0 (for demo vibes)
-  const displayAttendees = attendee_count > 0 ? attendee_count : Math.floor(Math.random() * 40) + 12
+
 
   return (
     <>
       <div
         onClick={() => setIsModalOpen(true)}
-        className={`group cursor-pointer bg-white rounded-3xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-1 select-none flex flex-col h-full ${className}`}
+        className={`group cursor-pointer bg-white rounded-3xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 select-none flex flex-col h-full ${className}`}
       >
-        {/* Hero Image - Cinematic Aspect Ratio */}
-        <div className="relative h-48 sm:h-52 bg-neutral-100 overflow-hidden shrink-0">
+        {/* Hero Image - 4:3 Aspect Ratio Standard */}
+        <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden shrink-0">
           {image_url ? (
-            <img
+            <Image
               src={image_url}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
@@ -87,27 +91,38 @@ export default function EventCard({
             </div>
           )}
 
-          {/* Category Pill - Only overlay element remaining */}
+          {/* Interactive Overlay */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+
+          {/* Category Badge - Top Left */}
           {category && (
-            <div className="absolute top-4 right-4 z-10 transition-opacity duration-300 group-hover:opacity-100">
-              <Badge variant="glass" className="backdrop-blur-md bg-white/90 font-bold border-none shadow-md">
+            <div className="absolute top-4 left-4 z-10 pointer-events-none">
+              <Badge variant="glass" className="backdrop-blur-md bg-white/90 font-bold border-none shadow-md text-xs uppercase tracking-wider">
                 {category}
               </Badge>
             </div>
           )}
 
-          {/* Interactive Overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+          {/* Save Button - Top Right */}
+          <div className="absolute top-4 right-4 z-10" onClick={(e) => e.stopPropagation()}>
+            <SaveButton
+              itemType="event"
+              itemId={id}
+              minimal
+              className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
+            />
+          </div>
         </div>
 
-        {/* Content Body - Split Layout */}
-        <div className="flex flex-1 p-5 gap-5">
-          {/* Left Column: Date Anchor */}
-          <div className="flex flex-col items-center flex-shrink-0 w-14 pt-1">
-            <span className="text-[10px] font-black text-primary-600 tracking-widest uppercase mb-0.5 leading-none">
+        {/* Content Body - p-6 Uniform */}
+        <div className="flex flex-1 p-6 gap-5 relative z-10 bg-white">
+          {/* Left Column: Date Anchor - Adjusted to align with text */}
+          <div className="flex flex-col items-center flex-shrink-0 w-12 pt-1 border-r border-neutral-100 pr-4 mr-1">
+            <span className="text-[10px] font-black text-primary-600 tracking-widest uppercase mb-1 leading-none">
               {month}
             </span>
-            <span className="text-3xl font-black text-neutral-900 leading-none tracking-tight">
+            <span className="text-2xl font-black text-neutral-900 leading-none tracking-tight">
               {day}
             </span>
           </div>
@@ -116,18 +131,18 @@ export default function EventCard({
           <div className="flex flex-col flex-1 min-w-0">
             {/* Title & Metadata */}
             <div className="mb-auto">
-              <h3 className="text-lg font-bold text-neutral-900 leading-tight mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+              <h3 className="text-lg font-bold text-neutral-900 leading-snug mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
                 {title}
               </h3>
 
               <div className="flex flex-col gap-1.5 mb-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-                  <Clock className="w-3.5 h-3.5 text-primary-500/80" />
+                <div className="flex items-center gap-2 text-sm font-semibold text-neutral-500">
+                  <Clock className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
                   <span>{time}</span>
                 </div>
                 {location && (
-                  <div className="flex items-center gap-2 text-xs font-medium text-neutral-400 truncate">
-                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-neutral-500 truncate">
+                    <MapPin className="w-4 h-4 shrink-0 text-neutral-400" strokeWidth={1.5} />
                     <span className="truncate">{location}</span>
                   </div>
                 )}
@@ -135,11 +150,11 @@ export default function EventCard({
             </div>
 
             {/* Footer: Host & Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-neutral-50 mt-2">
+            <div className="flex items-center justify-between pt-4 border-t border-neutral-100 mt-2">
               <div className="flex items-center gap-2 min-w-0">
                 {hosting_business ? (
                   <>
-                    <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
                       {hosting_business.logo_url ? (
                         <img src={hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -148,18 +163,18 @@ export default function EventCard({
                         </div>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold text-neutral-400 truncate group-hover:text-neutral-600 transition-colors">
+                    <span className="text-xs font-bold text-neutral-500 truncate group-hover:text-neutral-700 transition-colors">
                       {hosting_business.name}
                     </span>
                   </>
                 ) : (
-                  <span className="text-[10px] font-bold text-neutral-400">Asia Insights</span>
+                  <span className="text-xs font-bold text-neutral-400">Asia Insights</span>
                 )}
               </div>
 
-              {/* Action/Attendees Snippet */}
+              {/* Action */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-semibold text-neutral-400 group-hover:text-primary-500 transition-colors">
+                <span className="text-xs font-bold text-neutral-400 group-hover:text-primary-600 transition-colors uppercase tracking-wider">
                   View
                 </span>
               </div>

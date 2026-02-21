@@ -60,7 +60,7 @@
   }
 
   .section-padding {
-    @apply py-10 lg:py-12;
+    @apply py-16 lg:py-24;
   }
 
   .card {

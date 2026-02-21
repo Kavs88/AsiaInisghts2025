@@ -11,10 +11,10 @@ export async function getVendors(options: {
   pickupAvailable?: boolean
 } = {}) {
   let supabase
-  if (typeof window === 'undefined') {
-    supabase = await createClient()
+  if (typeof window !== 'undefined') {
+    const { createClient: createBrowserClient } = await import('./client')
+    supabase = createBrowserClient()
   } else {
-    // For client side, we use the same SSR client but it will use browser cookies
     supabase = await createClient()
   }
 
@@ -29,7 +29,7 @@ export async function getVendors(options: {
 
   let query = supabase
     .from('vendors')
-    .select('id, name, slug, tagline, bio, logo_url, hero_image_url, category, is_verified, is_active, delivery_available, pickup_available, created_at')
+    .select('id, name, slug, tagline, bio, logo_url, hero_image_url, category, is_verified, is_active, delivery_available, pickup_available, trust_badges, created_at')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
     .limit(maxLimit)
@@ -70,7 +70,7 @@ export async function getVendorBySlug(slug: string) {
     .select('*')
     .eq('slug', slug)
     .eq('is_active', true)
-    .single()
+    .maybeSingle()
 
   if (error) throw error
   return data
@@ -86,7 +86,7 @@ export async function getProducts(limit = 50) {
   // Optimize: Select only needed fields
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, slug, description, price, compare_at_price, image_urls, category, tags, stock_quantity, is_available, requires_preorder, preorder_lead_days, created_at, vendors(name, slug, logo_url)')
+    .select('id, name, slug, description, price, compare_at_price, image_urls, category, tags, stock_quantity, is_available, requires_preorder, preorder_lead_days, created_at, vendors(name, slug, logo_url, trust_badges)')
     .eq('is_available', true)
     .order('created_at', { ascending: false })
     .limit(maxLimit)
@@ -106,7 +106,7 @@ export async function getProductBySlug(slug: string) {
     .select('*, vendors(*)')
     .eq('slug', slug)
     .eq('is_available', true)
-    .single()
+    .maybeSingle()
 
   if (error) throw error
   return data
@@ -166,7 +166,13 @@ export async function getVendorGalleryImages(vendorId: string) {
  * Search products
  */
 export async function searchProducts(searchQuery: string, limit = 10) {
-  const supabase = await createClient()
+  let supabase
+  if (typeof window !== 'undefined') {
+    const { createClient: createBrowserClient } = await import('./client')
+    supabase = createBrowserClient()
+  } else {
+    supabase = await createClient()
+  }
 
   if (!supabase) {
     console.error('Failed to create Supabase client')
@@ -504,7 +510,13 @@ export async function getPropertiesNearBusiness(
  * Search businesses
  */
 export async function searchBusinesses(searchQuery: string, limit = 10) {
-  const supabase = await createClient()
+  let supabase
+  if (typeof window !== 'undefined') {
+    const { createClient: createBrowserClient } = await import('./client')
+    supabase = createBrowserClient()
+  } else {
+    supabase = await createClient()
+  }
 
   if (!supabase) {
     console.error('Failed to create Supabase client')
@@ -512,10 +524,10 @@ export async function searchBusinesses(searchQuery: string, limit = 10) {
   }
 
   const { data, error } = await supabase
-    .from('businesses')
-    .select('*')
-    .or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`)
-    .eq('is_active', true)
+    .from('entities')
+    .select('id, name, slug, tags, description, location_text, logo_url')
+    .eq('type', 'business')
+    .or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,location_text.ilike.%${searchQuery}%`)
     .limit(limit)
 
   if (error) {

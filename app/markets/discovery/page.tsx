@@ -73,6 +73,13 @@ export default function DiscoveryPage() {
     checkUser()
   }, [])
 
+  // Fix M-7: Reset filter if user session expires
+  useEffect(() => {
+    if (!user && (filter === 'favourite' || filter === 'planning_to_attend')) {
+      setFilter('all')
+    }
+  }, [user, filter])
+
   // Load events
   useEffect(() => {
     const loadEvents = async () => {
@@ -136,29 +143,43 @@ export default function DiscoveryPage() {
     <main id="main-content" className="min-h-screen bg-neutral-50">
       {/* Hero Section - Unified Events Branding */}
       <HubHero
-        title="Discover"
-        subtitle="From artisan workshops to community meetups, find something extraordinary happening near you."
+        title={user ? `Welcome Back, ${user.user_metadata?.full_name || user.email?.split('@')[0] || 'Regular'}` : "Discover"}
+        subtitle={user
+          ? "The community is active. Here's what's happening based on your interests."
+          : "From artisan workshops to community meetups, find something extraordinary happening near you."}
         imageUrl="/images/events-hero.png"
         variant="events"
         className="min-h-fit"
         contentClassName="py-12 lg:py-16"
         titleClassName="text-4xl lg:text-6xl"
       >
-        <button
-          onClick={() => {
-            const content = document.getElementById('discovery-content')
-            content?.scrollIntoView({ behavior: 'smooth' })
-          }}
-          className="px-8 py-4 bg-white text-neutral-900 font-bold rounded-2xl hover:bg-neutral-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-        >
-          Browse All Events
-        </button>
-        <Link
-          href="/contact"
-          className="px-8 py-4 bg-white/10 backdrop-blur-md text-white border border-white/20 font-bold rounded-2xl hover:bg-white/20 transition-all"
-        >
-          Host an Event
-        </Link>
+        <div className="flex flex-wrap items-center gap-4">
+          <button
+            onClick={() => {
+              const content = document.getElementById('discovery-content')
+              content?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className="px-8 py-4 bg-white text-neutral-900 font-bold rounded-2xl hover:bg-neutral-100 transition-all shadow-xl hover:shadow-2xl"
+          >
+            {user ? "View Feed" : "Browse All Events"}
+          </button>
+          {!user && (
+            <Link
+              href="/contact"
+              className="px-8 py-4 bg-white/10 backdrop-blur-md text-white border border-white/20 font-bold rounded-2xl hover:bg-white/20 transition-all"
+            >
+              Host an Event
+            </Link>
+          )}
+          {user && (
+            <button
+              onClick={() => setFilter('favourite')}
+              className="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-lg"
+            >
+              My Saved Events
+            </button>
+          )}
+        </div>
       </HubHero>
 
       {/* Discovery Content (Anchor for Hero) */}
@@ -166,7 +187,7 @@ export default function DiscoveryPage() {
 
       {/* Filters */}
       <section className="bg-white border-b border-neutral-200 py-4 sticky top-16 lg:top-20 z-20">
-        <div className="container-custom max-w-7xl">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             {/* Intent Filter */}
             {user && (
@@ -225,11 +246,11 @@ export default function DiscoveryPage() {
       </section>
 
       {/* Content */}
-      <div className="container-custom max-w-7xl pt-4 pb-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
         {loading ? (
           <div className="animate-pulse space-y-8">
             <div className="h-8 bg-neutral-200 rounded w-1/4 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map(i => (
                 <div key={i} className="h-64 bg-neutral-200 rounded-2xl"></div>
               ))}
@@ -257,7 +278,7 @@ export default function DiscoveryPage() {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {thisWeekEvents.map((event: Event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
@@ -279,7 +300,7 @@ export default function DiscoveryPage() {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {nextWeekEvents.map((event: Event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
@@ -325,8 +346,8 @@ export default function DiscoveryPage() {
 
       {/* Explore Local Markets - Supportive footer context */}
       {upcomingMarkets.length > 0 && (
-        <section className="py-20 lg:py-32 bg-white border-t border-neutral-200">
-          <div className="container-custom max-w-7xl">
+        <section className="py-12 bg-white border-t border-neutral-200">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
               <div className="max-w-2xl">
                 <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">Explore Local Markets</h2>
@@ -345,7 +366,7 @@ export default function DiscoveryPage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {upcomingMarkets.map((market: any) => (
                 <Link
                   key={market.id}

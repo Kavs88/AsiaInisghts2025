@@ -9,7 +9,7 @@ interface HubHeroProps {
     imageUrl?: string
     className?: string
     children?: React.ReactNode
-    variant?: 'events' | 'markets' | 'businesses' | 'default'
+    variant?: 'events' | 'markets' | 'businesses' | 'concierge' | 'default'
     anchorId?: string
     contentClassName?: string
     titleClassName?: string
@@ -31,6 +31,7 @@ export default function HubHero({
         events: 'from-neutral-900 via-neutral-900/40 to-transparent',
         markets: 'from-primary-900 via-primary-900/40 to-transparent',
         businesses: 'from-secondary-900 via-secondary-900/40 to-transparent',
+        concierge: 'from-primary-900 via-secondary-900 to-transparent',
         default: 'from-black/80 via-black/40 to-black/20'
     }
 
@@ -59,7 +60,7 @@ export default function HubHero({
             </div>
 
             {/* Content Layer */}
-            <div className={cn("container-custom relative z-20 py-24 lg:py-32", contentClassName)}>
+            <div className={cn("max-w-7xl mx-auto px-6 lg:px-8 relative z-20 py-24 lg:py-32", contentClassName)}>
                 <div className="max-w-4xl animate-fade-up">
                     <h1 className={cn("text-5xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tight", titleClassName)}>
                         {title}

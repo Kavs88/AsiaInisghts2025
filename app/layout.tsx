@@ -4,6 +4,7 @@ import './globals.css'
 import { Suspense } from 'react'
 import Header from '@/components/ui/Header'
 import Footer from '@/components/ui/Footer'
+import NextTopLoader from 'nextjs-toploader'
 import { AppProviders } from '@/components/providers/AppProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 
@@ -70,6 +71,17 @@ export default function RootLayout({
             <a href="#main-content" className="skip-to-content">
               Skip to main content
             </a>
+            <NextTopLoader
+              color="#0d9488"
+              initialPosition={0.08}
+              crawlSpeed={200}
+              height={3}
+              crawl={true}
+              showSpinner={false}
+              easing="ease"
+              speed={200}
+              shadow="0 0 10px #0d9488,0 0 5px #0d9488"
+            />
             <Suspense fallback={<div className="h-16 bg-white border-b border-neutral-100" />}>
               <Header />
             </Suspense>

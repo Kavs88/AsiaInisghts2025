@@ -16,17 +16,28 @@ interface SearchResult {
 
 
 interface SearchBarProps {
-  variant?: 'default' | 'fullscreen' | 'hero'
+  variant?: 'default' | 'fullscreen' | 'hero' | 'minimal'
   onClose?: () => void
   className?: string
+  placeholder?: string
 }
 
 export default function SearchBar({
   variant = 'default',
   onClose,
   className,
+  placeholder,
 }: SearchBarProps) {
+  const router = useRouter()
   const [query, setQuery] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+
+  // Default placeholders based on variant
+  const defaultPlaceholder = variant === 'hero'
+    ? "Search for markets, products, or businesses..."
+    : "Search..."
+
+  const displayPlaceholder = placeholder || defaultPlaceholder
   const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -34,7 +45,6 @@ export default function SearchBar({
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 400 })
   const inputRef = useRef<HTMLInputElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
 
   // Memoize search function to prevent recreation
   const performSearch = useCallback(async (searchQuery: string) => {
@@ -269,7 +279,7 @@ export default function SearchBar({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search products, vendors..."
+                placeholder={displayPlaceholder}
                 className="w-full pl-12 pr-4 py-4 text-lg border-2 border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 aria-label="Search input"
                 aria-expanded={isOpen}
@@ -414,6 +424,23 @@ export default function SearchBar({
               </svg>
             </button>
           )}
+          {/* Fix 4: Loading indicator inside input */}
+          {isSearching && !query && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+              <svg className="w-4 h-4 text-neutral-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            </div>
+          )}
+          {isSearching && query && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+              <svg className="w-4 h-4 text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Search Results Dropdown */}
@@ -465,6 +492,20 @@ export default function SearchBar({
                 </span>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Fix 3: Empty state for hero variant */}
+        {!isSearching && query.length >= 2 && results.length === 0 && (
+          <div
+            className="fixed bg-white border border-neutral-200 rounded-xl shadow-lg z-[10000] px-4 py-3 text-sm text-neutral-500"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              width: `${dropdownPosition.width || 400}px`,
+            }}
+          >
+            No results for &quot;{query}&quot;
           </div>
         )}
       </div>
@@ -527,6 +568,15 @@ export default function SearchBar({
             </svg>
           </button>
         )}
+        {/* Fix 4: Spinner for default variant */}
+        {isSearching && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none">
+            <svg className="w-4 h-4 text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* Search Results Dropdown */}
@@ -578,6 +628,20 @@ export default function SearchBar({
               </span>
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Fix 3: Empty state for default variant */}
+      {!isSearching && query.length >= 2 && results.length === 0 && (
+        <div
+          className="fixed bg-white border border-neutral-200 rounded-xl shadow-lg z-[10000] px-4 py-3 text-sm text-neutral-500"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`,
+            width: `${dropdownPosition.width || 400}px`,
+          }}
+        >
+          No results for &ldquo;{query}&rdquo;
         </div>
       )}
     </div>

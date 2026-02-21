@@ -28,7 +28,6 @@ export default function Footer() {
       { label: 'Event Venues', href: '/properties?property_type=event_space' },
     ],
     concierge: [
-      { label: 'Meet the Team', href: '/meet-the-team' },
       { label: 'Relocation Services', href: '/concierge' },
       { label: 'Local Guides', href: '/concierge/guides', comingSoon: true },
     ],
@@ -38,7 +37,6 @@ export default function Footer() {
       { label: 'Vendor Dashboard', href: '/markets/vendor/dashboard' },
     ],
     about: [
-      { label: 'Our Story', href: '/meet-the-team' },
       { label: 'Meet the Team', href: '/meet-the-team' },
       { label: 'Contact Us', href: '/contact' },
     ],
@@ -47,7 +45,7 @@ export default function Footer() {
   return (
     <footer className="bg-neutral-900 text-neutral-300" role="contentinfo">
       <div className="container-custom py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <Link
@@ -99,7 +97,7 @@ export default function Footer() {
           </div>
 
           {/* Links Sections */}
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Marketplace</h3>
             <ul className="space-y-2">
               {footerLinks.marketplace.map((link) => (
@@ -122,7 +120,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Stays & Spaces</h3>
             <ul className="space-y-2">
               {footerLinks.stays.map((link) => (
@@ -145,7 +143,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Concierge</h3>
             <ul className="space-y-2">
               {footerLinks.concierge.map((link) => (
@@ -168,7 +166,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Businesses</h3>
             <ul className="space-y-2">
               {footerLinks.businesses.map((link) => (
@@ -191,7 +189,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">About Us</h3>
             <ul className="space-y-2">
               {footerLinks.about.map((link) => (
@@ -209,7 +207,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-4 pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-neutral-400">
             © {currentYear} Asia Insights. All rights reserved.
           </p>

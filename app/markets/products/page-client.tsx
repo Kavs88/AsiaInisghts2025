@@ -64,7 +64,7 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
     <>
       {/* Filters */}
       <section className="py-6 bg-white border-b border-neutral-200 sticky top-[64px] lg:top-[80px] z-40 shadow-sm">
-        <div className="container-custom">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Category Filters */}
           <div className="mb-4">
             <h3 className="text-sm font-semibold text-neutral-700 mb-2">Categories</h3>
@@ -74,8 +74,8 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${selectedCategory === category
-                      ? 'bg-primary-600 text-white border-primary-600'
-                      : 'border-neutral-300 hover:border-primary-600 hover:bg-primary-50 hover:text-primary-600'
+                    ? 'bg-primary-600 text-white border-primary-600'
+                    : 'border-neutral-300 hover:border-primary-600 hover:bg-primary-50 hover:text-primary-600'
                     }`}
                 >
                   {category}
@@ -96,8 +96,8 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
                       key={tag}
                       onClick={() => toggleTag(tag)}
                       className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${isSelected
-                          ? 'bg-primary-600 text-white border-primary-600'
-                          : 'border-neutral-300 hover:border-primary-600 hover:bg-primary-50 hover:text-primary-600'
+                        ? 'bg-primary-600 text-white border-primary-600'
+                        : 'border-neutral-300 hover:border-primary-600 hover:bg-primary-50 hover:text-primary-600'
                         }`}
                     >
                       {tag}
@@ -119,8 +119,8 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
       </section>
 
       {/* Products Grid */}
-      <section className="py-12 bg-neutral-50">
-        <div className="container-custom">
+      <section className="py-20 bg-neutral-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-neutral-600">
               Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
@@ -150,7 +150,7 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
               </p>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}

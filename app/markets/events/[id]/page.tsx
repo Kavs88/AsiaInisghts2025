@@ -9,6 +9,7 @@ import ReviewsSection from '@/components/ui/ReviewsSection'
 import RSVPAction from '@/components/ui/RSVPAction'
 import EventHeroImage from '@/components/ui/EventHeroImage'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
+import { SaveButton } from '@/components/ui/SoftActionButtons'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
     const supabase = await createClient()
@@ -37,11 +38,22 @@ export default async function EventDetailPage({ params }: { params: { id: string
         .from('events') as any)
         .select(`
             *,
-            host:host_id (
                 id,
                 name,
                 slug,
-                logo_url
+                logo_url,
+                is_verified
+            ),
+            participating_entities (
+                role,
+                entity:entity_id (
+                    id,
+                    name,
+                    slug,
+                    logo_url,
+                    trust_badges,
+                    confidence_score
+                )
             )
         `)
         .eq('id', params.id)
@@ -68,14 +80,26 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
     if (!event && !marketDay) notFound()
 
-    const item = event || {
+    // Phase 2: Check saved status
+    const { getSavedStatus } = await import('@/lib/actions/social')
+    const savedStatus = await getSavedStatus('event', params.id)
+
+    const item = event ? {
+        ...event,
+        // Helper to get participants cleanly
+        participants: event.participating_entities?.map((p: any) => ({
+            ...p.entity,
+            role: p.role
+        })) || []
+    } : {
         ...marketDay,
-        title: `Market Day - ${marketDay.location_name}`,
+        title: `Market Day${marketDay.location_name ? ` - ${marketDay.location_name}` : ''}`,
         start_at: `${marketDay.market_date}T${marketDay.start_time || '00:00:00'}`,
         end_at: `${marketDay.market_date}T${marketDay.end_time || '23:59:59'}`,
         location: marketDay.location_name,
         host: marketDay.hosts,
-        isMarketDay: true
+        isMarketDay: true,
+        participants: [] // Market days have vendors in separate table, future sync loop needed if we want to show here
     }
 
     const startDate = new Date(item.start_at)
@@ -135,6 +159,8 @@ export default async function EventDetailPage({ params }: { params: { id: string
                         <span>Back to Discovery</span>
                     </Link>
                     <div className="flex items-center gap-3">
+                        {/* Phase 2: Save Button */}
+                        <SaveButton itemType="event" itemId={item.id} initialIsSaved={savedStatus} />
                         <EventIntentButtons eventId={item.id} />
                     </div>
                 </div>
@@ -216,7 +242,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
                             {/* Host info */}
                             {item.host && (
-                                <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 mb-12">
+                                <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100 mb-8">
                                     <div className="flex items-center gap-4">
                                         {item.host.logo_url ? (
                                             <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-neutral-200">
@@ -229,10 +255,50 @@ export default async function EventDetailPage({ params }: { params: { id: string
                                         )}
                                         <div>
                                             <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1">Hosted By</p>
-                                            <Link href={`/businesses/${item.host.slug}`} className="text-xl font-bold text-neutral-900 hover:text-primary-600 transition-colors">
+                                            <Link href={`/makers/${item.host.slug}`} className="text-xl font-bold text-neutral-900 hover:text-primary-600 transition-colors">
                                                 {item.host.name}
                                             </Link>
                                         </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Phase 2: Participating Entities */}
+                            {item.participants && item.participants.length > 0 && (
+                                <div className="mb-12">
+                                    <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                                        <User className="w-5 h-5 text-primary-600" />
+                                        Meet these verified makers
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {item.participants.map((participant: any) => (
+                                            <Link
+                                                key={participant.id}
+                                                href={`/makers/${participant.slug}`}
+                                                className="flex items-center gap-3 p-4 bg-white border border-neutral-100 rounded-2xl hover:border-primary-200 hover:shadow-sm transition-all group"
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-neutral-100 overflow-hidden relative border border-neutral-100">
+                                                    {participant.logo_url ? (
+                                                        <Image src={participant.logo_url} alt={participant.name} fill className="object-cover" />
+                                                    ) : (
+                                                        <div className="absolute inset-0 flex items-center justify-center font-bold text-neutral-300">
+                                                            {participant.name.charAt(0)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="font-bold text-neutral-900 truncate group-hover:text-primary-700">{participant.name}</div>
+                                                        {(participant.confidence_score > 80) && (
+                                                            <div className="w-4 h-4 text-emerald-500 rounded-full bg-emerald-50 flex items-center justify-center">
+                                                                <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-xs text-neutral-500 capitalize">{participant.role || 'Participant'}</div>
+                                                </div>
+                                            </Link>
+                                        ))}
                                     </div>
                                 </div>
                             )}

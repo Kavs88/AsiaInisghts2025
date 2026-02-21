@@ -102,7 +102,7 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
     <main id="main-content" className="min-h-screen bg-neutral-50">
       {/* Hero Section */}
       <section className="bg-white">
-        <div className="container-custom max-w-7xl">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <EventHero
             imageUrl={marketDay.hosts?.logo_url}
             category="Market"
@@ -114,7 +114,7 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
 
       {/* Title Block */}
       <section className="bg-white border-b border-neutral-200">
-        <div className="container-custom max-w-4xl py-8">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
               <h1 className="text-4xl lg:text-5xl font-bold text-neutral-900 mb-3">
@@ -131,7 +131,7 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
 
       {/* Main Content - Utility First Layout */}
       <section className="py-12 bg-white">
-        <div className="container-custom max-w-4xl">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Utility Bar */}
           <EventUtilityBar
             date={marketDay.market_date}
@@ -240,4 +240,3 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
     </main>
   )
 }
-

@@ -3,7 +3,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
+import { useRouter } from 'next/navigation'
+
 export default function ContactPageClient() {
+  const router = useRouter()
 
   const handleQuickContact = (method: 'whatsapp' | 'email' | 'phone') => {
     const businessPhone = '60172461819' // Asia Insights WhatsApp
@@ -24,6 +27,19 @@ export default function ContactPageClient() {
 
   return (
     <main id="main-content" className="min-h-screen bg-white">
+      {/* Back Button */}
+      <div className="absolute top-4 left-4 z-50">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm text-neutral-600 hover:text-neutral-900 rounded-full shadow-sm hover:shadow-md transition-all font-medium text-sm"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back
+        </button>
+      </div>
+
       {/* Hero Section with Banner Image */}
       <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-primary-50 to-secondary-50 overflow-hidden">
         {/* Banner Image Background with Transparency */}
@@ -38,7 +54,7 @@ export default function ContactPageClient() {
             sizes="100vw"
           />
         </div>
-        <div className="container-custom relative z-20 py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-20 py-20 lg:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-black text-neutral-900 mb-4">
               Get in Touch
@@ -51,8 +67,8 @@ export default function ContactPageClient() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 lg:py-20">
-        <div className="container-custom">
+      <section className="py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             {/* Contact Information */}
             <div className="space-y-8">

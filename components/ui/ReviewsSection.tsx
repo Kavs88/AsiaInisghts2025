@@ -14,6 +14,7 @@ interface ReviewsSectionProps {
 export default function ReviewsSection({ subjectId, subjectType, subjectName }: ReviewsSectionProps) {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+    const [authChecked, setAuthChecked] = useState(false)
     const [refreshKey, setRefreshKey] = useState(0)
 
     // Get current user
@@ -22,6 +23,7 @@ export default function ReviewsSection({ subjectId, subjectType, subjectName }: 
             const supabase = createClient()
             const { data: { user } } = await supabase.auth.getUser()
             setCurrentUserId(user?.id || null)
+            setAuthChecked(true)
         }
         checkUser()
     }, [])
@@ -35,13 +37,17 @@ export default function ReviewsSection({ subjectId, subjectType, subjectName }: 
         <div className="w-full">
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">Reviews</h2>
-                {currentUserId && (
+                {/* Show button area only after auth check resolves — prevents pop-in for logged-in users */}
+                {authChecked && currentUserId && (
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors shadow-sm hover:shadow-md"
                     >
                         Write a Review
                     </button>
+                )}
+                {!authChecked && (
+                    <div className="h-10 w-36 bg-neutral-100 animate-pulse rounded-xl" aria-hidden="true" />
                 )}
             </div>
 

@@ -99,13 +99,12 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
+     * Only match admin routes that require authentication checking.
+     * Public pages no longer run through middleware at all,
+     * eliminating unnecessary auth overhead on every request.
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/admin/:path*',
+    '/markets/admin/:path*',
   ],
 }
 

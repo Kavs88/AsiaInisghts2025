@@ -55,74 +55,71 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch market_days (Market events)
-    // Only query if supabase client exists
-    let marketDays: any[] = []
-    if (supabase) {
-      const marketDaysQuery = (supabase
-        .from('market_days') as any)
-        .select(`
-          id,
-          market_date,
-          location_name,
-          location_address,
-          start_time,
-          end_time,
-          is_published
-        `)
-        .eq('is_published', true)
-        .gte('market_date', startOfWeek.toISOString().split('T')[0])
-        .lt('market_date', endOfNextWeek.toISOString().split('T')[0])
-        .order('market_date', { ascending: true })
+    // Fetch market_days and events in PARALLEL for faster response
+    const [marketDaysResult, eventsResult] = await Promise.allSettled([
+      // Market days query
+      (async () => {
+        if (!supabase) return []
+        const { data, error } = await (supabase
+          .from('market_days') as any)
+          .select(`
+            id,
+            market_date,
+            location_name,
+            location_address,
+            start_time,
+            end_time,
+            is_published
+          `)
+          .eq('is_published', true)
+          .gte('market_date', startOfWeek.toISOString().split('T')[0])
+          .lt('market_date', endOfNextWeek.toISOString().split('T')[0])
+          .order('market_date', { ascending: true })
 
-      const { data: marketDaysData, error: marketDaysError } = await marketDaysQuery
+        if (error) {
+          console.error('[Discovery API] Market days query error:', error)
+          return []
+        }
+        return data || []
+      })(),
+      // Events query
+      (async () => {
+        if (category && category === 'Market') return []
+        const eventsQuery = (supabase
+          .from('events') as any)
+          .select(`
+            id,
+            title,
+            description,
+            start_at,
+            end_at,
+            location,
+            category,
+            status,
+            image_url,
+            host_id,
+            host_type
+          `)
+          .eq('status', 'published')
+          .gte('start_at', startOfWeek.toISOString())
+          .lt('start_at', endOfNextWeek.toISOString())
+          .order('start_at', { ascending: true })
 
-      if (marketDaysError) {
-        console.error('[Discovery API] Market days query error:', marketDaysError)
-        // Continue with empty array
-      } else {
-        marketDays = marketDaysData || []
-      }
-    }
+        if (category) {
+          eventsQuery.eq('category', category)
+        }
 
-    // Fetch events table (Workshop, Meetup, Sports, etc.)
-    // Note: If events table doesn't exist, this will return empty array
-    let events: any[] = []
-    if (!category || category !== 'Market') {
-      const eventsQuery = (supabase
-        .from('events') as any)
-        .select(`
-          id,
-          title,
-          description,
-          start_at,
-          end_at,
-          location,
-          category,
-          status,
-          image_url,
-          host_id,
-          host_type
-        `)
-        .eq('status', 'published')
-        .gte('start_at', startOfWeek.toISOString())
-        .lt('start_at', endOfNextWeek.toISOString())
-        .order('start_at', { ascending: true })
+        const { data, error } = await eventsQuery
+        if (error && error.code !== 'PGRST116') {
+          console.warn('[Discovery API] Events table query error:', error)
+          return []
+        }
+        return data || []
+      })()
+    ])
 
-      // Filter by category if specified
-      if (category) {
-        eventsQuery.eq('category', category)
-      }
-
-      const { data: eventsData, error: eventsError } = await eventsQuery
-
-      // If table doesn't exist, continue with empty array
-      if (eventsError && eventsError.code !== 'PGRST116') {
-        console.warn('[Discovery API] Events table query error:', eventsError)
-      } else if (eventsData) {
-        events = eventsData
-      }
-    }
+    const marketDays = marketDaysResult.status === 'fulfilled' ? marketDaysResult.value : []
+    const events = eventsResult.status === 'fulfilled' ? eventsResult.value : []
 
     // Combine and normalize events
     const allEvents: any[] = []
@@ -277,7 +274,7 @@ export async function GET(request: NextRequest) {
     const paginatedThisWeek = thisWeekEvents.slice(offset, offset + limit)
     const paginatedNextWeek = nextWeekEvents.slice(offset, offset + limit)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       thisWeek: {
         events: paginatedThisWeek,
         total: thisWeekEvents.length,
@@ -291,6 +288,11 @@ export async function GET(request: NextRequest) {
       page,
       limit,
     })
+
+    // Cache public discovery data for 60s, allow stale for 5 min
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+
+    return response
   } catch (error: any) {
     console.error('[GET /api/discovery] Error:', error)
     try {

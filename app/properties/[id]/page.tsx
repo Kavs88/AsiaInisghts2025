@@ -41,7 +41,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
     // Fetch nearby businesses for synergy
     // In a real app, we'd use coordinates. For now, we'll fetch a relevant subset.
-    const nearbyBusinesses = await getBusinesses('food', 4).catch(() => [])
+    const nearbyBusinesses = await getBusinesses({ category: 'food', limit: 4 }).catch(() => [])
 
     const displayPrice = property.price ? new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -53,7 +53,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <div className="min-h-screen bg-white pb-20 animate-fade-in">
             {/* Breadcrumb Navigation */}
             <div className="bg-white border-b border-neutral-100">
-                <div className="container mx-auto px-4 max-w-7xl">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <Breadcrumbs items={[
                         { label: 'Properties', href: '/properties' },
                         { label: property.address, href: '' }
@@ -63,10 +63,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {/* Minimal Header Nav */}
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
-                <div className="container mx-auto px-4 max-w-7xl h-16 flex items-center justify-between">
-                    <Link href="/properties" className="flex items-center gap-2 text-neutral-600 hover:text-primary-600 font-semibold transition-colors">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <Link href="/properties" className="flex items-center gap-2 px-4 py-2 -ml-4 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-xl transition-all font-semibold">
                         <ChevronLeft className="w-5 h-5" />
-                        <span>Back to Properties</span>
+                        <span>Back to Stays</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <button className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 rounded-xl transition-all">
@@ -83,7 +83,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {/* Gallery Section */}
             <section className="py-8 animate-fade-up" style={{ animationDelay: '100ms' }}>
-                <div className="container mx-auto px-4 max-w-7xl">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[400px] sm:h-[500px] lg:h-[600px]">
                         <div className="relative group overflow-hidden rounded-3xl bg-neutral-100">
                             {property.images?.[0] && typeof property.images[0] === 'string' ? (
@@ -109,19 +109,23 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
             {/* Content Section */}
             <section className="py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
-                <div className="container mx-auto px-4 max-w-7xl">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                         {/* Main Info */}
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-3 mb-6">
-                                <Badge variant="primary">
-                                    <Star className="w-3 h-3 mr-1 fill-primary-600" />
-                                    Featured {property.property_type === 'rental' ? 'Stay' : 'Venue'}
-                                </Badge>
-                                <Badge variant="success">
-                                    <ShieldCheck className="w-3 h-3 mr-1" />
-                                    Verified Property
-                                </Badge>
+                                {property.is_featured && (
+                                    <Badge variant="primary">
+                                        <Star className="w-3 h-3 mr-1 fill-primary-600" />
+                                        Featured {property.property_type === 'rental' ? 'Stay' : 'Venue'}
+                                    </Badge>
+                                )}
+                                {property.is_verified && (
+                                    <Badge variant="success">
+                                        <ShieldCheck className="w-3 h-3 mr-1" />
+                                        Verified Property
+                                    </Badge>
+                                )}
                             </div>
                             <h1 className="text-4xl sm:text-5xl font-black text-neutral-900 mb-8 leading-tight">{property.address}</h1>
 
@@ -175,29 +179,44 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             {/* Location Section */}
                             <div className="mt-20">
                                 <h3 className="text-2xl font-bold text-neutral-900 mb-8">Location</h3>
-                                <div className="h-[400px] w-full rounded-3xl overflow-hidden border border-neutral-200 shadow-soft">
-                                    <InteractiveMap
-                                        center={
-                                            property.location_coords?.y && property.location_coords?.x
-                                                ? [property.location_coords.y, property.location_coords.x]
-                                                : [11.9404, 108.4368]
-                                        }
-                                        zoom={14}
-                                        markers={[
-                                            {
-                                                position: property.location_coords?.y && property.location_coords?.x
-                                                    ? [property.location_coords.y, property.location_coords.x]
-                                                    : [11.9404, 108.4368],
-                                                label: property.address
-                                            }
-                                        ]}
-                                        className="h-full w-full"
-                                    />
-                                </div>
-                                <p className="mt-4 text-neutral-500 flex items-center gap-2">
-                                    <MapPin className="w-4 h-4" />
-                                    {property.address}
-                                </p>
+                                {property.location_coords?.y && property.location_coords?.x ? (
+                                    <>
+                                        <div className="h-[400px] w-full rounded-3xl overflow-hidden border border-neutral-200 shadow-soft">
+                                            <InteractiveMap
+                                                center={[property.location_coords.y, property.location_coords.x]}
+                                                zoom={14}
+                                                markers={[
+                                                    {
+                                                        position: [property.location_coords.y, property.location_coords.x],
+                                                        label: property.address
+                                                    }
+                                                ]}
+                                                className="h-full w-full"
+                                            />
+                                        </div>
+                                        <p className="mt-4 text-neutral-500 flex items-center gap-2">
+                                            <MapPin className="w-4 h-4" />
+                                            {property.address}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <div className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-neutral-200 shrink-0 text-primary-600">
+                                                <MapPin className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-neutral-900 mb-2">Address</h4>
+                                                <p className="text-neutral-600 font-medium">
+                                                    {property.address}
+                                                </p>
+                                                <p className="text-sm text-neutral-500 mt-2">
+                                                    Exact location details provided upon booking confirmation.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Synergy Section: Nearby Hotspots */}
@@ -231,7 +250,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
                         {/* Booking Sidebar */}
                         <div className="lg:col-span-1">
-                            <div className="sticky top-24 bg-white border border-neutral-200 rounded-3xl p-8 shadow-xl shadow-neutral-100">
+                            <div className="sticky top-24 bg-white border border-neutral-200 rounded-3xl p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow duration-500">
                                 {property.property_type === 'rental' && (
                                     <div className="flex items-end gap-2 mb-8">
                                         <span className="text-4xl font-black text-neutral-900">{displayPrice}</span>

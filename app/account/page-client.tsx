@@ -98,6 +98,24 @@ export default function AccountPageClient({ user, authority }: AccountPageClient
                 </section>
 
 
+                {/* 1.a Community - Personal Layer */}
+                <section className="mb-16 animate-enter delay-75">
+                    <div className="flex items-end justify-between mb-8">
+                        <h2 className="text-xl font-bold text-neutral-900">My Community</h2>
+                        <span className="text-sm text-neutral-500 font-medium">Your personal collection</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                        <ScopeCard
+                            href="/account/community"
+                            title="My Community Hub"
+                            description="View any places you follow, recommend, or have saved."
+                            icon={<Users className="w-6 h-6 text-white" />}
+                            color="bg-primary-600"
+                            featured={true}
+                        />
+                    </div>
+                </section>
+
                 {/* 2. Management Scope - "What I Steward" */}
                 {/* Separated visually from identity. Cards instead of lists. */}
 

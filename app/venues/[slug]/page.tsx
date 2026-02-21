@@ -91,8 +91,8 @@ export default async function VenueProfilePage({ params }: VenueProfilePageProps
       </section>
 
       {/* Content */}
-      <section className="py-12 lg:py-20">
-        <div className="container-custom">
+      <section className="py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="mb-8">

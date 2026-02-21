@@ -60,8 +60,8 @@ export default function MeetTheTeamClient() {
       id: 'greta',
       name: 'Greta',
       role: 'Operations & Client Support',
-      shortBlurb: 'Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience.',
-      bio: 'Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience. With a background in project management and high-stakes logistics, she is the engine that keeps our concierge services running precisely. Clients know Greta as the reliable voice that turns complex plans into simple, actionable steps.',
+      shortBlurb: 'Operating in the background, Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience.',
+      bio: 'Operating in the background, Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience. With a background in project management and high-stakes logistics, she is the engine that keeps our concierge services running precisely. Clients know Greta as the reliable voice that turns complex plans into simple, actionable steps.',
       atAGlance: [
         'Calm and reliable point of contact',
         'Keeps multi-step plans on track',
@@ -76,7 +76,7 @@ export default function MeetTheTeamClient() {
       ],
       image: '/images/team/greta.jpg',
       social: {
-        linkedin: 'https://linkedin.com',
+        linkedin: 'https://www.linkedin.com/in/greta-pudan/',
         email: 'greta@asiainsights.com'
       }
     },
@@ -109,52 +109,58 @@ export default function MeetTheTeamClient() {
 
   const values = [
     {
-      icon: <Shield className="w-6 h-6" />,
+      icon: <Shield className="w-6 h-6" strokeWidth={1.5} />,
       title: 'Radical Transparency',
       description: 'We give you the "real talk" on neighborhoods, costs, and cultural nuances—not a sales pitch.'
     },
     {
-      icon: <Users className="w-6 h-6" />,
+      icon: <Users className="w-6 h-6" strokeWidth={1.5} />,
       title: 'Local First',
       description: 'Our strength lies in our deep, authentic connections with the communities we operate in.'
     },
     {
-      icon: <Globe className="w-6 h-6" />,
+      icon: <Globe className="w-6 h-6" strokeWidth={1.5} />,
       title: 'Global Standards',
       description: 'We combine on-the-ground local knowledge with international standards of service and reliability.'
     }
   ]
   return (
     <main id="main-content" className="min-h-screen bg-neutral-50">
-      {/* Hero Section - High Fidelity */}
-      <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden bg-neutral-900">
+      {/* Hero Section - Compacted */}
+      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-24 overflow-hidden bg-neutral-900">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary-900/40 via-neutral-900 to-secondary-900/40" />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-600/10 via-transparent to-transparent blur-3xl" />
         </div>
 
-        <div className="container-custom relative z-10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-bold uppercase tracking-widest mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-bold uppercase tracking-widest mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
               </span>
               The People of Asia Insights
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
               Meet the <span className="text-primary-500">Guides.</span>
             </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl text-neutral-300 max-w-2xl font-medium leading-relaxed">
+            <p className="text-xl md:text-2xl text-neutral-300 max-w-2xl font-medium leading-relaxed mb-8">
               We aren't just consultants. We're your neighbors, fixers, and community connectors in Southeast Asia.
             </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+              Get in Touch
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Mission & Purpose */}
       <section className="py-24 bg-white relative">
-        <div className="container-custom">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8 tracking-tight">
@@ -189,7 +195,7 @@ export default function MeetTheTeamClient() {
       {/* Team Grid - Premium Cards */}
       <section className="py-24 relative overflow-hidden">
         <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white to-transparent" />
-        <div className="container-custom relative">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-4xl md:text-6xl font-black text-neutral-900 mb-6 tracking-tight">
               Our Core <span className="text-primary-600">Team.</span>
@@ -252,18 +258,18 @@ export default function MeetTheTeamClient() {
                     <div className="flex items-center justify-between border-t border-neutral-100 pt-6">
                       <button className="flex items-center gap-2 text-sm font-black text-neutral-900 group-hover:gap-4 transition-all uppercase tracking-widest">
                         Full Profile
-                        <ArrowRight className="w-4 h-4 text-primary-600" />
+                        <ArrowRight className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
                       </button>
 
                       <div className="flex gap-3">
-                        {member.social?.linkedin && (
+                        {member.social?.linkedin && !member.social.linkedin.endsWith('linkedin.com') && !member.social.linkedin.endsWith('linkedin.com/') && (
                           <div className="w-8 h-8 rounded-lg bg-neutral-50 flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-colors">
-                            <Linkedin className="w-4 h-4" />
+                            <Linkedin className="w-4 h-4" strokeWidth={1.5} />
                           </div>
                         )}
-                        {member.social?.email && (
+                        {member.social?.email && member.social.email !== 'sam@asiainsights.com' && (
                           <div className="w-8 h-8 rounded-lg bg-neutral-50 flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-colors">
-                            <Mail className="w-4 h-4" />
+                            <Mail className="w-4 h-4" strokeWidth={1.5} />
                           </div>
                         )}
                       </div>
@@ -278,7 +284,7 @@ export default function MeetTheTeamClient() {
 
       {/* Story / Timeline teaser */}
       <section className="py-24 bg-neutral-900 text-white overflow-hidden">
-        <div className="container-custom">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="relative">
               <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary-600/20 rounded-full blur-3xl animate-pulse" />
@@ -322,7 +328,7 @@ export default function MeetTheTeamClient() {
 
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">
-        <div className="container-custom">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="relative p-12 lg:p-24 rounded-[4rem] bg-gradient-to-br from-primary-600 to-secondary-600 text-white shadow-2xl overflow-hidden group">
             {/* Decorative Bubbles */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl group-hover:scale-110 transition-transform duration-1000" />
@@ -398,21 +404,21 @@ export default function MeetTheTeamClient() {
               <div className="space-y-3">
                 <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Connect</h3>
                 <div className="flex flex-col gap-2">
-                  {selectedMember.social?.email && (
+                  {selectedMember.social?.email && selectedMember.social.email !== 'sam@asiainsights.com' && (
                     <a href={`mailto:${selectedMember.social.email}`} className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-primary-500 hover:text-primary-600 transition-all text-sm font-bold shadow-sm group">
-                      <Mail className="w-4 h-4 text-neutral-400 group-hover:text-primary-500 transition-colors" />
+                      <Mail className="w-4 h-4 text-neutral-400 group-hover:text-primary-500 transition-colors" strokeWidth={1.5} />
                       <span className="truncate">{selectedMember.social.email}</span>
                     </a>
                   )}
-                  {selectedMember.social?.linkedin && (
+                  {selectedMember.social?.linkedin && !selectedMember.social.linkedin.endsWith('linkedin.com') && !selectedMember.social.linkedin.endsWith('linkedin.com/') && (
                     <a href={selectedMember.social.linkedin} target="_blank" rel="noopener" className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-[#0077b5] hover:text-[#0077b5] transition-all text-sm font-bold shadow-sm group">
-                      <Linkedin className="w-4 h-4 text-neutral-400 group-hover:text-[#0077b5] transition-colors" />
+                      <Linkedin className="w-4 h-4 text-neutral-400 group-hover:text-[#0077b5] transition-colors" strokeWidth={1.5} />
                       <span>LinkedIn Profile</span>
                     </a>
                   )}
-                  {selectedMember.social?.instagram && (
+                  {selectedMember.social?.instagram && !selectedMember.social.instagram.endsWith('instagram.com') && !selectedMember.social.instagram.endsWith('instagram.com/') && (
                     <a href={selectedMember.social.instagram} target="_blank" rel="noopener" className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-[#E1306C] hover:text-[#E1306C] transition-all text-sm font-bold shadow-sm group">
-                      <svg className="w-4 h-4 text-neutral-400 group-hover:text-[#E1306C] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                      <svg className="w-4 h-4 text-neutral-400 group-hover:text-[#E1306C] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                       <span>Instagram</span>
                     </a>
                   )}

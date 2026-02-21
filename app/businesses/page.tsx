@@ -1,25 +1,14 @@
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState, useTransition } from 'react';
-import BusinessCard from '@/components/ui/BusinessCard';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, MapPin, Loader2 } from 'lucide-react';
-
-interface Business {
-    id: string;
-    name: string;
-    category: string;
-    excerpt: string;
-    description?: string;
-    image_url: string;
-    slug: string;
-    location?: string;
-    rating?: number;
-    review_count?: number;
-}
+import { Search, Loader2 } from 'lucide-react';
+import BusinessCard from '@/components/ui/BusinessCard';
+import { getBusinesses, Business } from '@/lib/actions/businesses';
+import HubHero from '@/components/ui/HubHero';
 
 const CATEGORIES = [
+    { id: 'setup', label: 'Setup Stack', isIntent: true },
     { id: 'all', label: 'All Businesses' },
     { id: 'food', label: 'Food & Drink' },
     { id: 'retail', label: 'Retail' },
@@ -35,63 +24,71 @@ export default function BusinessesPage() {
     const router = useRouter();
     const currentCategory = searchParams.get('category') || 'all';
 
-    useEffect(() => {
-        const fetchBusinesses = async () => {
-            setLoading(true);
-            const supabase = createClient();
-            let query = supabase.from('businesses').select('*');
-
-            const category = searchParams.get('category') || 'all';
-            const search = searchParams.get('search');
-
-            if (category !== 'all') {
-                const categoryLabel = CATEGORIES.find(c => c.id === category)?.label;
-                if (categoryLabel) {
-                    if (category === 'food') query = query.ilike('category', '%Food%');
-                    else if (category === 'retail') query = query.ilike('category', '%Retail%');
-                    else if (category === 'services') query = query.ilike('category', '%Service%');
-                    else if (category === 'artisan') query = query.ilike('category', '%Artisan%');
-                }
-            }
-
-            if (search) {
-                query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                console.error('Error fetching businesses:', error);
-            } else {
-                setBusinesses(data || []);
-            }
-            setLoading(false);
-        };
-
-        fetchBusinesses();
-    }, [searchParams]);
-
-    const handleCategoryChange = (categoryId: string) => {
-        startTransition(() => {
-            if (categoryId === 'all') {
-                router.push('/businesses');
-            } else {
-                router.push(`/businesses?category=${categoryId}`);
-            }
-        });
-    };
-
+    // Sync local search query state with URL
     const [searchQuery, setSearchQuery] = useState('');
     const currentSearch = searchParams.get('search') || '';
 
-    // Sync local state with URL
     useEffect(() => {
         setSearchQuery(currentSearch);
     }, [currentSearch]);
 
+    // Fetch Logic
+    useEffect(() => {
+        const fetchBusinesses = async () => {
+            setLoading(true);
+            try {
+                // Call Server Action (Sources from 'entities')
+                const data = await getBusinesses({
+                    category: currentCategory === 'all' ? undefined : currentCategory,
+                    limit: 50
+                });
+
+                // Client-side search filtering
+                let filtered = data;
+                if (currentSearch) {
+                    const lowerSearch = currentSearch.toLowerCase();
+                    filtered = data.filter(b =>
+                        b.name.toLowerCase().includes(lowerSearch) ||
+                        (b.description && b.description.toLowerCase().includes(lowerSearch))
+                    );
+                }
+
+                setBusinesses(filtered);
+            } catch (error) {
+                console.error('Error fetching businesses:', error);
+                setBusinesses([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBusinesses();
+    }, [currentCategory, currentSearch]);
+
+    const handleCategoryChange = (categoryId: string) => {
+        startTransition(() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (categoryId === 'all') {
+                params.delete('category');
+            } else {
+                params.set('category', categoryId);
+            }
+            // Keep search logic consistent
+            if (currentSearch) {
+                params.set('search', currentSearch);
+            }
+            router.push(`/businesses?${params.toString()}`);
+        });
+    };
+
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             const params = new URLSearchParams(searchParams.toString());
+            // Preserve category
+            if (currentCategory !== 'all') {
+                params.set('category', currentCategory);
+            }
+
             if (searchQuery) {
                 params.set('search', searchQuery);
             } else {
@@ -103,40 +100,37 @@ export default function BusinessesPage() {
 
     return (
         <div className="min-h-screen bg-neutral-50">
-            <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-24 lg:py-32 px-4">
-                <div className="container-custom text-center">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
-                        Community Members
-                    </h1>
-                    <p className="text-primary-100 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-                        The definitive guide to the people building our community. Find them in town or at our **weekly flagship markets**.
-                    </p>
-
-                    <div className="max-w-xl mx-auto relative">
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={handleSearch}
-                            placeholder="Search businesses, services, or people... (Press Enter)"
-                            className="w-full pl-12 pr-4 py-4 rounded-2xl text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-lg"
-                        />
-                        <Search className="absolute left-4 top-4.5 h-5 w-5 text-neutral-400" />
-                    </div>
+            <HubHero
+                title="Community"
+                subtitle="Connect with verified local businesses, artisans, and service providers in Da Nang and Hoi An."
+                variant="businesses"
+                imageUrl="/images/Stalls 6.jpg"
+            >
+                <div className="w-full max-w-xl mx-auto relative mt-8">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearch}
+                        placeholder="Search businesses, services, or people... (Press Enter)"
+                        className="w-full pl-12 pr-4 py-4 rounded-2xl text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-lg"
+                    />
+                    <Search className="absolute left-4 top-4.5 h-5 w-5 text-neutral-400" />
                 </div>
-            </div>
+            </HubHero>
 
-            <div className="container-custom py-16 lg:py-20">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
                 <div className="flex flex-wrap justify-center gap-3 mb-14">
                     {CATEGORIES.map((cat) => (
                         <button
                             key={cat.id}
                             onClick={() => handleCategoryChange(cat.id)}
                             className={`px-7 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 shadow-sm ${currentCategory === cat.id
-                                ? 'bg-primary-600 text-white shadow-primary-200 scale-105'
-                                : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 hover:border-primary-300'
+                                ? (cat.id === 'setup' ? 'bg-neutral-900 text-white shadow-xl' : 'bg-primary-600 text-white shadow-primary-200')
+                                : (cat.id === 'setup' ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100' : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 hover:border-primary-300')
                                 }`}
                         >
+                            {cat.id === 'setup' && <span className="mr-2">⚡</span>}
                             {cat.label}
                         </button>
                     ))}
@@ -149,7 +143,7 @@ export default function BusinessesPage() {
                                 ? 'All Businesses'
                                 : CATEGORIES.find(c => c.id === currentCategory)?.label || 'Businesses'}
                         </h2>
-                        <span className="text-neutral-500 text-sm font-medium">
+                        <span className="text-neutral-900 text-sm font-semibold">
                             Showing {businesses.length} Community Members
                         </span>
                     </div>

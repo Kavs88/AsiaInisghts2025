@@ -160,7 +160,7 @@ export default async function MarketDaysPage() {
       <main id="main-content" className="min-h-screen">
         <HubHero
           title="Market Days"
-          subtitle="Join us for our weekly artisan markets featuring local businesses and makers."
+          subtitle="Join us for our artisan markets featuring local businesses and makers."
           imageUrl="/images/market-days-hero.png"
           variant="markets"
         />
@@ -180,7 +180,7 @@ export default async function MarketDaysPage() {
       {/* Page Header */}
       <HubHero
         title="Market Days"
-        subtitle="Join us for our weekly artisan markets featuring local businesses and makers."
+        subtitle="Join us for our artisan markets featuring local businesses and makers."
         imageUrl="/images/market-days-hero.png"
         variant="markets"
       />
@@ -462,6 +462,27 @@ export default async function MarketDaysPage() {
           </div>
         </section>
       )}
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-br from-markets-600 to-secondary-600 text-white">
+        <div className="container-custom text-center">
+          <h2 className="text-3xl lg:text-4xl font-black mb-6">
+            Are you a business or service provider?
+          </h2>
+          <p className="text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium">
+            Join our community of local businesses. List your business profile to verify your identity and apply for market stalls.
+          </p>
+          <Link
+            href="/markets/vendor/apply"
+            className="inline-flex items-center justify-center px-10 py-5 bg-white text-markets-700 font-bold rounded-2xl text-lg hover:bg-neutral-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+          >
+            Join the Community
+            <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </section>
     </main>
   )
 }

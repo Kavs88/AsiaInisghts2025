@@ -30,7 +30,7 @@ async function PropertiesGrid({
     return (
         <>
             {properties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                     {properties.map((property: any) => (
                         <PropertyCard
                             key={property.id}
@@ -60,7 +60,7 @@ async function PropertiesGrid({
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
                         <Link
                             href="/properties"
-                            className="inline-flex items-center justify-center px-8 py-4 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold rounded-2xl transition-all"
+                            className="inline-flex items-center justify-center px-8 py-4 text-neutral-500 font-bold rounded-2xl transition-all hover:text-neutral-900 hover:bg-neutral-100"
                         >
                             Clear All Filters
                         </Link>
@@ -130,8 +130,8 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
             </HubHero>
 
             {/* Results Grid - Enhanced consistency */}
-            <section id="properties-grid" className="py-16 lg:py-24 bg-neutral-50/50 animate-fade-up">
-                <div className="container-custom max-w-7xl">
+            <section id="properties-grid" className="py-12 bg-neutral-50/50 animate-fade-up">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-10">
                         {/* Stewardship Voice: Curated vs Recommended */}
                         <h2 className="text-2xl font-bold text-neutral-900">
@@ -139,7 +139,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
                         </h2>
                     </div>
 
-                    <Suspense fallback={<GridSkeleton count={8} />}>
+                    <Suspense fallback={<GridSkeleton count={6} columns={3} />}>
                         <PropertiesGrid propertyType={propertyType} category={category} />
                     </Suspense>
                 </div>

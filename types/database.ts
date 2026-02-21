@@ -3,6 +3,36 @@
 export type Database = {
   public: {
     Tables: {
+      entities: {
+        Row: {
+          id: string
+          entity_type: 'business' | 'vendor' | 'market_day' | 'other'
+          slug: string
+          name: string
+          description: string | null
+          category: string
+          location_text: string | null
+          location_coords: unknown | null
+          contact_info: any | null // JSONB
+          social_links: any | null // JSONB
+          logo_url: string | null
+          cover_image_url: string | null
+          images: string[] | null
+          is_verified: boolean
+          confidence_score: number | null
+          is_active: boolean
+          founder_recommended: boolean
+          search_vector: unknown | null
+          legacy_business_id: string | null
+          legacy_vendor_id: string | null
+          owner_id: string | null
+          tags: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['entities']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['entities']['Insert']>
+      }
       users: {
         Row: {
           id: string
@@ -310,8 +340,3 @@ export type Database = {
     }
   }
 }
-
-
-
-
-

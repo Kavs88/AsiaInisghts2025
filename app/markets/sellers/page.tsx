@@ -1,9 +1,10 @@
+import Link from 'next/link'
 import VendorCard from '@/components/ui/VendorCard'
 import { getVendors, getVendorsAttendanceStatus } from '@/lib/supabase/queries'
 
 export const metadata = {
-  title: 'Sellers - Sunday Market',
-  description: 'Browse all our artisan sellers and local makers',
+  title: 'Makers - Sunday Market',
+  description: 'Browse all our artisan makers and verified members',
 }
 
 export default async function SellersPage() {
@@ -30,7 +31,7 @@ export default async function SellersPage() {
   const mappedSellers = sellers.map((v) => {
     // Determine attendance status
     let attendingStatus: 'attending' | 'delivery-only' | 'online-only' | undefined = attendanceMap[v.id]
-    
+
     // If not in market_stalls but has delivery, mark as delivery-only
     if (!attendingStatus && v.delivery_available && !v.pickup_available) {
       attendingStatus = 'delivery-only'
@@ -48,6 +49,8 @@ export default async function SellersPage() {
       deliveryAvailable: v.delivery_available,
       pickupAvailable: v.pickup_available,
       attendingStatus,
+      trustBadges: v.trust_badges || [],
+      founderRecommended: v.founder_recommended,
     }
   })
 
@@ -62,10 +65,10 @@ export default async function SellersPage() {
           <div className="py-12 sm:py-16 lg:py-20">
             <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-4 tracking-tight">
-                Our Sellers
+                Our Community
               </h1>
               <p className="text-lg sm:text-xl lg:text-2xl text-neutral-600 max-w-3xl leading-relaxed">
-                Discover amazing local makers, artisans, and producers in our community
+                Meet the makers, artisans, and verified members behind the Sunday Market.
               </p>
             </div>
           </div>
@@ -82,8 +85,10 @@ export default async function SellersPage() {
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:border-markets-300 hover:bg-markets-50 hover:text-markets-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-markets-500 focus:ring-offset-1"
+                    disabled
+                    className="px-4 py-2 text-sm font-medium text-neutral-400 bg-neutral-50 border border-neutral-100 rounded-lg cursor-not-allowed transition-all duration-200"
                     aria-pressed={category === 'All'}
+                    title="Filtering coming soon"
                   >
                     {category}
                   </button>
@@ -91,18 +96,20 @@ export default async function SellersPage() {
               </div>
 
               {/* Additional Filters */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer hover:text-neutral-900 transition-colors">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 opacity-50 grayscale select-none pointer-events-none" title="Filters coming soon">
+                <label className="flex items-center gap-2 text-sm text-neutral-400 cursor-not-allowed">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-markets-600 border-neutral-300 rounded focus:ring-markets-500 focus:ring-offset-1"
+                    disabled
+                    className="w-4 h-4 text-neutral-300 border-neutral-200 rounded focus:ring-0 cursor-not-allowed"
                   />
                   <span>Attending Next Market</span>
                 </label>
-                <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer hover:text-neutral-900 transition-colors">
+                <label className="flex items-center gap-2 text-sm text-neutral-400 cursor-not-allowed">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-markets-600 border-neutral-300 rounded focus:ring-markets-500 focus:ring-offset-1"
+                    disabled
+                    className="w-4 h-4 text-neutral-300 border-neutral-200 rounded focus:ring-0 cursor-not-allowed"
                   />
                   <span>Delivery Available</span>
                 </label>
@@ -119,7 +126,7 @@ export default async function SellersPage() {
             {/* Results Count - Subtle, not prominent */}
             <div className="mb-8 sm:mb-10 lg:mb-12">
               <p className="text-sm sm:text-base text-neutral-500">
-                {mappedSellers.length} seller{mappedSellers.length !== 1 ? 's' : ''} found
+                {mappedSellers.length} member{mappedSellers.length !== 1 ? 's' : ''} found
               </p>
             </div>
 
@@ -148,10 +155,10 @@ export default async function SellersPage() {
                     />
                   </svg>
                   <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-3">
-                    No sellers found
+                    No members found
                   </h2>
                   <p className="text-base text-neutral-600">
-                    Check back soon for new sellers!
+                    Check back soon for new Makers!
                   </p>
                 </div>
               </div>
@@ -159,7 +166,28 @@ export default async function SellersPage() {
           </div>
         </div>
       </section>
-    </main>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-br from-markets-600 to-secondary-600 text-white">
+        <div className="container-custom text-center">
+          <h2 className="text-3xl lg:text-4xl font-black mb-6">
+            Are you a business or service provider?
+          </h2>
+          <p className="text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium">
+            Join our community of local businesses. List your business profile to verify your identity and apply for market stalls.
+          </p>
+          <Link
+            href="/markets/vendor/apply"
+            className="inline-flex items-center justify-center px-10 py-5 bg-white text-markets-700 font-bold rounded-2xl text-lg hover:bg-neutral-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+          >
+            Join the Community
+            <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </section>
+    </main >
   )
 }
 

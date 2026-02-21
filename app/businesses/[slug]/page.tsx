@@ -101,7 +101,7 @@ export default async function BusinessProfilePage({
         <main id="main-content" className="min-h-screen bg-white">
             {/* Breadcrumb Navigation */}
             <section className="bg-white border-b border-neutral-100">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <Breadcrumbs items={[
                         { label: 'Businesses', href: '/businesses' },
                         { label: biz.name, href: '' }
@@ -109,18 +109,28 @@ export default async function BusinessProfilePage({
                 </div>
             </section>
 
-            {/* Hero Banner - Uplifted Fallback */}
-            <section className="relative h-64 sm:h-72 lg:h-80 bg-neutral-900 overflow-hidden">
+            {/* Hero Banner - Immersive & Cinematic */}
+            <section className="relative h-[50vh] min-h-[400px] bg-neutral-900 overflow-hidden group">
                 {heroImageUrl ? (
-                    <Image src={heroImageUrl} alt={`${biz.name} banner`} fill className="object-cover opacity-60" priority />
+                    <Image
+                        src={heroImageUrl}
+                        alt={`${biz.name} banner`}
+                        fill
+                        className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                        priority
+                    />
                 ) : (
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+                    <div className="absolute inset-0 bg-neutral-900">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mixed-blend-overlay" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950" />
+                    </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                {/* Layered Branding Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                    <span className="text-[20vw] font-black text-white uppercase tracking-tighter select-none">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
+
+                {/* Layered Branding Overlay - Subtle Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                    <span className="text-[15vw] font-black text-white/5 uppercase tracking-tighter select-none truncate w-full text-center transform -rotate-12 translate-y-1/4 scale-150 blur-sm">
                         {biz.name}
                     </span>
                 </div>
@@ -129,31 +139,45 @@ export default async function BusinessProfilePage({
             {/* Shop Header - Inline identity block */}
             <section className="relative bg-white border-b border-neutral-100">
                 <div className="pt-12 sm:pt-16 lg:pt-20 pb-12">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                        {/* Identity Block - Logo + Name */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
-                            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto flex-1 min-w-0">
-                                {/* Logo */}
-                                <div className="flex-shrink-0">
-                                    {biz.logo_url ? (
-                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-white rounded-xl p-1.5 shadow-md border-2 border-neutral-200">
-                                            <Image src={biz.logo_url} alt={biz.name} fill className="object-cover rounded-lg" />
+                    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                        {/* Identity Block - Logo + Name - Overlapping Hero */}
+                        <div className="flex flex-col sm:flex-row items-end gap-6 sm:gap-8 mb-8 -mt-20 sm:-mt-24 relative z-10">
+                            {/* Logo - Card Style */}
+                            <div className="flex-shrink-0">
+                                {biz.logo_url ? (
+                                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 bg-white rounded-2xl p-2 shadow-xl border border-white/20 backdrop-blur-sm">
+                                        <div className="relative w-full h-full rounded-xl overflow-hidden bg-neutral-100">
+                                            <Image src={biz.logo_url} alt={biz.name} fill className="object-cover" />
                                         </div>
-                                    ) : (
-                                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl flex items-center justify-center shadow-md border-2 border-neutral-200">
-                                            <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary-600">
+                                    </div>
+                                ) : (
+                                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 bg-white rounded-2xl p-2 shadow-xl border border-white/20">
+                                        <div className="w-full h-full bg-gradient-to-br from-primary-50 to-neutral-50 rounded-xl flex items-center justify-center border border-neutral-100">
+                                            <span className="text-4xl sm:text-5xl lg:text-6xl font-black text-primary-600">
                                                 {biz.name.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Name + Verified Badge */}
+                            <div className="flex-1 min-w-0 pb-2">
+                                <div className="flex items-center gap-3 mb-2">
+                                    {biz.is_verified && (
+                                        <Badge variant="success" className="backdrop-blur-md bg-emerald-500/10 text-emerald-700 border-emerald-200/50 shadow-sm">
+                                            <CheckCircle className="w-3 h-3 mr-1" /> Verified Partner
+                                        </Badge>
+                                    )}
+                                    {biz.category && (
+                                        <Badge variant="neutral" className="bg-neutral-100 text-neutral-600 border-neutral-200">
+                                            {biz.category}
+                                        </Badge>
                                     )}
                                 </div>
-                                {/* Name + Verified Badge */}
-                                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                                    <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-neutral-900 tracking-tight leading-tight truncate">
-                                        {biz.name}
-                                    </h1>
-                                    {biz.is_verified && <CheckCircle className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 flex-shrink-0" />}
-                                </div>
+                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tight leading-[0.9]">
+                                    {biz.name}
+                                </h1>
                             </div>
                         </div>
 
@@ -226,118 +250,119 @@ export default async function BusinessProfilePage({
             </section>
 
             {/* Main Content Grid - About Section + Sidebar (Tabs are inside Client) */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2 space-y-16">
                         {/* About - Keep on home tab of profile if desired, or as a global entry */}
                         <section className="bg-white border-b border-neutral-100 sm:border-none">
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                                {/* Image Holder */}
-                                <div className="lg:col-span-4">
-                                    <div className="sticky top-24">
-                                        <div className="relative aspect-square bg-neutral-50 rounded-2xl overflow-hidden shadow-md">
-                                            {biz.logo_url ? (
-                                                <Image
-                                                    src={biz.logo_url}
-                                                    alt={`${biz.name} - About`}
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="(max-width: 1024px) 100vw, 33vw"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
-                                                    <div className="text-center p-8">
-                                                        <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-full flex items-center justify-center">
-                                                            <span className="text-5xl font-black text-primary-600">
-                                                                {biz.name.charAt(0).toUpperCase()}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-neutral-500 text-sm font-medium">About {biz.name}</p>
-                                                    </div>
-                                                </div>
-                                            )}
+                            <div className="space-y-8">
+                                {/* Hook/Intro - Large Text */}
+                                <div>
+                                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 mb-8 tracking-tight">
+                                        About {biz.name}
+                                    </h2>
+                                    <div className="prose prose-lg prose-neutral max-w-none">
+                                        <p className="text-xl sm:text-2xl font-light text-neutral-600 leading-relaxed">
+                                            {biz.tagline || biz.description?.split('.')[0] + '.'}
+                                        </p>
+                                        <div className="mt-8 text-lg text-neutral-700 leading-relaxed whitespace-pre-line">
+                                            {biz.description}
                                         </div>
                                     </div>
                                 </div>
-                                {/* About Content */}
-                                <div className="lg:col-span-8">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-6 tracking-tight">
-                                                About {biz.name}
-                                            </h2>
-                                            <div className="text-base sm:text-lg text-neutral-700 leading-relaxed whitespace-pre-line max-w-3xl">
-                                                {biz.description}
+
+                                {/* Visual Image Grid - If available (Placeholder for now if no extra images) */}
+                                {/* This would be a place to put a masonry grid of secondary images if they existed in the DB object */}
+
+                                {/* Additional Info Cards - Refined */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8">
+                                    {/* Delivery Options */}
+                                    {(biz.delivery_available || biz.pickup_available) && (
+                                        <div className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
+                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-neutral-100">
+                                                <ShoppingBag className="w-6 h-6 text-neutral-900" />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-neutral-900 mb-4">
+                                                Ways to Shop
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {biz.delivery_available && (
+                                                    <div className="flex items-center gap-3 text-neutral-700 bg-white p-3 rounded-xl border border-neutral-100 shadow-sm">
+                                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                        <span className="text-base font-semibold">Delivery Available</span>
+                                                    </div>
+                                                )}
+                                                {biz.pickup_available && (
+                                                    <div className="flex items-center gap-3 text-neutral-700 bg-white p-3 rounded-xl border border-neutral-100 shadow-sm">
+                                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                                        <span className="text-base font-semibold">Pickup Available</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-
-                                        {/* Additional Info Cards */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
-                                            {/* Delivery Options */}
-                                            {(biz.delivery_available || biz.pickup_available) && (
-                                                <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
-                                                    <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                            <ShoppingBag className="w-6 h-6 text-primary-600" />
-                                                        </div>
-                                                        Delivery Options
-                                                    </h3>
-                                                    <div className="space-y-3">
-                                                        {biz.delivery_available && (
-                                                            <div className="flex items-center gap-3 text-neutral-700">
-                                                                <CheckCircle className="w-5 h-5 text-success-600 flex-shrink-0" />
-                                                                <span className="text-base font-medium">Delivery Available</span>
-                                                            </div>
-                                                        )}
-                                                        {biz.pickup_available && (
-                                                            <div className="flex items-center gap-3 text-neutral-700">
-                                                                <CheckCircle className="w-5 h-5 text-success-600 flex-shrink-0" />
-                                                                <span className="text-base font-medium">Pickup Available</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </section>
                     </div>
 
                     {/* Sidebar */}
-                    <div className="space-y-8">
+                    <div className="space-y-8 lg:sticky lg:top-32 h-fit">
                         {/* Contact Card */}
-                        <div className="bg-neutral-50 p-8 rounded-3xl border border-neutral-100 shadow-sm">
-                            <h3 className="text-xl font-bold text-neutral-900 mb-6">Contact & Hours</h3>
+                        <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow duration-500">
+                            <h3 className="text-xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
+                                <span className="w-8 h-1 bg-primary-600 rounded-full inline-block"></span>
+                                Connect
+                            </h3>
                             <div className="space-y-6">
                                 {biz.website_url && (
-                                    <a href={biz.website_url} target="_blank" rel="noopener" className="flex items-center gap-4 text-primary-600 hover:text-primary-700 font-medium group">
-                                        <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center group-hover:border-primary-200 transition-colors"><Globe className="w-5 h-5" /></div>
-                                        Visit Website
+                                    <a href={biz.website_url} target="_blank" rel="noopener" className="flex items-center gap-4 text-neutral-900 hover:text-primary-600 font-bold group transition-colors">
+                                        <div className="w-12 h-12 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-primary-50 group-hover:border-primary-100 transition-colors">
+                                            <Globe className="w-5 h-5 text-neutral-400 group-hover:text-primary-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <span className="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-0.5">Website</span>
+                                            Visit Page
+                                        </div>
                                     </a>
                                 )}
                                 {biz.contact_phone && (
-                                    <div className="flex items-center gap-4 text-neutral-700">
-                                        <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center"><Phone className="w-5 h-5 text-neutral-400" /></div>
-                                        {biz.contact_phone}
+                                    <div className="flex items-center gap-4 text-neutral-900 font-semibold">
+                                        <div className="w-12 h-12 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center">
+                                            <Phone className="w-5 h-5 text-neutral-400" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <span className="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-0.5">Phone</span>
+                                            {biz.contact_phone}
+                                        </div>
                                     </div>
                                 )}
                                 {biz.contact_email && (
-                                    <div className="flex items-center gap-4 text-neutral-700">
-                                        <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center"><Mail className="w-5 h-5 text-neutral-400" /></div>
-                                        {biz.contact_email}
+                                    <div className="flex items-center gap-4 text-neutral-900 font-semibold">
+                                        <div className="w-12 h-12 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center">
+                                            <Mail className="w-5 h-5 text-neutral-400" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <span className="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-0.5">Email</span>
+                                            {biz.contact_email}
+                                        </div>
                                     </div>
                                 )}
                             </div>
 
                             {/* Hours */}
-                            {biz.opening_hours && (
-                                <div className="mt-8 pt-8 border-t border-neutral-200/50">
-                                    <div className="flex items-center gap-2 mb-4 text-neutral-900 font-bold"><Clock className="w-5 h-5 text-neutral-400" /> Opening Hours</div>
-                                    <div className="space-y-2 text-sm text-neutral-600">
+                            {biz.opening_hours && typeof biz.opening_hours === 'object' && !Array.isArray(biz.opening_hours) && (
+                                <div className="mt-10 pt-10 border-t border-dashed border-neutral-200">
+                                    <div className="flex items-center gap-2 mb-6 text-neutral-900 font-bold">
+                                        <Clock className="w-5 h-5 text-primary-600" />
+                                        Opening Hours
+                                    </div>
+                                    <div className="space-y-3">
                                         {Object.entries(biz.opening_hours as object || {}).map(([day, hours]) => (
-                                            <div key={day} className="flex justify-between"><span className="capitalize">{day}</span><span>{hours}</span></div>
+                                            <div key={day} className="flex justify-between items-center text-sm">
+                                                <span className="capitalize font-medium text-neutral-500 w-24">{day}</span>
+                                                <span className="font-bold text-neutral-900 text-right flex-1">{String(hours)}</span>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>

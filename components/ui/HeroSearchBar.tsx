@@ -2,9 +2,13 @@
 
 import SearchBar from './SearchBar'
 
-export default function HeroSearchBar() {
+interface HeroSearchBarProps {
+  helperText?: string
+}
+
+export default function HeroSearchBar({ helperText }: HeroSearchBarProps) {
   // Render SearchBar directly - Next.js will handle SSR/hydration automatically
   // No placeholder needed to avoid flash - SearchBar will hydrate seamlessly
-  return <SearchBar variant="hero" />
+  return <SearchBar variant="hero" placeholder={helperText} />
 }
 

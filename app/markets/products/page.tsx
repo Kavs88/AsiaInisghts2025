@@ -49,8 +49,8 @@ export default async function ProductsPage() {
   return (
     <main id="main-content" className="min-h-screen">
       {/* Page Header */}
-      <section className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-12 lg:py-16 xl:py-20">
-        <div className="container-custom">
+      <section className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white pt-20 pb-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div>
             <h1 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-4 lg:mb-6 leading-tight">All Products</h1>
             <p className="text-lg lg:text-xl xl:text-2xl text-white/95 max-w-3xl font-medium">
