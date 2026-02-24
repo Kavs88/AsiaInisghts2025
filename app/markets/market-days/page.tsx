@@ -165,8 +165,8 @@ export default async function MarketDaysPage() {
           variant="markets"
         />
 
-        <section className="py-20 bg-white">
-          <div className="container-custom max-w-7xl py-12 lg:py-24 animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <section className="py-12 bg-white">
+          <div className="container-custom max-w-7xl py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
             <p className="text-xl text-neutral-600 mb-4">No upcoming market days scheduled</p>
             <p className="text-neutral-500">Check back soon for our next market!</p>
           </div>
@@ -199,7 +199,7 @@ export default async function MarketDaysPage() {
                 />
               </div>
             )}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <h2 className="text-3xl font-bold text-neutral-900">
@@ -389,11 +389,11 @@ export default async function MarketDaysPage() {
 
       {/* Stay Near the Market */}
       {nearbyProperties.length > 0 && (
-        <section className="py-20 bg-neutral-900 text-white overflow-hidden">
+        <section className="py-12 bg-neutral-900 text-white overflow-hidden">
           <div className="container-custom">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
               <div className="max-w-2xl">
-                <h2 className="text-4xl lg:text-5xl font-black mb-6 tracking-tight">Stay Near the Market</h2>
+                <h2 className="text-3xl lg:text-4xl font-black mb-6 tracking-tight">Stay Near the Market</h2>
                 <p className="text-xl text-neutral-400 font-medium">
                   Turn your market visit into a weekend getaway. Check out these stays and event spaces located just minutes from {nextMarket.location_name}.
                 </p>
@@ -464,17 +464,17 @@ export default async function MarketDaysPage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-markets-600 to-secondary-600 text-white">
+      <section className="py-12 bg-neutral-900 text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl lg:text-4xl font-black mb-6">
             Are you a business or service provider?
           </h2>
-          <p className="text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium">
+          <p className="text-xl lg:text-2xl text-neutral-300 mb-10 max-w-2xl mx-auto font-medium">
             Join our community of local businesses. List your business profile to verify your identity and apply for market stalls.
           </p>
           <Link
             href="/markets/vendor/apply"
-            className="inline-flex items-center justify-center px-10 py-5 bg-white text-markets-700 font-bold rounded-2xl text-lg hover:bg-neutral-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+            className="inline-flex items-center justify-center px-10 py-5 bg-white text-neutral-900 font-bold rounded-2xl text-lg hover:bg-neutral-100 transition-all duration-200 shadow-md hover:shadow-xl hover:-translate-y-0.5"
           >
             Join the Community
             <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

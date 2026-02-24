@@ -130,7 +130,7 @@ export default function MeetTheTeamClient() {
       <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-24 overflow-hidden bg-neutral-900">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary-900/40 via-neutral-900 to-secondary-900/40" />
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary-600/10 via-transparent to-transparent blur-3xl" />
+
         </div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
@@ -159,11 +159,11 @@ export default function MeetTheTeamClient() {
       </section>
 
       {/* Mission & Purpose */}
-      <section className="py-24 bg-white relative">
+      <section className="py-12 bg-white relative">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8 tracking-tight">
+              <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-8 tracking-tight">
                 Bridging the <span className="text-primary-600">Gap.</span>
               </h2>
               <div className="space-y-6 text-lg text-neutral-600 leading-relaxed font-medium">
@@ -193,11 +193,10 @@ export default function MeetTheTeamClient() {
       </section>
 
       {/* Team Grid - Premium Cards */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-white to-transparent" />
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-6xl font-black text-neutral-900 mb-6 tracking-tight">
+      <section className="py-12 bg-neutral-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 tracking-tight">
               Our Core <span className="text-primary-600">Team.</span>
             </h2>
             <p className="text-xl text-neutral-600 font-medium leading-relaxed">
@@ -205,19 +204,16 @@ export default function MeetTheTeamClient() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {teamMembers.map((member) => (
               <div
                 key={member.id}
                 className="group relative"
                 onClick={() => setSelectedMember(member)}
               >
-                {/* Visual Backdrop */}
-                <div className="absolute inset-0 bg-primary-600 rounded-[2.5rem] translate-x-2 translate-y-2 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-                <div className="relative bg-white rounded-[2.5rem] p-4 lg:p-6 border border-neutral-200 overflow-hidden hover:translate-x-[-4px] hover:translate-y-[-4px] transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl">
+                <div className="relative bg-white rounded-2xl p-4 lg:p-6 border border-neutral-200 overflow-hidden hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl">
                   {/* Image Holder */}
-                  <div className="aspect-square relative rounded-[2rem] overflow-hidden mb-6 bg-neutral-100">
+                  <div className="aspect-square relative rounded-xl overflow-hidden mb-6 bg-neutral-100">
                     {member.image && !imageErrors[member.id] ? (
                       <Image
                         src={member.image}
@@ -283,12 +279,12 @@ export default function MeetTheTeamClient() {
       </section>
 
       {/* Story / Timeline teaser */}
-      <section className="py-24 bg-neutral-900 text-white overflow-hidden">
+      <section className="py-12 bg-neutral-900 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="relative">
-              <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary-600/20 rounded-full blur-3xl animate-pulse" />
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-tight">
+
+              <h2 className="text-3xl lg:text-4xl font-black mb-8 leading-tight">
                 Over a decade of <span className="text-primary-500 italic">presence.</span>
               </h2>
               <div className="space-y-8 relative z-10">
@@ -305,12 +301,13 @@ export default function MeetTheTeamClient() {
                 ))}
               </div>
             </div>
-            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden bg-neutral-800 border border-white/10 group">
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 group">
               <div className="absolute inset-0 bg-neutral-950/20 z-10 group-hover:bg-transparent transition-all duration-700" />
               <Image
                 src="https://images.unsplash.com/photo-1493106819501-66d381c446a1?auto=format&fit=crop&w=1200&q=80"
                 alt="Asia Connections"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
               />
               <div className="absolute bottom-12 left-12 right-12 z-20">
@@ -327,36 +324,28 @@ export default function MeetTheTeamClient() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="relative p-12 lg:p-24 rounded-[4rem] bg-gradient-to-br from-primary-600 to-secondary-600 text-white shadow-2xl overflow-hidden group">
-            {/* Decorative Bubbles */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl group-hover:scale-110 transition-transform duration-1000" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-20 -mb-20 blur-2xl" />
-
-            <div className="relative z-10 text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl lg:text-6xl font-black mb-8 leading-tight">
-                Ready to start your <span className="text-neutral-900/40">journey?</span>
-              </h2>
-              <p className="text-xl text-white/90 mb-12 font-medium">
-                Our team is ready to help you navigate Southeast Asia with the confidence of a local.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Link
-                  href="/concierge"
-                  className="px-10 py-5 bg-white text-primary-600 font-extrabold rounded-2xl hover:bg-neutral-100 transition-all shadow-lg hover:shadow-2xl flex items-center justify-center gap-3 group/btn"
-                >
-                  Explore Concierge
-                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/businesses"
-                  className="px-10 py-5 bg-primary-700/30 backdrop-blur-md border border-white/20 text-white font-extrabold rounded-2xl hover:bg-white/20 transition-all flex items-center justify-center gap-3"
-                >
-                  Browse Local Hubs
-                </Link>
-              </div>
-            </div>
+      <section className="py-12 bg-neutral-900 text-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-3xl lg:text-4xl font-black mb-6 leading-tight">
+            Ready to start your journey?
+          </h2>
+          <p className="text-xl text-neutral-300 mb-10 font-medium max-w-2xl mx-auto">
+            Our team is ready to help you navigate Southeast Asia with the confidence of a local.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/concierge"
+              className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+              Explore Concierge
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/businesses"
+              className="inline-flex items-center justify-center px-10 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-2xl transition-all duration-200"
+            >
+              Browse Local Hubs
+            </Link>
           </div>
         </div>
       </section>
@@ -445,7 +434,7 @@ export default function MeetTheTeamClient() {
             <div className="flex-1 p-8 md:p-12 overflow-y-auto max-h-[90vh]">
               <div className="max-w-2xl">
                 <div className="mb-10">
-                  <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-3 tracking-tight leading-none">
+                  <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3 tracking-tight leading-none">
                     {selectedMember.name}
                   </h2>
                   <p className="text-primary-600 font-bold text-xl flex items-center gap-2">

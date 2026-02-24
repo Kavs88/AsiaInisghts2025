@@ -119,10 +119,10 @@ export default function OrdersPage() {
   return (
     <main id="main-content" className="min-h-screen bg-neutral-50">
       {/* Page Header */}
-      <section className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-12 lg:py-16">
+      <section className="bg-neutral-900 text-white py-12 lg:py-16">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">My Orders</h1>
-          <p className="text-lg text-white/90">Track your order status</p>
+          <p className="text-lg text-neutral-300">Track your order status</p>
         </div>
       </section>
 

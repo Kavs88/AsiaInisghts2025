@@ -117,7 +117,7 @@ export default async function MarketsHomePage() {
           />
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-24">
+        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             <div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 mb-6 sm:mb-8 leading-[0.9] tracking-tight">
@@ -150,7 +150,7 @@ export default async function MarketsHomePage() {
       </section>
 
       {/* Upcoming Market Preview */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="bg-gradient-to-br from-markets-50/50 to-white rounded-3xl p-8 lg:p-12 border border-markets-100 shadow-lg">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
@@ -161,7 +161,7 @@ export default async function MarketsHomePage() {
                   </svg>
                   Next Event
                 </div>
-                <h2 className="text-4xl lg:text-6xl font-black text-neutral-900 mb-6 tracking-tight">
+                <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 tracking-tight">
                   {nextMarketDay
                     ? formatMarketDate(nextMarketDay.market_date)
                     : 'Sunday, December 17'}
@@ -183,7 +183,7 @@ export default async function MarketsHomePage() {
               </div>
               <Link
                 href="/markets/market-days"
-                className="inline-flex items-center justify-center px-10 py-5 bg-markets-600 hover:bg-markets-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg whitespace-nowrap"
+                className="inline-flex items-center justify-center px-10 py-5 bg-markets-600 hover:bg-markets-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-md hover:shadow-xl hover:-translate-y-1 text-lg whitespace-nowrap"
               >
                 View Details
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,11 +196,11 @@ export default async function MarketsHomePage() {
       </section>
 
       {/* Featured Sellers */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 mb-3">
+              <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3">
                 Featured Sellers
               </h2>
               <p className="text-xl text-neutral-600 font-medium">
@@ -217,7 +217,7 @@ export default async function MarketsHomePage() {
               </svg>
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayVendors.length > 0 ? (
               displayVendors.map((vendor) => (
                 <VendorCard key={vendor.id} {...vendor} />
@@ -240,11 +240,11 @@ export default async function MarketsHomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-neutral-50">
+      <section className="py-12 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 mb-3">
+              <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3">
                 Popular Products
               </h2>
               <p className="text-xl text-neutral-600 font-medium">
@@ -261,7 +261,7 @@ export default async function MarketsHomePage() {
               </svg>
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayProducts.length > 0 ? (
               displayProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
@@ -284,17 +284,17 @@ export default async function MarketsHomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-markets-600 to-secondary-600 text-white">
+      <section className="py-12 bg-neutral-900 text-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-black mb-6">
             Are you a business or service provider?
           </h2>
-          <p className="text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium">
+          <p className="text-xl lg:text-2xl text-neutral-300 mb-10 max-w-2xl mx-auto font-medium">
             Join our community of local businesses. List your business profile to verify your identity and apply for market stalls.
           </p>
           <Link
             href="/markets/vendor/apply"
-            className="inline-flex items-center justify-center px-10 py-5 bg-white text-markets-700 font-bold rounded-2xl text-lg hover:bg-neutral-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+            className="inline-flex items-center justify-center px-10 py-5 bg-white text-neutral-900 font-bold rounded-2xl text-lg hover:bg-neutral-100 transition-all duration-200 shadow-md hover:shadow-xl hover:-translate-y-0.5"
           >
             Join the Community
             <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -62,7 +62,7 @@ export default async function SellersPage() {
       {/* Page Header - Premium spacing and typography */}
       <section className="bg-white border-b border-neutral-100">
         <div className="container-custom">
-          <div className="py-12 sm:py-16 lg:py-20">
+          <div className="py-12">
             <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-4 tracking-tight">
                 Our Community
@@ -122,7 +122,7 @@ export default async function SellersPage() {
       {/* Sellers Grid - Premium spacing and layout */}
       <section className="bg-neutral-50">
         <div className="container-custom">
-          <div className="py-12 sm:py-16 lg:py-20">
+          <div className="py-12">
             {/* Results Count - Subtle, not prominent */}
             <div className="mb-8 sm:mb-10 lg:mb-12">
               <p className="text-sm sm:text-base text-neutral-500">
@@ -132,13 +132,13 @@ export default async function SellersPage() {
 
             {/* Grid - Consistent gaps, equal height cards */}
             {mappedSellers.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {mappedSellers.map((seller) => (
                   <VendorCard key={seller.id} {...seller} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16 sm:py-20 lg:py-24">
+              <div className="text-center py-12">
                 <div className="max-w-md mx-auto">
                   <svg
                     className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-neutral-300 mb-6"
@@ -168,17 +168,17 @@ export default async function SellersPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-markets-600 to-secondary-600 text-white">
+      <section className="py-12 bg-neutral-900 text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl lg:text-4xl font-black mb-6">
             Are you a business or service provider?
           </h2>
-          <p className="text-xl lg:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium">
+          <p className="text-xl lg:text-2xl text-neutral-300 mb-10 max-w-2xl mx-auto font-medium">
             Join our community of local businesses. List your business profile to verify your identity and apply for market stalls.
           </p>
           <Link
             href="/markets/vendor/apply"
-            className="inline-flex items-center justify-center px-10 py-5 bg-white text-markets-700 font-bold rounded-2xl text-lg hover:bg-neutral-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+            className="inline-flex items-center justify-center px-10 py-5 bg-white text-neutral-900 font-bold rounded-2xl text-lg hover:bg-neutral-100 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
           >
             Join the Community
             <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
