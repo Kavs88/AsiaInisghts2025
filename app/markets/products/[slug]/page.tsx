@@ -17,28 +17,32 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const product = await getProductBySlug(resolvedParams.slug) as any
     const vendor = (product?.vendors) || {}
 
-    const title = `${product.name} – ${vendor.name || 'Vendor'} – AI Markets`
     const description = product.description
       ? product.description.substring(0, 160).trim() + (product.description.length > 160 ? '...' : '')
-      : `View ${product.name} from ${vendor.name || 'our vendors'} on AI Markets`
+      : `Discover ${product.name} from ${vendor.name || 'our vendors'} on Asia Insights`
+    const image = product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : null
 
     return {
-      title,
+      title: product.name,
       description,
       openGraph: {
-        title,
+        title: product.name,
         description,
         type: 'website',
-        images: product.image_urls && product.image_urls.length > 0
-          ? [{ url: product.image_urls[0] }]
-          : [],
+        siteName: 'Asia Insights',
+        ...(image && { images: [{ url: image, width: 1200, height: 630, alt: product.name }] }),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: product.name,
+        description,
+        ...(image && { images: [image] }),
       },
     }
-  } catch (error) {
-    const resolvedParams = params instanceof Promise ? await params : params
+  } catch {
     return {
-      title: `${resolvedParams.slug} - AI Markets`,
-      description: `View product details for ${resolvedParams.slug}`,
+      title: resolvedParams.slug,
+      description: `View product details on Asia Insights`,
     }
   }
 }
