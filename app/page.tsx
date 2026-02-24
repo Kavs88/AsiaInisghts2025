@@ -239,7 +239,7 @@ export default async function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Sam's Photo */}
               <div className="relative order-2 lg:order-1">
-                <div className="aspect-square rounded-[2.5rem] overflow-hidden bg-neutral-100 relative max-w-md mx-auto lg:mx-0">
+                <div className="aspect-square rounded-2xl overflow-hidden bg-neutral-100 relative max-w-md mx-auto lg:mx-0">
                   <Image
                     src="/images/team/SNM.jpg"
                     alt="Sam - Founder of Asia Insights"

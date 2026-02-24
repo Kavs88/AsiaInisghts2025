@@ -1,47 +1,65 @@
-'use client'
-
-import { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+interface FooterLink {
+  label: string
+  href: string
+  comingSoon?: boolean
+}
+
+const footerLinks: { [key: string]: FooterLink[] } = {
+  marketplace: [
+    { label: 'Market Products', href: '/markets/products' },
+    { label: 'Sellers & Vendors', href: '/markets/sellers' },
+    { label: 'Market Days', href: '/markets/market-days' },
+    { label: 'My Orders', href: '/markets/orders' },
+  ],
+  stays: [
+    { label: 'All Stays', href: '/properties' },
+    { label: 'Premium Villas', href: '/properties?type=villa' },
+    { label: 'Event Venues', href: '/properties?property_type=event_space' },
+  ],
+  concierge: [
+    { label: 'Relocation Services', href: '/concierge' },
+    { label: 'Local Guides', href: '/concierge/guides', comingSoon: true },
+  ],
+  businesses: [
+    { label: 'Business Hub', href: '/businesses' },
+    { label: 'List Your Business', href: '/markets/vendor/apply' },
+    { label: 'Vendor Dashboard', href: '/markets/vendor/dashboard' },
+  ],
+  about: [
+    { label: 'Meet the Team', href: '/meet-the-team' },
+    { label: 'Contact Us', href: '/contact' },
+  ],
+}
+
+function FooterLinkList({ links }: { links: FooterLink[] }) {
+  return (
+    <ul className="space-y-2">
+      {links.map((link) => (
+        <li key={link.label}>
+          {link.comingSoon ? (
+            <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
+              {link.label}
+              <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
+            </span>
+          ) : (
+            <Link
+              href={link.href}
+              className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
+            >
+              {link.label}
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export default function Footer() {
-  const currentYear = useMemo(() => new Date().getFullYear(), [])
-
-  // Memoize footer links to prevent recreation on every render
-  // FIX: All Markets routes must use /markets/* prefix to maintain section isolation
-  // QA Fix: Footer route safety - replaced legacy routes with correct /markets/* routes
-  interface FooterLink {
-    label: string
-    href: string
-    comingSoon?: boolean
-  }
-
-  const footerLinks = useMemo<{ [key: string]: FooterLink[] }>(() => ({
-    marketplace: [
-      { label: 'Market Products', href: '/markets/products' },
-      { label: 'Sellers & Vendors', href: '/markets/sellers' },
-      { label: 'Market Days', href: '/markets/market-days' },
-      { label: 'My Orders', href: '/markets/orders' },
-    ],
-    stays: [
-      { label: 'All Stays', href: '/properties' },
-      { label: 'Premium Villas', href: '/properties?type=villa' },
-      { label: 'Event Venues', href: '/properties?property_type=event_space' },
-    ],
-    concierge: [
-      { label: 'Relocation Services', href: '/concierge' },
-      { label: 'Local Guides', href: '/concierge/guides', comingSoon: true },
-    ],
-    businesses: [
-      { label: 'Business Hub', href: '/businesses' },
-      { label: 'List Your Business', href: '/markets/vendor/apply' },
-      { label: 'Vendor Dashboard', href: '/markets/vendor/dashboard' },
-    ],
-    about: [
-      { label: 'Meet the Team', href: '/meet-the-team' },
-      { label: 'Contact Us', href: '/contact' },
-    ],
-  }), [])
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-neutral-900 text-neutral-300" role="contentinfo">
@@ -106,110 +124,27 @@ export default function Footer() {
           {/* Links Sections */}
           <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Marketplace</h3>
-            <ul className="space-y-2">
-              {footerLinks.marketplace.map((link) => (
-                <li key={link.label}>
-                  {link.comingSoon ? (
-                    <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
-                      {link.label}
-                      <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.marketplace} />
           </div>
 
           <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Stays & Spaces</h3>
-            <ul className="space-y-2">
-              {footerLinks.stays.map((link) => (
-                <li key={link.label}>
-                  {link.comingSoon ? (
-                    <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
-                      {link.label}
-                      <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.stays} />
           </div>
 
           <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Concierge</h3>
-            <ul className="space-y-2">
-              {footerLinks.concierge.map((link) => (
-                <li key={link.label}>
-                  {link.comingSoon ? (
-                    <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
-                      {link.label}
-                      <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.concierge} />
           </div>
 
           <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">Businesses</h3>
-            <ul className="space-y-2">
-              {footerLinks.businesses.map((link) => (
-                <li key={link.label}>
-                  {link.comingSoon ? (
-                    <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
-                      {link.label}
-                      <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
-                    </span>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.businesses} />
           </div>
 
           <div className="lg:col-span-2">
             <h3 className="text-white font-semibold mb-4 text-xs uppercase tracking-widest">About Us</h3>
-            <ul className="space-y-2">
-              {footerLinks.about.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-neutral-400 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.about} />
           </div>
         </div>
 
@@ -237,4 +172,3 @@ export default function Footer() {
     </footer>
   )
 }
-

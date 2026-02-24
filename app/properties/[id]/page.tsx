@@ -87,7 +87,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[400px] sm:h-[500px] lg:h-[600px]">
                         <div className="relative group overflow-hidden rounded-3xl bg-neutral-100">
                             {property.images?.[0] && typeof property.images[0] === 'string' ? (
-                                <Image src={property.images[0]} alt={property.address} fill className="object-cover group-hover:scale-105 transition-transform duration-700" priority />
+                                <Image src={property.images[0]} alt={property.address} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover group-hover:scale-105 transition-transform duration-700" priority />
                             ) : (
                                 <div className="w-full h-full bg-neutral-100 flex items-center justify-center"><Building2 className="w-20 h-20 text-neutral-200" /></div>
                             )}
@@ -96,7 +96,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             {[1, 2, 3, 4].map((index) => (
                                 <div key={index} className="relative group overflow-hidden rounded-3xl bg-neutral-100">
                                     {property.images?.[index] && typeof property.images[index] === 'string' ? (
-                                        <Image src={property.images[index]} alt={`${property.address} ${index + 1}`} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                                        <Image src={property.images[index]} alt={`${property.address} ${index + 1}`} fill sizes="(max-width: 1024px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                     ) : (
                                         <div className="w-full h-full bg-neutral-100 flex items-center justify-center"><Building2 className="w-10 h-10 text-neutral-200" /></div>
                                     )}
@@ -110,7 +110,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {/* Content Section */}
             <section className="py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
                         {/* Main Info */}
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-3 mb-6">
@@ -177,7 +177,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             </div>
 
                             {/* Location Section */}
-                            <div className="mt-20">
+                            <div className="mt-12">
                                 <h3 className="text-2xl font-bold text-neutral-900 mb-8">Location</h3>
                                 {property.location_coords?.y && property.location_coords?.x ? (
                                     <>
@@ -220,7 +220,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             </div>
 
                             {/* Synergy Section: Nearby Hotspots */}
-                            <div className="mt-20">
+                            <div className="mt-12">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
                                         <h3 className="text-2xl font-bold text-neutral-900">Nearby Hotspots</h3>
@@ -305,6 +305,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                             <Mail className="w-4 h-4" />
                                             Email
                                         </a>
+                                    </div>
+                                    <div className="text-center pt-2">
+                                        <Link href="/concierge" className="inline-block text-sm font-semibold text-neutral-500 hover:text-primary-600 transition-colors">
+                                            Need integrated support? Contact Concierge.
+                                        </Link>
                                     </div>
                                 </div>
 

@@ -15,7 +15,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs'
  * BUSINESS PROFILE PAGE - DESIGN SYSTEM RULES
  * 
  * SPACING (8px grid):
- * - Section padding: py-12 sm:py-16 lg:py-20 (48px/64px/80px)
+ * - Section padding: py-12 standard (48px)
  * - Internal component padding: p-6 (24px) standard, p-8 (32px) for cards
  * - Gap scale: gap-4 (16px) mobile, gap-6 (24px) tablet, gap-8 (32px) desktop
  * - No negative margins or layout hacks
@@ -116,6 +116,7 @@ export default async function BusinessProfilePage({
                         src={heroImageUrl}
                         alt={`${biz.name} banner`}
                         fill
+                        sizes="100vw"
                         className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-in-out"
                         priority
                     />
@@ -138,7 +139,7 @@ export default async function BusinessProfilePage({
 
             {/* Shop Header - Inline identity block */}
             <section className="relative bg-white border-b border-neutral-100">
-                <div className="pt-12 sm:pt-16 lg:pt-20 pb-12">
+                <div className="py-12">
                     <div className="max-w-7xl mx-auto px-6 lg:px-8">
                         {/* Identity Block - Logo + Name - Overlapping Hero */}
                         <div className="flex flex-col sm:flex-row items-end gap-6 sm:gap-8 mb-8 -mt-20 sm:-mt-24 relative z-10">
@@ -147,7 +148,7 @@ export default async function BusinessProfilePage({
                                 {biz.logo_url ? (
                                     <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 bg-white rounded-2xl p-2 shadow-xl border border-white/20 backdrop-blur-sm">
                                         <div className="relative w-full h-full rounded-xl overflow-hidden bg-neutral-100">
-                                            <Image src={biz.logo_url} alt={biz.name} fill className="object-cover" />
+                                            <Image src={biz.logo_url} alt={biz.name} fill sizes="(max-width: 640px) 128px, (max-width: 1024px) 160px, 176px" className="object-cover" />
                                         </div>
                                     </div>
                                 ) : (
@@ -258,7 +259,7 @@ export default async function BusinessProfilePage({
                             <div className="space-y-8">
                                 {/* Hook/Intro - Large Text */}
                                 <div>
-                                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 mb-8 tracking-tight">
+                                    <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-8 tracking-tight">
                                         About {biz.name}
                                     </h2>
                                     <div className="prose prose-lg prose-neutral max-w-none">
@@ -348,6 +349,12 @@ export default async function BusinessProfilePage({
                                         </div>
                                     </div>
                                 )}
+                            </div>
+
+                            <div className="mt-8 pt-6 border-t border-neutral-100 text-center">
+                                <Link href="/concierge" className="inline-block text-sm font-semibold text-neutral-500 hover:text-primary-600 transition-colors">
+                                    Need integrated support? Contact Concierge.
+                                </Link>
                             </div>
 
                             {/* Hours */}

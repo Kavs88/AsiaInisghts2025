@@ -162,6 +162,7 @@ export default function BusinessProfileClient({
                                                         src={product.image_urls[0]}
                                                         alt={product.name}
                                                         fill
+                                                        sizes="(max-width: 768px) 50vw, 25vw"
                                                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                     />
                                                 )}
@@ -179,7 +180,7 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
+                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
                                     <ShoppingBag className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
                                     <h3 className="text-xl font-bold text-neutral-900 mb-2">No products found</h3>
                                     <p className="text-neutral-500">Check back later for new items.</p>
@@ -217,7 +218,7 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
+                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
                                     <Calendar className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
                                     <h3 className="text-xl font-bold text-neutral-900 mb-2">No events scheduled</h3>
                                     <p className="text-neutral-500">Stay tuned for future events.</p>
@@ -247,7 +248,7 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
+                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
                                     <Tag className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
                                     <h3 className="text-xl font-bold text-neutral-900 mb-2">No active deals</h3>
                                     <p className="text-neutral-500">Check back for special offers.</p>
@@ -264,7 +265,7 @@ export default function BusinessProfileClient({
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {business.images.map((img: string, i: number) => (
                                     <div key={i} className="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-zoom-in group border border-neutral-100">
-                                        <Image src={img} alt={`${business.name} ${i + 1}`} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <Image src={img} alt={`${business.name} ${i + 1}`} fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover group-hover:scale-110 transition-transform duration-700" />
                                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                 ))}
