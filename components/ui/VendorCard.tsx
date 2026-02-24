@@ -102,7 +102,7 @@ function VendorCard({
         )}
 
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
         <div className="absolute top-4 left-4 z-20 pointer-events-none">
           {category && <Badge variant="glass" className="backdrop-blur-md bg-white/90 font-bold border-none shadow-md text-xs uppercase tracking-wider">{category}</Badge>}

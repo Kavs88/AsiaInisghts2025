@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Loader2 } from 'lucide-react';
 import BusinessCard from '@/components/ui/BusinessCard';
+import { GridSkeleton } from '@/components/ui/LoadingSkeleton';
 import { getBusinesses, Business } from '@/lib/actions/businesses';
 import HubHero from '@/components/ui/HubHero';
 
@@ -119,8 +120,8 @@ export default function BusinessesPage() {
                 </div>
             </HubHero>
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
-                <div className="flex flex-wrap justify-center gap-3 mb-14">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+                <div className="flex flex-wrap justify-center gap-3 mb-12">
                     {CATEGORIES.map((cat) => (
                         <button
                             key={cat.id}
@@ -149,13 +150,9 @@ export default function BusinessesPage() {
                     </div>
 
                     {loading && businesses.length === 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {[1, 2, 3, 4, 5, 6].map((n) => (
-                                <div key={n} className="h-[400px] bg-neutral-100 rounded-2xl animate-pulse" />
-                            ))}
-                        </div>
+                        <GridSkeleton count={6} columns={3} />
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {businesses.map((business) => (
                                 <BusinessCard key={business.id} business={business} />
                             ))}
@@ -163,7 +160,7 @@ export default function BusinessesPage() {
                     )}
 
                     {!loading && businesses.length === 0 && (
-                        <div className="text-center py-24">
+                        <div className="text-center py-12">
                             <div className="bg-neutral-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
                                 <Search className="h-10 w-10 text-neutral-400" />
                             </div>

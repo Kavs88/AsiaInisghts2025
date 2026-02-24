@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Bed, Bath, Users, ArrowRight, Building2 } from 'lucide-react'
+import Badge from './Badge'
 
 interface PropertyCardProps {
     id: string
@@ -72,27 +73,27 @@ export default function PropertyCard({
 
                 {/* Interactive Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
 
                 {/* Badges - Top Left */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2 z-20 pointer-events-none">
-                    <div className="px-2.5 py-1 backdrop-blur-md bg-white/90 text-neutral-900 text-xs font-bold border border-white/50 shadow-sm rounded-lg uppercase tracking-wider">
+                    <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-900 font-bold border-none shadow-md text-xs uppercase tracking-wider">
                         {type}
-                    </div>
+                    </Badge>
                 </div>
 
-                {/* Status Badges - Top Right (subtle, subordinate to content) */}
+                {/* Status Badges - Top Right */}
                 {(isNew || isFeatured) && (
                     <div className="absolute top-4 right-4 flex flex-col gap-2 z-20 pointer-events-none">
                         {isFeatured && (
-                            <div className="px-2.5 py-1 backdrop-blur-md bg-white/90 text-neutral-600 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/50 shadow-sm">
+                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm">
                                 Featured
-                            </div>
+                            </Badge>
                         )}
                         {isNew && (
-                            <div className="px-2.5 py-1 backdrop-blur-md bg-white/90 text-neutral-600 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/50 shadow-sm">
+                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm">
                                 New
-                            </div>
+                            </Badge>
                         )}
                     </div>
                 )}

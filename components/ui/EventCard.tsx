@@ -93,7 +93,7 @@ export default function EventCard({
 
           {/* Interactive Overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
           {/* Category Badge - Top Left */}
           {category && (
@@ -183,7 +183,7 @@ export default function EventCard({
             {/* Offers (if any) - Subtle integration */}
             {offers.length > 0 && (
               <div className="mt-3 py-1.5 px-3 bg-amber-50/50 border border-amber-100/50 rounded-lg flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                 <span className="text-[10px] font-bold text-amber-900/70 truncate">
                   {offers[0].title}
                 </span>

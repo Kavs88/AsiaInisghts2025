@@ -54,7 +54,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
 
                 {/* Interactive Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
                 {/* Category Badge - Top Left */}
                 <div className="absolute top-4 left-4 z-20 pointer-events-none">
