@@ -124,6 +124,7 @@ export async function getVendorProducts(vendorId: string) {
     .eq('vendor_id', vendorId)
     .eq('is_available', true)
     .order('created_at', { ascending: false })
+    .limit(50)
 
   if (error) throw error
   return data
@@ -140,6 +141,7 @@ export async function getVendorPortfolio(vendorId: string) {
     .select('*')
     .eq('vendor_id', vendorId)
     .order('created_at', { ascending: false })
+    .limit(24)
 
   if (error) throw error
   return data
@@ -157,6 +159,7 @@ export async function getVendorGalleryImages(vendorId: string) {
     .eq('vendor_id', vendorId)
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false })
+    .limit(30)
 
   if (error) throw error
   return data || []
@@ -253,6 +256,7 @@ export async function getMarketDayWithStalls(marketDayId: string) {
       market_days(*)
     `)
     .eq('market_day_id', marketDayId)
+    .limit(200)
 
   if (error) throw error
   return data
@@ -288,6 +292,7 @@ export async function getVendorsAttendingMarket(marketDayId: string) {
     `)
     .eq('market_day_id', marketDayId)
     .eq('attending_physically', true)
+    .limit(200)
 
   if (error) throw error
   return data || []
@@ -371,6 +376,7 @@ export async function getCustomerOrderIntents(customerEmail: string) {
     `)
     .eq('customer_email', customerEmail)
     .order('created_at', { ascending: false })
+    .limit(100)
 
   if (error) {
     console.error('Error fetching customer order intents:', error)
@@ -547,6 +553,7 @@ export async function getAllHosts() {
     .from('hosts') as any)
     .select('*')
     .order('name')
+    .limit(100)
 
   if (error) {
     console.error('Error fetching hosts:', error)

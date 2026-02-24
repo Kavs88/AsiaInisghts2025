@@ -36,7 +36,7 @@ export async function GET() {
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
-        return NextResponse.json({ events: data || [] })
+        return NextResponse.json({ events: data || [] }, { headers: { 'Cache-Control': 'private, no-store' } })
     } catch (error: any) {
         console.error('[GET /api/vendor/events] Unexpected error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

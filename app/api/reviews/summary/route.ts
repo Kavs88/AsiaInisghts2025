@@ -53,6 +53,8 @@ export async function GET(request: NextRequest) {
             )
         }
 
+        const cacheHeaders = { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } }
+
         // If no reviews exist, return default values
         if (!data) {
             return NextResponse.json({
@@ -65,10 +67,10 @@ export async function GET(request: NextRequest) {
                 one_star_count: 0,
                 verified_reviews_count: 0,
                 latest_review_at: null
-            })
+            }, cacheHeaders)
         }
 
-        return NextResponse.json(data)
+        return NextResponse.json(data, cacheHeaders)
     } catch (error: any) {
         console.error('[GET /api/reviews/summary] Unexpected error:', error)
         return NextResponse.json(

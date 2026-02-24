@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         return dateA - dateB
       })
 
-    return NextResponse.json({ events })
+    return NextResponse.json({ events }, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error: any) {
     console.error('[GET /api/my-events] Error:', error)
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
