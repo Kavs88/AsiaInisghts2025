@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     default: 'Asia Insights - Community & Commerce',
     template: '%s · Asia Insights',
   },
-  description: 'Discover artisan vendors, shop local products, and visit our real-world markets',
-  keywords: 'marketplace, artisan, local, vendors, asia insights, handmade, local produce',
+  description: 'A curated directory and trust layer for expats, travellers, and long-stay residents in Southeast Asia. Businesses, stays, events, and human concierge support.',
+  keywords: 'expat, nomad, relocation, southeast asia, vietnam, thailand, malaysia, concierge, local businesses, stays',
   icons: {
     icon: [
       { url: '/icon.png', sizes: '32x32', type: 'image/png' },
@@ -72,7 +72,7 @@ export default function RootLayout({
               Skip to main content
             </a>
             <NextTopLoader
-              color="#0d9488"
+              color="#0054b6"
               initialPosition={0.08}
               crawlSpeed={200}
               height={3}
@@ -80,7 +80,7 @@ export default function RootLayout({
               showSpinner={false}
               easing="ease"
               speed={200}
-              shadow="0 0 10px #0d9488,0 0 5px #0d9488"
+              shadow="0 0 10px #0054b6,0 0 5px #0054b6"
             />
             <Suspense fallback={<div className="h-16 bg-white border-b border-neutral-100" />}>
               <Header />

@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --color-primary: 140 82 255;
-    /* #8c52ff - AI Markets Purple */
+    --color-primary: 0 84 182;
+    /* #0054b6 - Asia Insights Brand Blue */
     --color-secondary: 217 70 239;
   }
 
@@ -57,10 +57,6 @@
     max-width: 100%;
     box-sizing: border-box;
     /* overflow-x: hidden; - Removed to allow sticky elements/tooltips */
-  }
-
-  .section-padding {
-    @apply py-16 lg:py-24;
   }
 
   .card {

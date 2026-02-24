@@ -7,19 +7,139 @@ import { getProperties } from '@/lib/actions/properties'
 import { getUpcomingMarketDays } from '@/lib/supabase/queries'
 import PropertyCard from '@/components/ui/PropertyCard'
 
+import { Suspense } from 'react'
+import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
+
 // QA FIX: Hub → Markets Decoupling
 // REMOVED: Direct Markets data fetching (getVendors, getProducts, getUpcomingMarketDays)
 // QA FIX: Hub → Markets Decoupling
 // REASON: Hub must not depend on Markets internals to maintain section independence
 // NOTE: Forcing HMR update
+
+async function FeaturedBusinesses() {
+  const businesses = await getBusinesses({ limit: 3, featuredOnly: true })
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {businesses.length > 0 || true ? (
+        <>
+          {businesses.map((biz: any) => (
+            <div key={biz.id} className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-neutral-100 h-full aspect-[4/3]">
+              {/* Absolute Link Overlay */}
+              <Link
+                href={`/businesses/${biz.slug}`}
+                className="absolute inset-0 z-10"
+                aria-label={`View ${biz.name}`}
+              />
+
+              {biz.logo_url ? (
+                <Image
+                  src={biz.logo_url}
+                  alt={biz.name}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 text-neutral-300">
+                  <Building2 className="w-12 h-12" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-0" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 z-20 pointer-events-none">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
+                    {biz.category}
+                  </span>
+                </div>
+                <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
+                  {biz.name}
+                </h3>
+                <p className="text-white/70 text-sm line-clamp-1">
+                  {biz.address}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Premium Access Point - Concierge */}
+          <div className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-neutral-900 h-full aspect-[4/3]">
+            <Link
+              href="/concierge"
+              className="absolute inset-0 z-10"
+              aria-label="Asia Insights Concierge"
+            />
+            <div className="absolute inset-0 bg-neutral-900 z-0" />
+            <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-700">
+              <ShieldCheck className="w-24 h-24 text-white" />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-0" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 z-20 pointer-events-none">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
+                  Premium Support
+                </span>
+              </div>
+              <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
+                Asia Insights Concierge
+              </h3>
+              <p className="text-white/70 text-sm line-clamp-1">
+                Let our Concierge handle the details.
+              </p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="col-span-full text-center py-12 bg-neutral-50 rounded-3xl border border-neutral-100 border-dashed">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
+            <Building2 className="w-8 h-8 text-neutral-300" />
+          </div>
+          <h3 className="text-lg font-bold text-neutral-900 mb-2">New businesses coming soon</h3>
+          <p className="text-neutral-500 max-w-md mx-auto">
+            We are currently onboarding trusted local businesses. Check back shortly for our curated selection of new spots in town.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+async function FeaturedProperties() {
+  const properties = await getProperties({ limit: 4, featuredOnly: true })
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {properties.length > 0 ? (
+        properties.map((property: any) => (
+          <PropertyCard
+            key={property.id}
+            id={property.id}
+            address={property.address}
+            type={property.type}
+            property_type={property.property_type}
+            price={property.price}
+            bedrooms={property.bedrooms}
+            bathrooms={property.bathrooms}
+            capacity={property.capacity}
+            images={property.images}
+            businesses={property.businesses}
+          />
+        ))
+      ) : (
+        <div className="col-span-full text-center py-12 bg-white/50 rounded-3xl border border-neutral-200 border-dashed backdrop-blur-sm">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
+            <Building2 className="w-8 h-8 text-neutral-300" />
+          </div>
+          <h3 className="text-lg font-bold text-neutral-900 mb-2">Premium stays coming soon</h3>
+          <p className="text-neutral-500 max-w-md mx-auto">
+            Our partners are currently listing their best properties. Check back shortly for our collection of villas and event spaces.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default async function Home() {
-  // Fetch new/featured businesses and properties for the homepage
-  // Use Promise.all for parallel fetching
-  const [businesses, properties, upcomingMarkets] = await Promise.all([
-    getBusinesses({ limit: 4, featuredOnly: true }),
-    getProperties({ limit: 4, featuredOnly: true }),
-    getUpcomingMarketDays(1).catch((): any[] => [])
-  ])
+  // Fetch non-blocking UI data (markets cache hit)
+  const upcomingMarkets = await getUpcomingMarketDays(1).catch((): any[] => [])
 
   const nextMarket = upcomingMarkets?.[0] ?? null
   const nextMarketDate = nextMarket?.market_date
@@ -34,7 +154,7 @@ export default async function Home() {
   return (
     <main id="main-content" className="min-h-screen bg-white">
       {/* PHASE 1: Platform Identity Hero Section */}
-      <section className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center bg-neutral-900 overflow-hidden pt-20 pb-16">
+      <section className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center bg-neutral-900 overflow-hidden py-16 lg:py-24">
         {/* Large Hero Image Background */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -113,10 +233,10 @@ export default async function Home() {
       )}
 
       {/* Why Trust Us - Human Connection */}
-      <section className="py-24 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Sam's Photo */}
               <div className="relative order-2 lg:order-1">
                 <div className="aspect-square rounded-[2.5rem] overflow-hidden bg-neutral-100 relative max-w-md mx-auto lg:mx-0">
@@ -130,13 +250,12 @@ export default async function Home() {
                   <div className="absolute inset-0 border-[6px] border-white/20 rounded-[2.5rem] pointer-events-none" />
                 </div>
                 {/* Decorative element */}
-                <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-primary-100/50 rounded-full blur-3xl -z-10" />
-                <div className="absolute -top-8 -left-8 w-40 h-40 bg-secondary-100/50 rounded-full blur-3xl -z-10" />
+
               </div>
 
               {/* Story */}
               <div className="order-1 lg:order-2">
-                <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 mb-6 lg:mb-8 leading-[1.1] tracking-tight">
+                <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 lg:mb-8 tracking-tight">
                   Why Trust <br className="hidden lg:block" /><span className="text-primary-600">Asia Insights?</span>
                 </h2>
                 <div className="prose prose-lg prose-neutral mb-8">
@@ -192,10 +311,10 @@ export default async function Home() {
       </section>
 
       {/* PHASE 2: Directory Overview */}
-      <section id="explore-asia-insights" className="py-24 bg-neutral-50 relative overflow-hidden">
+      <section id="explore-asia-insights" className="py-12 bg-neutral-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative z-10">
-          <div className="mb-12 lg:mb-16">
-            <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4 tracking-tight uppercase">
+          <div className="mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
               Explore Asia Insights
             </h2>
             <p className="text-lg text-neutral-600 font-medium max-w-2xl">
@@ -203,123 +322,101 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 mb-2">
-                <h3 className="text-2xl font-black text-neutral-900 tracking-tight uppercase">Properties & Stays</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+            {/* Stays */}
+            <Link
+              href="/properties"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+            >
+              <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
               </div>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Find a Stay</h4>
+              <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Vetted apartments, villas, and co-living spaces for your first 30 days.</p>
+              <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
+                Browse Stays <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
+            </Link>
 
-              <div className="space-y-6">
-                {/* Stays */}
-                <Link
-                  href="/properties"
-                  className="block bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500">
-                    <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                  </div>
-                  <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Find a Stay</h4>
-                  <p className="text-neutral-600 text-base leading-relaxed font-medium mb-4">Vetted apartments, villas, and co-living spaces for your first 30 days.</p>
-                  <span className="text-sm font-bold text-primary-600 flex items-center gap-2">
-                    Browse Stays <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </span>
-                </Link>
-
-                {/* Concierge */}
-                <Link
-                  href="/concierge"
-                  className="block bg-neutral-50 rounded-[2rem] p-8 border border-neutral-200/60 hover:border-primary-200 hover:bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-50 transition-colors">
-                    <svg className="w-6 h-6 text-neutral-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                  </div>
-                  <h5 className="text-lg font-bold text-neutral-900 mb-2">Concierge Service</h5>
-                  <p className="text-sm text-neutral-500 font-medium">Personalized support for your move.</p>
-                </Link>
+            {/* Relocation Services */}
+            <Link
+              href="/concierge"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-amber-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+            >
+              <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-            </div>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-amber-500 transition-colors">Relocation Services</h4>
+              <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Expert guidance for moving to, settling in, and navigating life in Vietnam.</p>
+              <span className="text-sm font-bold text-amber-600 flex items-center gap-2 mt-auto">
+                Get Support <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
+            </Link>
 
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 mb-2">
-                <h3 className="text-2xl font-black text-neutral-900 tracking-tight uppercase">Local Services</h3>
+            {/* Essentials */}
+            <Link
+              href="/businesses"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-blue-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+            >
+              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
               </div>
-
-              <div className="space-y-6">
-                {/* Businesses */}
-                <Link
-                  href="/businesses"
-                  className="block bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-all duration-500">
-                    <svg className="w-7 h-7 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-blue-600 transition-colors">Essentials</h4>
-                  <p className="text-neutral-600 text-base leading-relaxed font-medium mb-4">Banking, high-speed internet, legal advice, and visa support.</p>
-                  <div className="mt-auto flex flex-wrap gap-2 mb-6">
-                    <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-xs font-bold rounded-lg uppercase tracking-wider">Visa</span>
-                    <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-xs font-bold rounded-lg uppercase tracking-wider">Legal</span>
-                    <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-xs font-bold rounded-lg uppercase tracking-wider">Banks</span>
-                  </div>
-                  <span className="text-sm font-bold text-blue-600 flex items-center gap-2">
-                    Browse Directory <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </span>
-                </Link>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-blue-600 transition-colors">Local Essentials</h4>
+              <p className="text-neutral-600 text-base leading-relaxed font-medium mb-6 grow">Banking, high-speed internet, legal advice, and visa support.</p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-[10px] font-bold rounded-lg uppercase tracking-wider">Visa</span>
+                <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-[10px] font-bold rounded-lg uppercase tracking-wider">Legal</span>
               </div>
-            </div>
+              <span className="text-sm font-bold text-blue-600 flex items-center gap-2 mt-auto">
+                Browse Directory <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
+            </Link>
 
-            <div className="space-y-8">
-              <div className="flex items-center gap-4 mb-2">
-                <h3 className="text-2xl font-black text-neutral-900 tracking-tight uppercase">Community Events</h3>
+            {/* Events */}
+            <Link
+              href="/markets/discovery"
+              className="lg:col-span-2 lg:col-start-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+            >
+              <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
               </div>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Local Events</h4>
+              <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Discover festivals, workshops, and gatherings happening this week.</p>
+              <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
+                Explore Events <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
+            </Link>
 
-              <div className="space-y-6">
-                {/* Events */}
-                <Link
-                  href="/markets/discovery"
-                  className="block bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500">
-                    <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Local Events</h4>
-                  <p className="text-neutral-600 text-base leading-relaxed font-medium mb-4">Discover festivals, workshops, and gatherings happening this week.</p>
-                  <span className="text-sm font-bold text-primary-600 flex items-center gap-2">
-                    Explore Events <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </span>
-                </Link>
-
-                {/* Markets */}
-                <Link
-                  href="/markets"
-                  className="block bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-                >
-                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-all duration-500">
-                    <svg className="w-7 h-7 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
-                  <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-green-600 transition-colors">Sunday Markets</h4>
-                  <p className="text-neutral-600 text-base leading-relaxed font-medium mb-4">Our flagship community gatherings. Shop local, meet the makers.</p>
-                  <span className="text-sm font-bold text-green-600 flex items-center gap-2">
-                    View Schedule <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </span>
-                </Link>
+            {/* Markets */}
+            <Link
+              href="/markets"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+            >
+              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
               </div>
-            </div>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-green-600 transition-colors">Sunday Markets</h4>
+              <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Our flagship community gatherings. Shop local, meet the makers.</p>
+              <span className="text-sm font-bold text-green-600 flex items-center gap-2 mt-auto">
+                View Schedule <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* PHASE 4: New in Town - Featured Businesses */}
-      <section className="py-20 bg-neutral-50 overflow-hidden">
+      <section className="py-12 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
@@ -341,63 +438,15 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {businesses.length > 0 ? (
-              businesses.map((biz: any) => (
-                <div key={biz.id} className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 bg-neutral-100 h-full aspect-[4/3]">
-                  {/* Absolute Link Overlay */}
-                  <Link
-                    href={`/businesses/${biz.slug}`}
-                    className="absolute inset-0 z-10"
-                    aria-label={`View ${biz.name}`}
-                  />
-
-                  {biz.logo_url ? (
-                    <Image
-                      src={biz.logo_url}
-                      alt={biz.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 text-neutral-300">
-                      <Building2 className="w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-0" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 z-20 pointer-events-none">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
-                        {biz.category}
-                      </span>
-                    </div>
-                    <h3 className="text-lg lg:text-xl font-bold text-white mb-1 leading-tight group-hover:text-primary-300 transition-colors">
-                      {biz.name}
-                    </h3>
-                    <p className="text-white/70 text-sm line-clamp-1">
-                      {biz.address}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12 bg-neutral-50 rounded-3xl border border-neutral-100 border-dashed">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
-                  <Building2 className="w-8 h-8 text-neutral-300" />
-                </div>
-                <h3 className="text-lg font-bold text-neutral-900 mb-2">New businesses coming soon</h3>
-                <p className="text-neutral-500 max-w-md mx-auto">
-                  We are currently onboarding trusted local businesses. Check back shortly for our curated selection of new spots in town.
-                </p>
-              </div>
-            )}
-          </div>
+          <Suspense fallback={<GridSkeleton count={4} columns={4} />}>
+            <FeaturedBusinesses />
+          </Suspense>
         </div>
       </section>
 
       {/* NEW: Top Stays & Spaces Elevation */}
-      <section className="py-20 bg-neutral-50/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-gradient-to-br from-primary-50/10 to-transparent rounded-full blur-3xl -mr-16 -mt-16" />
+      <section className="py-12 bg-neutral-50 relative overflow-hidden">
+
         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
@@ -405,7 +454,7 @@ export default async function Home() {
                 <ShieldCheck className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
                 <span>Premium Stays</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
+              <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
                 Curated <span className="text-primary-600">Spaces.</span>
               </h2>
               <p className="text-lg text-neutral-600 mt-4 leading-relaxed">
@@ -421,35 +470,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {properties.length > 0 ? (
-              properties.map((property: any) => (
-                <PropertyCard
-                  key={property.id}
-                  id={property.id}
-                  address={property.address}
-                  type={property.type}
-                  property_type={property.property_type}
-                  price={property.price}
-                  bedrooms={property.bedrooms}
-                  bathrooms={property.bathrooms}
-                  capacity={property.capacity}
-                  images={property.images}
-                  businesses={property.businesses}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12 bg-white/50 rounded-3xl border border-neutral-200 border-dashed backdrop-blur-sm">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
-                  <Building2 className="w-8 h-8 text-neutral-300" />
-                </div>
-                <h3 className="text-lg font-bold text-neutral-900 mb-2">Premium stays coming soon</h3>
-                <p className="text-neutral-500 max-w-md mx-auto">
-                  Our partners are currently listing their best properties. Check back shortly for our collection of villas and event spaces.
-                </p>
-              </div>
-            )}
-          </div>
+          <Suspense fallback={<GridSkeleton count={4} columns={4} />}>
+            <FeaturedProperties />
+          </Suspense>
         </div>
       </section>
 

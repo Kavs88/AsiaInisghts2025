@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   const currentYear = useMemo(() => new Date().getFullYear(), [])
@@ -50,13 +51,19 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link
               href="/"
-              className="inline-block text-2xl font-bold text-white mb-4 hover:text-primary-400 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded-lg"
+              className="inline-block mb-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-neutral-900 rounded-lg"
+              aria-label="Asia Insights Home"
             >
-              Asia Insights
+              <Image
+                src="/images/asia-insights-logo.svg"
+                alt="Asia Insights"
+                width={140}
+                height={40}
+                className="h-8 w-auto object-contain brightness-0 invert"
+              />
             </Link>
             <p className="text-neutral-400 mb-6 max-w-md">
-              Discover local businesses, shop products, and visit our real-world
-              markets. Supporting businesses and building community.
+              Curated local knowledge for expats, travellers, and long-stay residents in Southeast Asia.
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-4">

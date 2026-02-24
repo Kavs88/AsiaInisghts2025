@@ -49,6 +49,7 @@ function Header({ className }: HeaderProps) {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
   const [userIsAdmin, setUserIsAdmin] = useState(false)
+  const [nextMarketLabel, setNextMarketLabel] = useState<string | null>(null)
 
   const accountButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -193,6 +194,19 @@ function Header({ className }: HeaderProps) {
     }
   }, [user, loading])
 
+  // Fetch next market date once on mount
+  useEffect(() => {
+    fetch('/api/next-market')
+      .then(r => r.json())
+      .then(({ market }) => {
+        if (market?.market_date) {
+          const d = new Date(market.market_date + 'T00:00:00')
+          setNextMarketLabel(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   // Scroll handler
   const handleScroll = useCallback(() => {
     setIsScrolled(window.scrollY > 10)
@@ -328,6 +342,10 @@ function Header({ className }: HeaderProps) {
         ]
       },
       {
+        label: 'Concierge',
+        href: '/concierge',
+      },
+      {
         label: 'About',
         href: '/meet-the-team',
         subItems: [
@@ -427,7 +445,7 @@ function Header({ className }: HeaderProps) {
                         {isOpen && typeof window !== 'undefined' && menuPosition && (
                           <div
                             ref={menuRef}
-                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-neutral-200/50 py-3 z-dropdown min-w-[220px] overflow-hidden"
+                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/50 py-3 z-dropdown min-w-[220px] overflow-hidden"
                             style={{
                               top: `${menuPosition.top}px`,
                               left: `${menuPosition.left}px`,
@@ -693,8 +711,8 @@ function Header({ className }: HeaderProps) {
                 </Link>
               )}
 
-              {/* Market Date Picker - Desktop - Hidden on Discovery page to reduce noise */}
-              {pathname !== '/markets/discovery' && (
+              {/* Next Market Date - Desktop - Hidden on Discovery page and when no date available */}
+              {pathname !== '/markets/discovery' && nextMarketLabel && (
                 <Link
                   href="/markets/market-days"
                   className={cn(
@@ -704,12 +722,10 @@ function Header({ className }: HeaderProps) {
                   <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="flex flex-col min-w-[35px]">
-                    <span className="text-[9px] text-primary-600 font-medium leading-tight">
-                      Next
-                    </span>
-                    <span className="text-[10px] font-bold text-neutral-900 group-hover:text-primary-700 leading-tight">
-                      Dec 17
+                  <span className="flex flex-col">
+                    <span className="text-[9px] text-primary-600 font-medium leading-tight">Next</span>
+                    <span className="text-[10px] font-bold text-neutral-900 group-hover:text-primary-700 leading-tight whitespace-nowrap">
+                      {nextMarketLabel}
                     </span>
                   </span>
                 </Link>
