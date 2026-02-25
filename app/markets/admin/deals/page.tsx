@@ -12,7 +12,7 @@ export default function AdminDealsPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-neutral-900">Deals Management</h1>
+                        <h1 className="text-3xl font-black text-neutral-900">Deals Management</h1>
                         <p className="text-neutral-600">Curate vendor deals and offers</p>
                     </div>
                     <button disabled className="px-4 py-2 bg-neutral-200 text-neutral-500 rounded-lg cursor-not-allowed">

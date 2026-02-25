@@ -213,7 +213,7 @@ export default function SellerProfileClient({
       <div id="tab-content">
         {/* Tab Content: Products - Standard section padding */}
         {activeTab === 'products' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
               {/* Filters and Sort - Standard gap scale */}
               <div className="mb-8 space-y-6">
@@ -323,11 +323,11 @@ export default function SellerProfileClient({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-neutral-300">
-                  <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-neutral-200">
+                  <svg className="w-12 h-12 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <p className="text-2xl font-bold text-neutral-900 mb-3">No products found</p>
+                  <p className="text-2xl font-black text-neutral-900 mb-3">No products found</p>
                   <p className="text-base text-neutral-600 mb-8">Try adjusting your filters or sorting options</p>
                   <button
                     onClick={() => {
@@ -347,12 +347,12 @@ export default function SellerProfileClient({
 
         {/* Tab Content: Events - Only show if events exist */}
         {activeTab === 'events' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
               {events.length > 0 ? (
                 <>
                   <div className="mb-8">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-3 tracking-tight">Events</h2>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 mb-3 tracking-tight">Events</h2>
                     <p className="text-base sm:text-lg text-neutral-600">Upcoming events hosted by {vendor.name}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -365,7 +365,7 @@ export default function SellerProfileClient({
                             </svg>
                             {new Date(event.start_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
-                          <h3 className="text-lg font-semibold text-neutral-900 mb-2 line-clamp-2">{event.title}</h3>
+                          <h3 className="text-lg font-bold text-neutral-900 mb-2 line-clamp-2">{event.title}</h3>
                           {event.description && (
                             <p className="text-sm text-neutral-600 mb-4 line-clamp-3">{event.description}</p>
                           )}
@@ -384,11 +384,11 @@ export default function SellerProfileClient({
                   </div>
                 </>
               ) : (
-                <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-neutral-300">
-                  <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-neutral-200">
+                  <svg className="w-12 h-12 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <h2 className="text-2xl font-bold text-neutral-900 mb-3">No Upcoming Events</h2>
+                  <h2 className="text-2xl font-black text-neutral-900 mb-3">No Upcoming Events</h2>
                   <p className="text-neutral-600">No events scheduled at this time.</p>
                 </div>
               )}
@@ -398,12 +398,12 @@ export default function SellerProfileClient({
 
         {/* Tab Content: Deals - Only show if deals exist */}
         {activeTab === 'deals' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
               {deals.length > 0 ? (
                 <>
                   <div className="mb-8">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-3 tracking-tight">Current Offers</h2>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 mb-3 tracking-tight">Current Offers</h2>
                     <p className="text-base sm:text-lg text-neutral-600">Active deals and special offers</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -429,7 +429,7 @@ export default function SellerProfileClient({
                           <div className="mb-2">
                             <p className="text-xs text-neutral-500 mb-1">From {vendor.name}</p>
                           </div>
-                          <h3 className="text-lg font-semibold text-neutral-900 mb-2 line-clamp-2">{deal.title}</h3>
+                          <h3 className="text-lg font-bold text-neutral-900 mb-2 line-clamp-2">{deal.title}</h3>
                           {deal.description && (
                             <p className="text-sm text-neutral-600 mb-4 line-clamp-3">{deal.description}</p>
                           )}
@@ -451,11 +451,11 @@ export default function SellerProfileClient({
                   </div>
                 </>
               ) : (
-                <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-neutral-300">
-                  <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-neutral-200">
+                  <svg className="w-12 h-12 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                   </svg>
-                  <h2 className="text-2xl font-bold text-neutral-900 mb-3">No Active Offers</h2>
+                  <h2 className="text-2xl font-black text-neutral-900 mb-3">No Active Offers</h2>
                   <p className="text-neutral-600">No deals available at this time.</p>
                 </div>
               )}
@@ -465,12 +465,12 @@ export default function SellerProfileClient({
 
         {/* Tab Content: Portfolio - Standard section padding */}
         {activeTab === 'portfolio' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
               {portfolio.length > 0 ? (
                 <>
                   <div className="mb-8">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-3 tracking-tight">Portfolio</h2>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 mb-3 tracking-tight">Portfolio</h2>
                     <p className="text-base sm:text-lg text-neutral-600">Work by {vendor.name}</p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -504,11 +504,11 @@ export default function SellerProfileClient({
                   </div>
                 </>
               ) : (
-                <div className="text-center py-16 bg-white rounded-2xl border-2 border-dashed border-neutral-300">
-                  <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-neutral-200">
+                  <svg className="w-12 h-12 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-xl font-semibold text-neutral-600">No portfolio items available yet.</p>
+                  <p className="text-xl font-bold text-neutral-600">No portfolio items available yet.</p>
                 </div>
               )}
             </div>
@@ -517,14 +517,14 @@ export default function SellerProfileClient({
 
         {/* Tab Content: Policies - Standardized container width */}
         {activeTab === 'policies' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-white">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-12 tracking-tight">Shop Policies</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 mb-8 tracking-tight">Shop Policies</h2>
 
               <div className="space-y-8">
                 {/* Shipping Policy */}
                 <div className="bg-neutral-50 rounded-2xl p-8 border border-neutral-200">
-                  <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+                  <h3 className="text-xl sm:text-2xl font-black text-neutral-900 mb-6 flex items-center gap-3">
                     <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -546,7 +546,7 @@ export default function SellerProfileClient({
 
                 {/* Returns Policy */}
                 <div className="bg-neutral-50 rounded-2xl p-8 border border-neutral-200">
-                  <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+                  <h3 className="text-xl sm:text-2xl font-black text-neutral-900 mb-6 flex items-center gap-3">
                     <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -562,7 +562,7 @@ export default function SellerProfileClient({
 
                 {/* Payment Policy */}
                 <div className="bg-neutral-50 rounded-2xl p-8 border border-neutral-200">
-                  <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+                  <h3 className="text-xl sm:text-2xl font-black text-neutral-900 mb-6 flex items-center gap-3">
                     <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -582,7 +582,7 @@ export default function SellerProfileClient({
 
         {/* Tab Content: Reviews - Live Review System */}
         {activeTab === 'reviews' && (
-          <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
+          <section className="py-12 bg-neutral-50">
             <div className="container-custom max-w-7xl">
               <ReviewsSection subjectId={vendor.id} subjectType="vendor" subjectName={vendor.name} />
             </div>

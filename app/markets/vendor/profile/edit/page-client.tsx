@@ -216,7 +216,7 @@ export default function VendorProfileEditClient({ vendor: initialVendor }: Vendo
 
       {/* Business Information */}
       <div className="bg-white rounded-2xl shadow-soft p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-6">Business Information</h2>
+        <h2 className="text-2xl font-black text-neutral-900 mb-6">Business Information</h2>
         
         <div className="space-y-6">
           <div>
@@ -303,7 +303,7 @@ export default function VendorProfileEditClient({ vendor: initialVendor }: Vendo
 
       {/* Images */}
       <div className="bg-white rounded-2xl shadow-soft p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-6">Images</h2>
+        <h2 className="text-2xl font-black text-neutral-900 mb-6">Images</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Logo Upload */}
@@ -422,7 +422,7 @@ export default function VendorProfileEditClient({ vendor: initialVendor }: Vendo
 
       {/* Contact Information */}
       <div className="bg-white rounded-2xl shadow-soft p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-6">Contact Information</h2>
+        <h2 className="text-2xl font-black text-neutral-900 mb-6">Contact Information</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -482,7 +482,7 @@ export default function VendorProfileEditClient({ vendor: initialVendor }: Vendo
 
       {/* Delivery Options */}
       <div className="bg-white rounded-2xl shadow-soft p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-6">Delivery Options</h2>
+        <h2 className="text-2xl font-black text-neutral-900 mb-6">Delivery Options</h2>
         
         <div className="space-y-4">
           <label className="flex items-center gap-3 cursor-pointer group">

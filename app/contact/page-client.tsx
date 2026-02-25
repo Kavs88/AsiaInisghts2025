@@ -41,25 +41,26 @@ export default function ContactPageClient() {
       </div>
 
       {/* Hero Section with Banner Image */}
-      <section className="relative min-h-[50vh] flex items-center bg-gradient-to-br from-primary-50 to-secondary-50 overflow-hidden">
-        {/* Banner Image Background with Transparency */}
+      <section className="relative min-h-[50vh] flex items-center bg-neutral-900 overflow-hidden">
+        {/* Banner Image Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/90 z-10" />
           <Image
-            src="/images/contact-banner.jpg"
+            src="/images/Stalls 6.jpg"
             alt=""
             fill
-            className="object-cover opacity-50"
+            className="object-cover opacity-40"
             priority
             sizes="100vw"
           />
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent z-10" />
+          <div className="absolute inset-0 bg-neutral-900/20 z-0" />
         </div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-20 py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-20 py-16 lg:py-24">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-black text-neutral-900 mb-4">
+            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-4 drop-shadow-xl">
               Get in Touch
             </h1>
-            <p className="text-xl lg:text-2xl text-neutral-700 font-light">
+            <p className="text-xl lg:text-2xl text-neutral-200 font-medium leading-relaxed drop-shadow-md">
               Ready to start your journey in Southeast Asia? Have questions about our concierge services? We'd love to hear from you.
             </p>
           </div>
@@ -67,13 +68,13 @@ export default function ContactPageClient() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 lg:py-24">
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             {/* Contact Information */}
             <div className="space-y-8">
               <div>
-                <h2 className="text-3xl font-bold text-neutral-900 mb-6">Contact Information</h2>
+                <h2 className="text-3xl font-black text-neutral-900 mb-6">Contact Information</h2>
                 <p className="text-neutral-600 mb-8">
                   Reach out to us through any of these channels. We're here to help!
                 </p>

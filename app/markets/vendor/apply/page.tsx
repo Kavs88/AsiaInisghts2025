@@ -11,7 +11,7 @@ export default function VendorApplyPage() {
       {/* Page Header */}
       <section className="bg-neutral-900 text-white py-12 lg:py-16">
         <div className="container-custom">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4">Become a Vendor</h1>
+          <h1 className="text-4xl lg:text-5xl font-black mb-4">Become a Vendor</h1>
           <p className="text-lg text-neutral-300">Join our marketplace and reach new customers</p>
         </div>
       </section>

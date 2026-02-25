@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import EventCard from '@/components/ui/EventCard'
+import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
 import Image from 'next/image'
 import HubHero from '@/components/ui/HubHero'
 import Link from 'next/link'
@@ -159,7 +160,7 @@ export default function DiscoveryPage() {
               const content = document.getElementById('discovery-content')
               content?.scrollIntoView({ behavior: 'smooth' })
             }}
-            className="px-8 py-4 bg-white text-neutral-900 font-bold rounded-2xl hover:bg-neutral-100 transition-all shadow-xl hover:shadow-2xl"
+            className="px-8 py-4 bg-white text-neutral-900 font-bold rounded-2xl hover:bg-neutral-100 transition-all shadow-md hover:shadow-xl"
           >
             {user ? "View Feed" : "Browse All Events"}
           </button>
@@ -246,15 +247,11 @@ export default function DiscoveryPage() {
       </section>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
         {loading ? (
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-neutral-200 rounded w-1/4 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-64 bg-neutral-200 rounded-2xl"></div>
-              ))}
-            </div>
+          <div className="space-y-8">
+            <div className="h-8 bg-neutral-200 animate-pulse rounded w-1/4 mb-6"></div>
+            <GridSkeleton count={6} columns={3} />
           </div>
         ) : (
           <>
@@ -278,7 +275,7 @@ export default function DiscoveryPage() {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {thisWeekEvents.map((event: Event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
@@ -300,7 +297,7 @@ export default function DiscoveryPage() {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {nextWeekEvents.map((event: Event) => (
                     <EventCard key={event.id} {...event} />
                   ))}
@@ -366,7 +363,7 @@ export default function DiscoveryPage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {upcomingMarkets.map((market: any) => (
                 <Link
                   key={market.id}

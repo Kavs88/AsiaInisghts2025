@@ -11,7 +11,7 @@ import Badge from '@/components/ui/Badge'
  * SELLER PROFILE PAGE - DESIGN SYSTEM RULES
  * 
  * SPACING (8px grid):
- * - Section padding: py-12 sm:py-16 lg:py-20 (48px/64px/80px)
+ * - Section padding: py-12 standard (48px)
  * - Internal component padding: p-6 (24px) standard, p-8 (32px) for cards
  * - Gap scale: gap-4 (16px) mobile, gap-6 (24px) tablet, gap-8 (32px) desktop
  * - No negative margins or layout hacks
@@ -37,15 +37,29 @@ export async function generateMetadata({ params }: SellerProfilePageProps) {
   const resolvedParams = params instanceof Promise ? await params : params
   try {
     const vendor = await getVendorBySlug(resolvedParams.slug) as any
-    if (!vendor) return { title: 'Sunday Market' }
+    if (!vendor) return { title: 'Seller Not Found' }
+    const description = vendor.short_tagline || vendor.bio || `View products and portfolio from ${vendor.name}`
+    const image = vendor.hero_image_url || vendor.logo_url || null
     return {
-      title: `${vendor.name} - Sunday Market`,
-      description: vendor.short_tagline || vendor.bio || `View products and portfolio from ${vendor.name}`,
+      title: vendor.name,
+      description,
+      openGraph: {
+        title: vendor.name,
+        description,
+        type: 'website',
+        siteName: 'Asia Insights',
+        ...(image && { images: [{ url: image, width: 1200, height: 630, alt: vendor.name }] }),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: vendor.name,
+        description,
+        ...(image && { images: [image] }),
+      },
     }
-  } catch (error) {
-    const resolvedParams = params instanceof Promise ? await params : params
+  } catch {
     return {
-      title: `${resolvedParams.slug} - Sunday Market`,
+      title: resolvedParams.slug,
       description: `View products and portfolio from ${resolvedParams.slug}`,
     }
   }
@@ -256,7 +270,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
 
       {/* Shop Header - Inline identity block */}
       <section className="relative bg-white border-b border-neutral-100">
-        <div className="pt-12 sm:pt-16 lg:pt-20 pb-12">
+        <div className="py-12">
           {/* Vendor Info - Inside container-custom */}
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             {/* Identity Block - Logo + Name */}
@@ -286,7 +300,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
 
                 {/* Name + Verified Badge - Center-aligned with logo */}
                 <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-neutral-900 tracking-tight leading-tight truncate">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-neutral-900 tracking-tight leading-tight truncate">
                     {mappedVendor.name}
                   </h1>
                   {mappedVendor.isVerified && (
@@ -349,6 +363,13 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
             {mappedVendor.tagline && (
               <p className="text-base sm:text-lg text-neutral-600 leading-relaxed mb-4">
                 {mappedVendor.tagline}
+              </p>
+            )}
+
+            {/* Bio - Inline with identity, immediately visible */}
+            {mappedVendor.bio && (
+              <p className="text-base sm:text-lg text-neutral-600 leading-relaxed mb-4 max-w-3xl">
+                {mappedVendor.bio}
               </p>
             )}
 
@@ -451,7 +472,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                 </div>
                 <div>
                   <div className="text-sm font-medium text-primary-600">Next Market</div>
-                  <div className="text-lg sm:text-xl font-bold text-neutral-900">
+                  <div className="text-lg sm:text-xl font-black text-neutral-900">
                     {new Date(mappedVendor.nextMarketDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     {mappedVendor.nextMarketStall && (
                       <span className="ml-2 text-sm font-normal text-neutral-600">• Stall {mappedVendor.nextMarketStall}</span>
@@ -475,7 +496,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
 
       {/* About Section - Only show if bio exists */}
       {mappedVendor.bio && (
-        <section className="py-12 sm:py-16 lg:py-20 bg-white border-b border-neutral-100">
+        <section className="py-12 bg-neutral-50 border-b border-neutral-100">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Image Holder */}
@@ -506,23 +527,14 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                 </div>
               </div>
 
-              {/* About Content - Typography scale */}
+              {/* About Content - Info Cards */}
               <div className="lg:col-span-8">
                 <div className="space-y-6">
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-6 tracking-tight">
-                      About {mappedVendor.name}
-                    </h2>
-                    <div className="text-base sm:text-lg text-neutral-700 leading-relaxed whitespace-pre-line max-w-3xl">
-                      {mappedVendor.bio}
-                    </div>
-                  </div>
-
                   {/* Additional Info Cards - Standard gap scale, standard padding */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Delivery Options */}
                     <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
-                      <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
+                      <h3 className="text-lg sm:text-xl font-black text-neutral-900 mb-4 flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                           <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -556,7 +568,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                     {/* Market Attendance */}
                     {mappedVendor.attendingStatus === 'attending' && mappedVendor.nextMarketDate && (
                       <div className="bg-primary-50 rounded-2xl p-6 border border-primary-100">
-                        <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
+                        <h3 className="text-lg sm:text-xl font-black text-neutral-900 mb-4 flex items-center gap-3">
                           <div className="w-10 h-10 bg-primary-200 rounded-xl flex items-center justify-center flex-shrink-0">
                             <svg className="w-6 h-6 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -565,7 +577,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                           Next Market
                         </h3>
                         <div className="space-y-2 text-neutral-700">
-                          <p className="font-bold text-lg sm:text-xl">
+                          <p className="font-black text-lg sm:text-xl">
                             {new Date(mappedVendor.nextMarketDate).toLocaleDateString('en-US', {
                               weekday: 'long',
                               month: 'long',

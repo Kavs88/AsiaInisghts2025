@@ -30,7 +30,7 @@ async function PropertiesGrid({
     return (
         <>
             {properties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {properties.map((property: any) => (
                         <PropertyCard
                             key={property.id}
@@ -48,9 +48,9 @@ async function PropertiesGrid({
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-32 bg-white rounded-[2.5rem] border border-neutral-200/60 shadow-sm relative overflow-hidden">
+                <div className="text-center py-12 bg-white rounded-2xl border border-neutral-200/60 shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-                    <div className="w-24 h-24 bg-neutral-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <div className="w-24 h-24 bg-neutral-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Home className="w-12 h-12 text-neutral-300" />
                     </div>
                     <h3 className="text-2xl font-bold text-neutral-900 mb-3">No properties match your filters</h3>
@@ -130,11 +130,11 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
             </HubHero>
 
             {/* Results Grid - Enhanced consistency */}
-            <section id="properties-grid" className="py-12 bg-neutral-50/50 animate-fade-up">
+            <section id="properties-grid" className="py-12 bg-neutral-50 animate-fade-up">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-10">
+                    <div className="flex items-center justify-between mb-8">
                         {/* Stewardship Voice: Curated vs Recommended */}
-                        <h2 className="text-2xl font-bold text-neutral-900">
+                        <h2 className="text-2xl font-black text-neutral-900">
                             {propertyType === 'event_space' ? 'Exceptional Event Venues' : 'Curated Stays & Venues'}
                         </h2>
                     </div>

@@ -218,6 +218,14 @@ export default function SearchBar({
             // Fallback to window.location if router.push fails
             window.location.href = results[selectedIndex].href
           }
+        } else if (query.trim().length > 0) {
+          // Route to unified search page if nothing specific is selected
+          try {
+            router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+            handleClose()
+          } catch {
+            window.location.href = `/search?q=${encodeURIComponent(query.trim())}`
+          }
         }
         break
       case 'Escape':

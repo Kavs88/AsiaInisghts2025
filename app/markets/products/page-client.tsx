@@ -119,7 +119,7 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
       </section>
 
       {/* Products Grid */}
-      <section className="py-20 bg-neutral-50">
+      <section className="py-12 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-neutral-600">
@@ -150,7 +150,7 @@ export default function ProductsPageClient({ products, categories, allTags }: Pr
               </p>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}

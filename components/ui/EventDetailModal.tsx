@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import { X, MapPin, Calendar, Clock, Share2, Info, ArrowUpRight } from 'lucide-react'
+import { X, MapPin, Calendar, Clock, Share2 } from 'lucide-react'
 import Modal from '@/components/ui/Modal'
 import EventIntentButtons from './EventIntentButtons'
 import Badge from './Badge'
@@ -36,34 +36,46 @@ interface EventDetailModalProps {
     }
 }
 
+const DESCRIPTION_THRESHOLD = 280
+
 export default function EventDetailModal({ isOpen, onClose, event }: EventDetailModalProps) {
     const [mounted, setMounted] = useState(false)
+    const [expanded, setExpanded] = useState(false)
 
     useEffect(() => {
         setMounted(true)
         return () => setMounted(false)
     }, [])
 
+    // Reset expand state when modal closes
+    useEffect(() => {
+        if (!isOpen) setExpanded(false)
+    }, [isOpen])
+
     if (!mounted || !event) return null
 
     const getSafeDate = (dateStr: string | undefined | null) => {
-        if (!dateStr) return null;
-        const d = new Date(dateStr);
-        return isNaN(d.getTime()) ? null : d;
-    };
+        if (!dateStr) return null
+        const d = new Date(dateStr)
+        return isNaN(d.getTime()) ? null : d
+    }
 
-    const startDate = getSafeDate(event.start_at);
-    const endDate = getSafeDate(event.end_at);
+    const startDate = getSafeDate(event.start_at)
+    const endDate = getSafeDate(event.end_at)
 
-    if (!startDate) return null;
+    if (!startDate) return null
 
-    const weekday = startDate.toLocaleDateString('en-US', { weekday: 'long' });
-    const day = startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long' });
-    const timeStr = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const month = startDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+    const day = startDate.toLocaleDateString('en-US', { day: 'numeric' })
+    const weekday = startDate.toLocaleDateString('en-US', { weekday: 'long' })
+    const longDay = startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long' })
+    const timeStr = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    const endTimeStr = endDate
+        ? endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+        : null
 
-    // Use a Portal to render the modal at the document body level
-    // This prevents the specific CSS transform on the EventCard (hover scale) from
-    // creating a new stacking context that traps 'fixed' position elements.
+    const isLongDescription = !!(event.description && event.description.length > DESCRIPTION_THRESHOLD)
+
     return createPortal(
         <Modal
             isOpen={isOpen}
@@ -73,147 +85,160 @@ export default function EventDetailModal({ isOpen, onClose, event }: EventDetail
             hideHeader={true}
             noPadding={true}
         >
-            <div className="relative bg-white min-h-[600px] flex flex-col md:flex-row">
-                {/* Close Button - Desktop (Top Right of Modal) */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 z-50 p-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900 rounded-full transition-all"
-                    aria-label="Close"
-                >
-                    <X className="w-5 h-5" />
-                </button>
+            <div className="relative bg-white flex flex-col">
 
-                {/* Sidebar (Left) */}
-                <div className="w-full md:w-[340px] shrink-0 bg-neutral-50 border-b md:border-b-0 md:border-r border-neutral-100 p-6 md:p-8 flex flex-col gap-6">
-                    {/* Event Image */}
-                    <div className="aspect-[4/5] relative rounded-2xl overflow-hidden shadow-md bg-neutral-200 ring-1 ring-black/5">
-                        {event.image_url ? (
-                            <Image
-                                src={event.image_url}
-                                alt={event.title}
-                                fill
-                                className="object-cover"
-                            />
-                        ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-100 to-secondary-100 text-primary-300">
-                                <Calendar className="w-16 h-16" />
-                            </div>
-                        )}
-                        {/* Category Badge overlay on image */}
-                        <div className="absolute top-4 left-4">
-                            <Badge variant="glass" className="bg-white/90 backdrop-blur-md shadow-sm border-white/50">{event.category || 'Event'}</Badge>
+                {/* Hero Image */}
+                <div className="relative aspect-video bg-neutral-100 overflow-hidden shrink-0">
+                    {event.image_url ? (
+                        <Image
+                            src={event.image_url}
+                            alt={event.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 896px"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
+                            <Calendar className="w-20 h-20 text-primary-300" strokeWidth={1} />
                         </div>
-                    </div>
+                    )}
 
-                    {/* Key Details Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Details</h3>
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-                        <div className="space-y-3">
-                            {/* Date */}
-                            <div className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl shadow-sm">
-                                <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
-                                <div>
-                                    <div className="text-sm font-bold text-neutral-900 leading-none mb-0.5">{weekday}</div>
-                                    <div className="text-xs font-medium text-neutral-500">{day}</div>
-                                </div>
-                            </div>
-
-                            {/* Time */}
-                            <div className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl shadow-sm">
-                                <Clock className="w-4 h-4 text-primary-600 shrink-0" />
-                                <div>
-                                    <div className="text-sm font-bold text-neutral-900 leading-none mb-0.5">{timeStr}</div>
-                                    {endDate && (
-                                        <div className="text-xs font-medium text-neutral-500">
-                                            Until {endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Location */}
-                            {event.location && (
-                                <div className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl shadow-sm">
-                                    <MapPin className="w-4 h-4 text-primary-600 shrink-0" />
-                                    <div>
-                                        <div className="text-sm font-bold text-neutral-900 leading-none mb-0.5">{event.location}</div>
-                                        {event.location_address && (
-                                            <div className="text-xs font-medium text-neutral-500 line-clamp-1">{event.location_address}</div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                    {/* Category Badge — Top Left */}
+                    {event.category && (
+                        <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 font-bold border-none shadow-md text-xs uppercase tracking-wider">
+                                {event.category}
+                            </Badge>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Actions in Sidebar - Mobile Accessible */}
-                    <div className="mt-auto pt-4 border-t border-neutral-200">
-                        <EventIntentButtons eventId={event.id} className="w-full" />
+                    {/* Close Button — Top Right */}
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 z-10 p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow-md border border-white/30 hover:bg-white text-neutral-700 hover:text-neutral-900 transition-all"
+                        aria-label="Close"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+
+                    {/* Date Pill — Bottom Left */}
+                    <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-white/50">
+                        <div className="text-xs font-black text-primary-600 uppercase tracking-widest leading-none mb-0.5">{month}</div>
+                        <div className="text-2xl font-black text-neutral-900 leading-none">{day}</div>
                     </div>
                 </div>
 
-                {/* Content (Right) */}
-                <div className="flex-1 p-8 md:p-12 overflow-y-auto max-h-[90vh]">
-                    <div className="max-w-2xl">
-                        <div className="mb-8">
-                            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 mb-4 tracking-tight leading-[1.1]">
-                                {event.title}
-                            </h2>
+                {/* Content Body — pb-24 leaves room for sticky footer */}
+                <div className="p-6 md:p-8 flex flex-col gap-5 pb-24">
 
-                            {/* Host Link */}
-                            {event.hosting_business && (
-                                <Link
-                                    href={`/businesses/${event.hosting_business.slug}`}
-                                    className="inline-flex items-center gap-2 group"
-                                >
-                                    <div className="w-6 h-6 rounded-full bg-neutral-100 overflow-hidden border border-neutral-200">
-                                        {event.hosting_business.logo_url ? (
-                                            <img src={event.hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-primary-50 text-[10px] text-primary-600 font-bold">
-                                                {event.hosting_business.name[0]}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <span className="text-sm font-bold text-neutral-500 group-hover:text-primary-600 transition-colors">
-                                        Hosted by <span className="text-neutral-900">{event.hosting_business.name}</span>
-                                    </span>
-                                </Link>
-                            )}
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-8">
-                            <div>
-                                <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4">About Event</h3>
-                                <div className="prose prose-neutral prose-lg text-neutral-600 leading-relaxed font-medium max-w-none">
-                                    {event.description ||
-                                        <span className="italic text-neutral-400">No detailed description provided.</span>
-                                    }
+                    {/* Title + Host */}
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight leading-tight">
+                            {event.title}
+                        </h2>
+                        {event.hosting_business && (
+                            <Link
+                                href={`/businesses/${event.hosting_business.slug}`}
+                                className="mt-3 flex items-center gap-2.5 group w-fit"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
+                                    {event.hosting_business.logo_url ? (
+                                        <img src={event.hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-primary-100 text-xs font-bold text-primary-600">
+                                            {event.hosting_business.name[0]}
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                                <span className="text-sm font-semibold text-neutral-500 group-hover:text-primary-600 transition-colors">
+                                    Hosted by <span className="text-neutral-800">{event.hosting_business.name}</span>
+                                </span>
+                            </Link>
+                        )}
+                    </div>
 
-                            {/* Share / Secondary */}
-                            <div className="pt-8 border-t border-neutral-100 flex gap-4">
-                                <button
-                                    className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
-                                    onClick={() => {
-                                        if (navigator.share) {
-                                            navigator.share({
-                                                title: event.title,
-                                                text: event.description || '',
-                                                url: window.location.href
-                                            }).catch(console.error);
-                                        }
-                                    }}
-                                >
-                                    <Share2 className="w-4 h-4" />
-                                    Share
-                                </button>
+                    {/* Meta Strip */}
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 py-4 border-y border-neutral-100">
+                        <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+                            <Calendar className="w-4 h-4 text-primary-500 shrink-0" />
+                            <span>{weekday}, {longDay}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+                            <Clock className="w-4 h-4 text-primary-500 shrink-0" />
+                            <span>{timeStr}{endTimeStr ? ` – ${endTimeStr}` : ''}</span>
+                        </div>
+                        {event.location && (
+                            <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+                                <MapPin className="w-4 h-4 text-primary-500 shrink-0" />
+                                <span className="line-clamp-1">{event.location}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        {event.description ? (
+                            <>
+                                <p className={`text-[15px] text-neutral-600 leading-relaxed font-medium${!expanded && isLongDescription ? ' line-clamp-4' : ''}`}>
+                                    {event.description}
+                                </p>
+                                {isLongDescription && (
+                                    <button
+                                        onClick={() => setExpanded(!expanded)}
+                                        className="mt-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors"
+                                    >
+                                        {expanded ? 'Show less' : 'Read more'}
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <span className="italic text-neutral-400 text-sm">No description provided.</span>
+                        )}
+                    </div>
+
+                    {/* Offers Strip */}
+                    {event.offers && event.offers.length > 0 && (
+                        <div className="py-3 px-4 bg-amber-50/60 border border-amber-100/60 rounded-xl">
+                            <div className="text-xs font-black text-amber-700 uppercase tracking-widest mb-1.5">
+                                Offers at this event
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                {event.offers.map((offer) => (
+                                    <div key={offer.id} className="text-sm font-medium text-amber-900/80">
+                                        {offer.title}
+                                    </div>
+                                ))}
                             </div>
                         </div>
+                    )}
+
+                    {/* Share */}
+                    <div className="pt-1 flex">
+                        <button
+                            className="flex items-center gap-2 text-sm font-bold text-neutral-400 hover:text-neutral-700 transition-colors"
+                            onClick={() => {
+                                if (navigator.share) {
+                                    navigator.share({
+                                        title: event.title,
+                                        text: event.description || '',
+                                        url: window.location.href
+                                    }).catch(console.error)
+                                }
+                            }}
+                        >
+                            <Share2 className="w-4 h-4" />
+                            Share
+                        </button>
                     </div>
+                </div>
+
+                {/* Sticky CTA Footer */}
+                <div className="sticky bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-neutral-100 px-6 py-4 z-10">
+                    <EventIntentButtons eventId={event.id} className="w-full" />
                 </div>
             </div>
         </Modal>,

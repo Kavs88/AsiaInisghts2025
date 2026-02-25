@@ -11,7 +11,7 @@ const HeroSearchBar = dynamic(() => import('@/components/ui/HeroSearchBar'), {
 })
 
 export const metadata = {
-  title: 'Markets | AI Markets',
+  title: 'Markets | Asia Insights',
   description: 'Discover local markets, vendors, and artisans',
 }
 
@@ -103,40 +103,41 @@ export default async function MarketsHomePage() {
   return (
     <main id="main-content" className="min-h-screen bg-white">
       {/* Hero Section - Markets Branding */}
-      <section className="relative min-h-[60vh] sm:min-h-[70vh] lg:min-h-[90vh] flex items-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 overflow-hidden">
+      <section className="relative min-h-[60vh] sm:min-h-[70vh] lg:min-h-[90vh] flex items-center bg-neutral-900 overflow-hidden py-16 lg:py-24">
         {/* Large Hero Image Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/60 to-white/95 z-10" />
           <Image
             src="/images/Stalls 6.jpg"
             alt="Markets"
             fill
-            className="object-cover opacity-30"
+            className="object-cover opacity-40"
             priority
             sizes="100vw"
           />
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent z-10" />
+          <div className="absolute inset-0 bg-neutral-900/20 z-0" />
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-24">
+        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             <div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 mb-6 sm:mb-8 leading-[0.9] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-black text-white mb-6 sm:mb-8 leading-[0.9] tracking-tighter drop-shadow-xl">
                 Our Flagship
-                <span className="block text-markets-600 mt-2">Artisan Markets</span>
+                <span className="block text-primary-400 mt-2">Artisan Markets</span>
               </h1>
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-neutral-700 mb-8 sm:mb-12 leading-relaxed max-w-2xl font-light">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-neutral-200 mb-8 sm:mb-12 leading-relaxed max-w-2xl font-medium drop-shadow-md">
                 Join our flagship events. Experience local businesses in person, shop from makers, and support your community.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/markets/market-days"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-markets-600 hover:bg-markets-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary-600/30 text-lg hover:-translate-y-1"
                 >
                   Find Next Event
                 </Link>
                 <Link
                   href="/markets/vendor/apply"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white hover:bg-neutral-50 text-markets-600 font-semibold rounded-2xl transition-all duration-200 border-2 border-markets-600 text-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-2xl transition-all duration-200 border-2 border-white/30 hover:border-white/50 text-lg"
                 >
                   List Your Stall
                 </Link>
@@ -150,9 +151,9 @@ export default async function MarketsHomePage() {
       </section>
 
       {/* Upcoming Market Preview */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-markets-50/50 to-white rounded-3xl p-8 lg:p-12 border border-markets-100 shadow-lg">
+          <div className="bg-white rounded-2xl p-8 lg:p-12 border border-markets-100 shadow-md">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-markets-100 text-markets-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6">

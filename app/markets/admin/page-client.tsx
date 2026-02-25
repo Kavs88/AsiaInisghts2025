@@ -126,7 +126,7 @@ export default function AdminDashboardClient() {
       <main className="min-h-screen bg-neutral-50">
         <div className="container-custom py-8">
           <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
+            <h2 className="text-xl font-black text-error-900 mb-2">Access Denied</h2>
             <p className="text-error-800 mb-4">You do not have admin privileges.</p>
             <div className="space-y-2 text-sm text-error-700">
               <p>Please check:</p>
@@ -150,7 +150,7 @@ export default function AdminDashboardClient() {
     <main className="min-h-screen bg-neutral-50">
       <div className="container-custom py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-neutral-900 mb-2">Platform Overview</h1>
+          <h1 className="text-4xl font-black text-neutral-900 mb-2">Platform Overview</h1>
           <p className="text-neutral-600">Your community at a glance</p>
         </div>
 
@@ -220,7 +220,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors">
                     Vendor Stewardship
                   </h3>
                   <p className="text-sm text-neutral-600">Welcome and support vendor relationships</p>
@@ -244,7 +244,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors">
                     Create New Vendor
                   </h3>
                   <p className="text-sm text-neutral-600">Set up a new vendor account</p>
@@ -262,7 +262,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-warning-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-warning-600 transition-colors">
                     Change Requests
                   </h3>
                   <p className="text-sm text-neutral-600">Review vendor profile change requests</p>
@@ -289,7 +289,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors">
                     Product Curation
                   </h3>
                   <p className="text-sm text-neutral-600">Review and celebrate artisan offerings</p>
@@ -314,7 +314,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors">
                     Order Fulfillment
                   </h3>
                   <p className="text-sm text-neutral-600">Support order processing and delivery</p>
@@ -341,7 +341,7 @@ export default function AdminDashboardClient() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-secondary-600 transition-colors">
+                  <h3 className="text-lg font-bold text-neutral-900 group-hover:text-secondary-600 transition-colors">
                     Property Directory
                   </h3>
                   <p className="text-sm text-neutral-600">Curate venue and property listings</p>

@@ -47,7 +47,7 @@ export default function ReviewsSection({ subjectId, subjectType, subjectName }: 
                     </button>
                 )}
                 {!authChecked && (
-                    <div className="h-10 w-36 bg-neutral-100 animate-pulse rounded-xl" aria-hidden="true" />
+                    <div className="h-10 w-36 bg-neutral-100 rounded-xl" aria-hidden="true" />
                 )}
             </div>
 

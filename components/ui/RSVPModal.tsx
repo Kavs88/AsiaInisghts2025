@@ -23,9 +23,9 @@ export default function RSVPModal({
   onSuccess,
 }: RSVPModalProps) {
   const [status, setStatus] = useState<'going' | 'interested'>(
-    currentStatus === 'going' ? 'going' : 
-    currentStatus === 'interested' ? 'interested' : 
-    'going'
+    currentStatus === 'going' ? 'going' :
+      currentStatus === 'interested' ? 'interested' :
+        'going'
   )
   const [notes, setNotes] = useState(currentNotes || '')
   const [agreedToPolicy, setAgreedToPolicy] = useState(false)
@@ -85,7 +85,7 @@ export default function RSVPModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-neutral-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-neutral-900">RSVP to Event</h2>
@@ -112,29 +112,27 @@ export default function RSVPModal({
                 <button
                   type="button"
                   onClick={() => setStatus('going')}
-                  className={`px-4 py-3 rounded-xl border-2 font-semibold transition-all ${
-                    status === 'going'
+                  className={`px-4 py-3 rounded-xl border-2 font-semibold transition-all ${status === 'going'
                       ? 'border-primary-600 bg-primary-50 text-primary-700'
                       : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
-                  }`}
+                    }`}
                 >
                   I'm Going
                 </button>
                 <button
                   type="button"
                   onClick={() => setStatus('interested')}
-                  className={`px-4 py-3 rounded-xl border-2 font-semibold transition-all ${
-                    status === 'interested'
+                  className={`px-4 py-3 rounded-xl border-2 font-semibold transition-all ${status === 'interested'
                       ? 'border-primary-600 bg-primary-50 text-primary-700'
                       : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
-                  }`}
+                    }`}
                 >
                   Interested
                 </button>
               </div>
             </div>
           )}
-          
+
           {/* Show current status if updating */}
           {currentStatus && (
             <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
@@ -206,7 +204,7 @@ export default function RSVPModal({
                 required
               />
               <span className="text-sm text-neutral-700">
-                <span className="font-semibold">Cancellation Policy:</span> I understand that space is limited. 
+                <span className="font-semibold">Cancellation Policy:</span> I understand that space is limited.
                 I will update my RSVP if I cannot attend.
               </span>
             </label>

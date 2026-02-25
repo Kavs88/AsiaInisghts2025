@@ -73,7 +73,7 @@ export default function BusinessProfileClient({
             </div>
 
             {/* Tab Navigation */}
-            <section className="sticky top-16 lg:top-20 z-30 bg-white border-b border-neutral-200 mt-12">
+            <section className="sticky top-16 lg:top-20 z-30 bg-white border-b border-neutral-200 mt-6">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
                         <button
@@ -147,10 +147,10 @@ export default function BusinessProfileClient({
             <div id="tab-content" className="scroll-mt-36 lg:scroll-mt-40">
                 {/* Active Tab Content will be rendered here */}
                 {activeTab === 'shop' && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
                             <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">Products</h2>
+                                <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">Products</h2>
                             </div>
                             {products.length > 0 ? (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -180,10 +180,10 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
-                                    <ShoppingBag className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No products found</h3>
-                                    <p className="text-neutral-500">Check back later for new items.</p>
+                                <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-neutral-200">
+                                    <ShoppingBag className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-black text-neutral-900 mb-2">No products yet</h3>
+                                    <p className="text-neutral-500 text-sm">Check back later for new items.</p>
                                 </div>
                             )}
                         </div>
@@ -191,9 +191,9 @@ export default function BusinessProfileClient({
                 )}
 
                 {activeTab === 'events' && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-8 tracking-tight">Upcoming Events</h2>
+                            <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mb-8 tracking-tight">Upcoming Events</h2>
                             {events.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {events.map((event: any) => (
@@ -218,10 +218,10 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
-                                    <Calendar className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No events scheduled</h3>
-                                    <p className="text-neutral-500">Stay tuned for future events.</p>
+                                <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-neutral-200">
+                                    <Calendar className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-black text-neutral-900 mb-2">No events scheduled</h3>
+                                    <p className="text-neutral-500 text-sm">Stay tuned for future events.</p>
                                 </div>
                             )}
                         </div>
@@ -229,9 +229,9 @@ export default function BusinessProfileClient({
                 )}
 
                 {activeTab === 'deals' && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-8 tracking-tight">Active Deals</h2>
+                            <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mb-8 tracking-tight">Active Deals</h2>
                             {deals.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {deals.map((deal: any) => (
@@ -248,10 +248,10 @@ export default function BusinessProfileClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-neutral-200">
-                                    <Tag className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No active deals</h3>
-                                    <p className="text-neutral-500">Check back for special offers.</p>
+                                <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-neutral-200">
+                                    <Tag className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-black text-neutral-900 mb-2">No active deals</h3>
+                                    <p className="text-neutral-500 text-sm">Check back for special offers.</p>
                                 </div>
                             )}
                         </div>
@@ -259,9 +259,9 @@ export default function BusinessProfileClient({
                 )}
 
                 {activeTab === 'gallery' && business.images && business.images.length > 0 && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-8 tracking-tight">Gallery</h2>
+                            <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mb-8 tracking-tight">Gallery</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {business.images.map((img: string, i: number) => (
                                     <div key={i} className="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-zoom-in group border border-neutral-100">
@@ -275,7 +275,7 @@ export default function BusinessProfileClient({
                 )}
 
                 {activeTab === 'reviews' && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
                             <ReviewsSection subjectId={business.id} subjectType="business" subjectName={business.name} />
                         </div>
@@ -283,11 +283,11 @@ export default function BusinessProfileClient({
                 )}
 
                 {activeTab === 'neighborhood' && (
-                    <section className="py-12 bg-neutral-50/50">
+                    <section className="py-12 bg-neutral-50">
                         <div className="container mx-auto px-4 max-w-7xl">
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                                 <div className="max-w-2xl">
-                                    <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4 tracking-tight">Stay & Play Nearby</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mb-3 tracking-tight">Stay & Play Nearby</h2>
                                     <p className="text-neutral-600">
                                         Discover accommodations and event spaces just around the corner from {business.name}.
                                     </p>

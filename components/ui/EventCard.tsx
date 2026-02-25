@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import EventIntentButtons from './EventIntentButtons'
 import EventDetailModal from './EventDetailModal'
-import { MapPin, Clock } from 'lucide-react'
+import { MapPin, Clock, Calendar, ArrowRight } from 'lucide-react'
 import Badge from './Badge'
 import { SaveButton } from './SoftActionButtons'
 
@@ -64,13 +63,11 @@ export default function EventCard({
   const day = startDate.toLocaleDateString('en-US', { day: 'numeric' })
   const time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 
-
-
   return (
     <>
       <div
         onClick={() => setIsModalOpen(true)}
-        className={`group cursor-pointer bg-white rounded-3xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 select-none flex flex-col h-full ${className}`}
+        className={`group cursor-pointer bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 select-none flex flex-col h-full ${className}`}
       >
         {/* Hero Image - 4:3 Aspect Ratio Standard */}
         <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden shrink-0">
@@ -85,9 +82,7 @@ export default function EventCard({
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-              <svg className="w-12 h-12 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <Calendar className="w-16 h-16 text-primary-300" strokeWidth={1} />
             </div>
           )}
 
@@ -113,83 +108,71 @@ export default function EventCard({
               className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
             />
           </div>
+
+          {/* Date Pill - Bottom Left */}
+          <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-white/50">
+            <div className="text-xs font-black text-primary-600 uppercase tracking-widest leading-none mb-0.5">{month}</div>
+            <div className="text-2xl font-black text-neutral-900 leading-none">{day}</div>
+          </div>
         </div>
 
-        {/* Content Body - p-6 Uniform */}
-        <div className="flex flex-1 p-6 gap-5 relative z-10 bg-white">
-          {/* Left Column: Date Anchor - Adjusted to align with text */}
-          <div className="flex flex-col items-center flex-shrink-0 w-12 pt-1 border-r border-neutral-100 pr-4 mr-1">
-            <span className="text-[10px] font-black text-primary-600 tracking-widest uppercase mb-1 leading-none">
-              {month}
-            </span>
-            <span className="text-2xl font-black text-neutral-900 leading-none tracking-tight">
-              {day}
-            </span>
-          </div>
+        {/* Content Body */}
+        <div className="p-6 flex flex-col flex-1">
+          {/* Title */}
+          <h3 className="text-lg font-bold text-neutral-900 leading-snug line-clamp-2 mb-3 group-hover:text-primary-600 transition-colors">
+            {title}
+          </h3>
 
-          {/* Right Column: Event Details */}
-          <div className="flex flex-col flex-1 min-w-0">
-            {/* Title & Metadata */}
-            <div className="mb-auto">
-              <h3 className="text-lg font-bold text-neutral-900 leading-snug mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
-                {title}
-              </h3>
-
-              <div className="flex flex-col gap-1.5 mb-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-neutral-500">
-                  <Clock className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                  <span>{time}</span>
-                </div>
-                {location && (
-                  <div className="flex items-center gap-2 text-sm font-medium text-neutral-500 truncate">
-                    <MapPin className="w-4 h-4 shrink-0 text-neutral-400" strokeWidth={1.5} />
-                    <span className="truncate">{location}</span>
-                  </div>
-                )}
-              </div>
+          {/* Meta Row */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-auto">
+            <div className="flex items-center gap-2 text-sm font-medium text-neutral-500">
+              <Clock className="w-4 h-4" strokeWidth={1.5} />
+              <span>{time}</span>
             </div>
-
-            {/* Footer: Host & Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-neutral-100 mt-2">
-              <div className="flex items-center gap-2 min-w-0">
-                {hosting_business ? (
-                  <>
-                    <div className="w-6 h-6 rounded-full bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
-                      {hosting_business.logo_url ? (
-                        <img src={hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary-100 text-[8px] font-bold text-primary-600">
-                          {hosting_business.name.substring(0, 1)}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs font-bold text-neutral-500 truncate group-hover:text-neutral-700 transition-colors">
-                      {hosting_business.name}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-xs font-bold text-neutral-400">Asia Insights</span>
-                )}
-              </div>
-
-              {/* Action */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-neutral-400 group-hover:text-primary-600 transition-colors uppercase tracking-wider">
-                  View
-                </span>
-              </div>
-            </div>
-
-            {/* Offers (if any) - Subtle integration */}
-            {offers.length > 0 && (
-              <div className="mt-3 py-1.5 px-3 bg-amber-50/50 border border-amber-100/50 rounded-lg flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span className="text-[10px] font-bold text-amber-900/70 truncate">
-                  {offers[0].title}
-                </span>
+            {location && (
+              <div className="flex items-center gap-2 text-sm font-medium text-neutral-500 truncate">
+                <MapPin className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+                <span className="truncate">{location}</span>
               </div>
             )}
           </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-4 mt-4 border-t border-neutral-100">
+            <div className="flex items-center gap-2 min-w-0">
+              {hosting_business ? (
+                <>
+                  <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
+                    {hosting_business.logo_url ? (
+                      <img src={hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary-100 text-xs font-bold text-primary-600">
+                        {hosting_business.name.substring(0, 1)}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs font-bold text-neutral-500 truncate">
+                    {hosting_business.name}
+                  </span>
+                </>
+              ) : (
+                <span className="text-xs font-bold text-neutral-400">Asia Insights</span>
+              )}
+            </div>
+            <div className="w-7 h-7 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 flex-shrink-0">
+              <ArrowRight className="w-3.5 h-3.5 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
+            </div>
+          </div>
+
+          {/* Offers Strip */}
+          {offers.length > 0 && (
+            <div className="mt-3 py-1.5 px-3 bg-amber-50/50 border border-amber-100/50 rounded-lg flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="text-xs font-bold text-amber-900/70 truncate">
+                {offers[0].title}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -206,7 +189,3 @@ export default function EventCard({
     </>
   )
 }
-
-
-
-

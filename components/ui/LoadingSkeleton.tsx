@@ -27,8 +27,10 @@ export function Skeleton({ className, variant = 'text' }: SkeletonProps) {
 
 export function CardSkeleton() {
   return (
-    <div className="bg-white rounded-3xl border border-neutral-100 overflow-hidden">
-      <Skeleton variant="image" className="w-full h-48" />
+    <div className="bg-white rounded-2xl border border-neutral-100 overflow-hidden">
+      <div className="w-full aspect-[4/3] relative">
+        <Skeleton variant="image" className="absolute inset-0 w-full h-full rounded-none" />
+      </div>
       <div className="p-6 space-y-3">
         <Skeleton className="h-5 w-3/4" />
         <Skeleton className="h-4 w-1/2" />

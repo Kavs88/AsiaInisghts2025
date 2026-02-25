@@ -18,7 +18,7 @@ export default function EventHero({
   return (
     <div className={`relative w-full ${className}`}>
       {/* Hero Image Container - Aspect 21:9 */}
-      <div className="relative w-full aspect-[21/9] bg-neutral-200 overflow-hidden rounded-2xl lg:rounded-3xl">
+      <div className="relative w-full aspect-[21/9] bg-neutral-200 overflow-hidden rounded-2xl">
         {imageUrl ? (
           <>
             <Image

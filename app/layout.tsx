@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Suspense } from 'react'
 import Header from '@/components/ui/Header'
@@ -14,6 +14,14 @@ const inter = Inter({
   preload: true,
   variable: '--font-inter',
   adjustFontFallback: true,
+})
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-display',
+  weight: ['400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
@@ -58,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
       <head>
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -72,7 +80,7 @@ export default function RootLayout({
               Skip to main content
             </a>
             <NextTopLoader
-              color="#0054b6"
+              color="#0d9488"
               initialPosition={0.08}
               crawlSpeed={200}
               height={3}
@@ -80,7 +88,7 @@ export default function RootLayout({
               showSpinner={false}
               easing="ease"
               speed={200}
-              shadow="0 0 10px #0054b6,0 0 5px #0054b6"
+              shadow="0 0 10px #0d9488,0 0 5px #0d9488"
             />
             <Suspense fallback={<div className="h-16 bg-white border-b border-neutral-100" />}>
               <Header />

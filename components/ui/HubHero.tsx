@@ -30,8 +30,8 @@ export default function HubHero({
     const themes = {
         events: 'from-neutral-900 via-neutral-900/40 to-transparent',
         markets: 'from-primary-900 via-primary-900/40 to-transparent',
-        businesses: 'from-secondary-900 via-secondary-900/40 to-transparent',
-        concierge: 'from-primary-900 via-secondary-900 to-transparent',
+        businesses: 'from-neutral-900 via-neutral-900/40 to-transparent',
+        concierge: 'from-primary-900 via-primary-900/40 to-transparent',
         default: 'from-black/80 via-black/40 to-black/20'
     }
 

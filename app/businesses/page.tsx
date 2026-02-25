@@ -102,7 +102,7 @@ export default function BusinessesPage() {
     return (
         <div className="min-h-screen bg-neutral-50">
             <HubHero
-                title="Community"
+                title="Businesses"
                 subtitle="Connect with verified local businesses, artisans, and service providers in Da Nang and Hoi An."
                 variant="businesses"
                 imageUrl="/images/Stalls 6.jpg"
@@ -131,8 +131,7 @@ export default function BusinessesPage() {
                                 : (cat.id === 'setup' ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100' : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 hover:border-primary-300')
                                 }`}
                         >
-                            {cat.id === 'setup' && <span className="mr-2">⚡</span>}
-                            {cat.label}
+                                {cat.label}
                         </button>
                     ))}
                 </div>

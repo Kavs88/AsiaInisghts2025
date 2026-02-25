@@ -13,7 +13,7 @@ export default function AdminEventsPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             {/* LANGUAGE GUARDRAIL: Use stewardship verbs, never "manage" */}
-            <h1 className="text-3xl font-bold text-neutral-900">Community Calendar</h1>
+            <h1 className="text-3xl font-black text-neutral-900">Community Calendar</h1>
             <p className="text-neutral-600">Shape gatherings and welcome new events</p>
           </div>
           <button disabled className="px-4 py-2 bg-neutral-200 text-neutral-500 rounded-lg cursor-not-allowed">

@@ -40,7 +40,7 @@ export default function AccountPageClient({ user, authority }: AccountPageClient
 
     return (
         <main className="min-h-screen bg-neutral-50/50">
-            <div className="container-custom max-w-5xl py-12 lg:py-20">
+            <div className="container-custom max-w-5xl py-12">
 
                 {/* 1. Identity Section - "Who I Am" */}
                 {/* Visual hierarchies: calm, open, whitespace-heavy */}

@@ -111,7 +111,7 @@ export default function ShareButton({
 
       {/* Quick Share Options Dropdown */}
       {showOptions && !navigator.share && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-neutral-200 overflow-hidden z-50 animate-fade-in">
+        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-neutral-200 overflow-hidden z-50 animate-fade-in">
           <button
             onClick={handleCopyLink}
             className="w-full flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 transition-colors text-left"

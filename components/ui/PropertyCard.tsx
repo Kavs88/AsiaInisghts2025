@@ -1,8 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Bed, Bath, Users, ArrowRight, Building2 } from 'lucide-react'
+import Image from 'next/image'
+import { Bed, Bath, Users, ArrowRight, Building2, MapPin } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import Badge from './Badge'
 
 interface PropertyCardProps {
@@ -23,6 +24,7 @@ interface PropertyCardProps {
     } | null
     isNew?: boolean
     isFeatured?: boolean
+    className?: string
 }
 
 export default function PropertyCard({
@@ -37,7 +39,8 @@ export default function PropertyCard({
     images,
     businesses,
     isNew = false,
-    isFeatured = false
+    isFeatured = false,
+    className
 }: PropertyCardProps) {
     const mainImage = images && images.length > 0 ? images[0] : null
     const displayPrice = price ? new Intl.NumberFormat('en-US', {
@@ -46,14 +49,19 @@ export default function PropertyCard({
         maximumFractionDigits: 0
     }).format(price) : null
 
+    const hasSpecs = !!(bedrooms || bathrooms || capacity)
+    const typeLabel = property_type === 'event_space'
+        ? 'Event Space'
+        : type.charAt(0).toUpperCase() + type.slice(1)
+
     return (
-        <article className="group bg-white rounded-3xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative flex flex-col h-full">
-            {/* Full Card Link Overlay - Fixes 'not opening' issue */}
-            <Link
-                href={`/properties/${id}`}
-                className="absolute inset-0 z-10 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                aria-label={`View property at ${address}`}
-            />
+        <article
+            className={cn(
+                "group relative bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col",
+                className
+            )}
+        >
+            <Link href={`/properties/${id}`} className="absolute inset-0 z-10" aria-label={`View ${address}`} />
 
             {/* Image Section - 4:3 Ratio Standard */}
             <div className="aspect-[4/3] relative bg-neutral-100 overflow-hidden shrink-0">
@@ -66,111 +74,121 @@ export default function PropertyCard({
                         className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-slate-100 flex items-center justify-center">
-                        <Building2 className="w-12 h-12 text-neutral-300" strokeWidth={1.5} />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+                        <Building2 className="w-16 h-16 text-primary-300" strokeWidth={1} />
                     </div>
                 )}
 
                 {/* Interactive Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
-                {/* Badges - Top Left */}
-                <div className="absolute top-4 left-4 flex flex-col gap-2 z-20 pointer-events-none">
+                {/* Type Badge — Top Left */}
+                <div className="absolute top-4 left-4 z-20 pointer-events-none">
                     <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-900 font-bold border-none shadow-md text-xs uppercase tracking-wider">
                         {type}
                     </Badge>
                 </div>
 
-                {/* Status Badges - Top Right */}
+                {/* Status Badges — Top Right */}
                 {(isNew || isFeatured) && (
-                    <div className="absolute top-4 right-4 flex flex-col gap-2 z-20 pointer-events-none">
+                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 pointer-events-none">
                         {isFeatured && (
-                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm">
+                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm text-xs uppercase tracking-wider">
                                 Featured
                             </Badge>
                         )}
                         {isNew && (
-                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm">
+                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm text-xs uppercase tracking-wider">
                                 New
                             </Badge>
                         )}
                     </div>
                 )}
-
-                {/* Price Tag - Premium Floating Bottom Left */}
-                {displayPrice && (
-                    <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
-                        <div className="bg-white/95 backdrop-blur-md text-neutral-900 px-4 py-2 rounded-xl font-black text-lg shadow-lg border border-white/50">
-                            {displayPrice}
-                            {property_type === 'rental' && <span className="text-xs font-bold text-neutral-400 ml-1">/mo</span>}
-                        </div>
-                    </div>
-                )}
             </div>
 
-            {/* Content Section - p-6 Uniform */}
-            <div className="p-6 flex flex-col flex-1 relative z-20 pointer-events-none">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="min-w-0 w-full">
-                        {businesses ? (
-                            <p className="text-xs font-medium text-neutral-500 mb-1.5 truncate">
-                                <Link href={`/businesses/${businesses.slug}`} className="pointer-events-auto hover:text-primary-600 transition-colors" onClick={(e) => e.stopPropagation()}>
-                                    Listed by {businesses.name}
-                                </Link>
-                            </p>
-                        ) : null}
-                        <h3 className="text-lg font-bold text-neutral-900 truncate group-hover:text-primary-600 transition-colors leading-snug">
-                            {address}
-                        </h3>
-                        <div className="flex items-center gap-1.5 text-neutral-500 mt-1">
-                            <MapPin className="w-4 h-4" strokeWidth={1.5} />
-                            <span className="text-sm font-medium truncate">Premium Location</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Specs - Clean layout */}
-                <div className="flex items-center gap-5 pt-4 mt-auto border-t border-neutral-100">
-                    {property_type === 'rental' ? (
-                        <>
-                            {bedrooms && (
-                                <div className="flex items-center gap-2 text-neutral-600">
-                                    <Bed className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                    <span className="text-sm font-bold">{bedrooms} <span className="text-neutral-500 font-medium text-xs uppercase ml-1">Beds</span></span>
-                                </div>
-                            )}
-                            {bathrooms && (
-                                <div className="flex items-center gap-2 text-neutral-600">
-                                    <Bath className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                    <span className="text-sm font-bold">{bathrooms} <span className="text-neutral-500 font-medium text-xs uppercase ml-1">Baths</span></span>
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        capacity && (
-                            <div className="flex items-center gap-2 text-neutral-600">
-                                <Users className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                <span className="text-sm font-bold">Up to {capacity} <span className="text-neutral-500 font-medium text-xs uppercase ml-1">Guests</span></span>
-                            </div>
-                        )
+            {/* Content Stage - p-6 Uniform */}
+            <div className="p-6 flex flex-col flex-1 relative z-10 pointer-events-none">
+                {/* Title block */}
+                <div className="min-w-0 flex-1 mb-4">
+                    {businesses && (
+                        <p className="text-xs font-medium text-neutral-500 mb-2 truncate pointer-events-auto relative z-20">
+                            Listed by <Link
+                                href={`/businesses/${businesses.slug}`}
+                                className="hover:text-primary-600 transition-colors"
+                            >
+                                {businesses.name}
+                            </Link>
+                        </p>
                     )}
+                    <h3 className="text-lg font-bold text-neutral-900 leading-snug group-hover:text-primary-600 transition-colors line-clamp-2">
+                        {address}
+                    </h3>
+                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mt-2">
+                        {typeLabel}
+                    </p>
                 </div>
 
-                {/* View Action - Fixed height footprint to prevent shift */}
-                <div className="relative h-11 mt-4 pointer-events-auto">
-                    {/* Default View */}
-                    <div className="absolute inset-0 group-hover:opacity-0 transition-opacity duration-300">
-                        <div className="w-full h-full bg-neutral-50 text-neutral-500 font-bold rounded-xl border border-neutral-100 flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
-                            View Details <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+                {/* Footer / Meta */}
+                <div className="mt-auto pt-4 border-t border-neutral-100/50 flex flex-col gap-4">
+
+                    {/* Price - Prominent */}
+                    {displayPrice && (
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-xl font-black text-neutral-900 tracking-tight leading-none">
+                                {displayPrice}
+                            </span>
+                            {property_type === 'rental' && (
+                                <span className="text-sm font-bold text-neutral-500">/mo</span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Specs — only when data exists */}
+                    {hasSpecs ? (
+                        <div className="flex items-center gap-4 text-neutral-600 flex-wrap pointer-events-auto">
+                            {property_type === 'rental' ? (
+                                <>
+                                    {bedrooms && (
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                            <Bed className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
+                                            <span className="text-sm font-bold">
+                                                {bedrooms} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Beds</span>
+                                            </span>
+                                        </div>
+                                    )}
+                                    {bathrooms && (
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                            <Bath className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
+                                            <span className="text-sm font-bold">
+                                                {bathrooms} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Baths</span>
+                                            </span>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                capacity && (
+                                    <div className="flex items-center gap-1.5 shrink-0">
+                                        <Users className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
+                                        <span className="text-sm font-bold">
+                                            Up to {capacity} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Guests</span>
+                                        </span>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    ) : null}
+
+                    {/* CTA row like BusinessCard and ProductCard standard */}
+                    <div className="flex items-center justify-between pt-2 mt-auto">
+                        <span className="text-sm font-bold text-neutral-500 group-hover:text-primary-600 transition-colors pointer-events-none uppercase tracking-wide">
+                            View Property
+                        </span>
+                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 pointer-events-none">
+                            <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
                         </div>
                     </div>
-                    {/* Hover Reveal Action */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-full h-full bg-neutral-900 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg pointer-events-auto">
-                            View Property <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </article>

@@ -18,18 +18,27 @@ interface PropertyPageProps {
 }
 
 export async function generateMetadata({ params }: PropertyPageProps) {
-    // Handle both Promise and direct object params (Next.js 14.2+ compatibility)
     const resolvedParams = params instanceof Promise ? await params : params
     const property = await getPropertyById(resolvedParams.id) as any
-    if (!property) {
-        return {
-            title: 'Property Not Found | AI Markets',
-            description: 'The property you are looking for could not be found.',
-        }
-    }
+    if (!property) return { title: 'Property Not Found' }
+    const description = property.description || `Discover ${property.address} — ${property.property_type === 'rental' ? 'rental property' : 'event space'} in Southeast Asia.`
+    const image = property.images?.[0] || null
     return {
-        title: `${property.address} | AI Markets`,
-        description: property.description || `Discover ${property.address} - ${property.property_type === 'rental' ? 'rental property' : 'event space'} in Southeast Asia.`,
+        title: property.address,
+        description,
+        openGraph: {
+            title: property.address,
+            description,
+            type: 'website',
+            siteName: 'Asia Insights',
+            ...(image && { images: [{ url: image, width: 1200, height: 630, alt: property.address }] }),
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: property.address,
+            description,
+            ...(image && { images: [image] }),
+        },
     }
 }
 
@@ -85,7 +94,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <section className="py-8 animate-fade-up" style={{ animationDelay: '100ms' }}>
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[400px] sm:h-[500px] lg:h-[600px]">
-                        <div className="relative group overflow-hidden rounded-3xl bg-neutral-100">
+                        <div className="relative group overflow-hidden rounded-2xl bg-neutral-100">
                             {property.images?.[0] && typeof property.images[0] === 'string' ? (
                                 <Image src={property.images[0]} alt={property.address} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover group-hover:scale-105 transition-transform duration-700" priority />
                             ) : (
@@ -94,7 +103,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         </div>
                         <div className="grid grid-cols-2 gap-4 h-full">
                             {[1, 2, 3, 4].map((index) => (
-                                <div key={index} className="relative group overflow-hidden rounded-3xl bg-neutral-100">
+                                <div key={index} className="relative group overflow-hidden rounded-2xl bg-neutral-100">
                                     {property.images?.[index] && typeof property.images[index] === 'string' ? (
                                         <Image src={property.images[index]} alt={`${property.address} ${index + 1}`} fill sizes="(max-width: 1024px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                     ) : (
@@ -181,7 +190,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                 <h3 className="text-2xl font-bold text-neutral-900 mb-8">Location</h3>
                                 {property.location_coords?.y && property.location_coords?.x ? (
                                     <>
-                                        <div className="h-[400px] w-full rounded-3xl overflow-hidden border border-neutral-200 shadow-soft">
+                                        <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-neutral-200 shadow-soft">
                                             <InteractiveMap
                                                 center={[property.location_coords.y, property.location_coords.x]}
                                                 zoom={14}
@@ -200,7 +209,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                         </p>
                                     </>
                                 ) : (
-                                    <div className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
+                                    <div className="bg-neutral-50 rounded-2xl p-8 border border-neutral-100">
                                         <div className="flex items-start gap-4">
                                             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-neutral-200 shrink-0 text-primary-600">
                                                 <MapPin className="w-6 h-6" />
@@ -250,7 +259,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
                         {/* Booking Sidebar */}
                         <div className="lg:col-span-1">
-                            <div className="sticky top-24 bg-white border border-neutral-200 rounded-3xl p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow duration-500">
+                            <div className="sticky top-24 bg-white border border-neutral-200 rounded-2xl p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow duration-500">
                                 {property.property_type === 'rental' && (
                                     <div className="flex items-end gap-2 mb-8">
                                         <span className="text-4xl font-black text-neutral-900">{displayPrice}</span>

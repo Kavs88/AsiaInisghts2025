@@ -36,9 +36,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const business = await getBusinessBySlug(resolvedParams.slug)
     if (!business) return { title: 'Business Not Found' }
     const biz = business as any
+    const description = biz.tagline || biz.description || `Discover ${biz.name} on Asia Insights`
+    const image = biz.hero_image_url || biz.logo_url || null
     return {
-        title: `${biz.name} | AI Markets`,
-        description: biz.tagline || biz.description,
+        title: biz.name,
+        description,
+        openGraph: {
+            title: biz.name,
+            description,
+            type: 'website',
+            siteName: 'Asia Insights',
+            ...(image && { images: [{ url: image, width: 1200, height: 630, alt: biz.name }] }),
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: biz.name,
+            description,
+            ...(image && { images: [image] }),
+        },
     }
 }
 
@@ -182,27 +197,13 @@ export default async function BusinessProfilePage({
                             </div>
                         </div>
 
-                        {/* Action Buttons & Tabbed Content */}
-                        <div className="mb-6">
-                            <BusinessProfileClient
-                                business={biz}
-                                products={products}
-                                events={events}
-                                deals={deals}
-                                nearbyProperties={nearbyProperties}
-                                contact_phone={biz.contact_phone}
-                                contact_email={biz.contact_email}
-                            />
-                        </div>
-
-                        {/* Tagline and Stats - Keep in Header for visibility */}
-                        <div>
+                        {/* Tagline + Review + Stats — immediately after identity, before tabs */}
+                        <div className="mb-8">
                             {biz.tagline && (
-                                <p className="text-base sm:text-lg text-neutral-600 leading-relaxed mb-4">
+                                <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed mb-4 max-w-2xl font-medium">
                                     {biz.tagline}
                                 </p>
                             )}
-                            {/* Review Summary - Trust Signal */}
                             {reviewSummary && reviewSummary.totalReviews > 0 && (
                                 <div className="mb-4">
                                     <ReviewSummary
@@ -212,40 +213,44 @@ export default async function BusinessProfilePage({
                                     />
                                 </div>
                             )}
-                            {/* Stats Row */}
-                            <div className="flex flex-wrap items-center gap-4 mb-4">
-                                <div className="flex items-center gap-2">
-                                    <ShoppingBag className="w-5 h-5 text-primary-600" />
-                                    <span className="text-base sm:text-lg font-semibold text-neutral-900">{products.length}</span>
-                                    <span className="text-base sm:text-lg text-neutral-600">Products</span>
-                                </div>
-                                {events.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-4">
+                                {products.length > 0 && (
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="w-5 h-5 text-success-600" />
-                                        <span className="text-base sm:text-lg font-semibold text-success-700">{events.length}</span>
-                                        <span className="text-base sm:text-lg text-success-700">Upcoming Events</span>
+                                        <ShoppingBag className="w-4 h-4 text-primary-600" />
+                                        <span className="text-sm font-bold text-neutral-900">{products.length} Products</span>
                                     </div>
                                 )}
-                                {biz.category && (
-                                    <Badge variant="primary">{biz.category}</Badge>
+                                {events.length > 0 && (
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="w-4 h-4 text-success-600" />
+                                        <span className="text-sm font-bold text-success-700">{events.length} Upcoming Events</span>
+                                    </div>
                                 )}
-                            </div>
-                            {/* Activity Signals */}
-                            <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-600 mb-4">
                                 {activityStats.hostedEventsCount > 0 && (
-                                    <span className="flex items-center gap-1.5">
+                                    <span className="flex items-center gap-1.5 text-sm text-neutral-500">
                                         <CheckCircle className="w-4 h-4 text-primary-600" />
                                         Hosted {activityStats.hostedEventsCount} event{activityStats.hostedEventsCount !== 1 ? 's' : ''}
                                     </span>
                                 )}
                                 {activityStats.isActiveThisMonth && (
-                                    <span className="flex items-center gap-1.5">
+                                    <span className="flex items-center gap-1.5 text-sm text-neutral-500">
                                         <CheckCircle className="w-4 h-4 text-success-600" />
                                         Active this month
                                     </span>
                                 )}
                             </div>
                         </div>
+
+                        {/* Action Buttons + Tab Nav + Tab Content */}
+                        <BusinessProfileClient
+                            business={biz}
+                            products={products}
+                            events={events}
+                            deals={deals}
+                            nearbyProperties={nearbyProperties}
+                            contact_phone={biz.contact_phone}
+                            contact_email={biz.contact_email}
+                        />
                     </div>
                 </div>
             </section>
@@ -259,7 +264,7 @@ export default async function BusinessProfilePage({
                             <div className="space-y-8">
                                 {/* Hook/Intro - Large Text */}
                                 <div>
-                                    <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-8 tracking-tight">
+                                    <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 tracking-tight">
                                         About {biz.name}
                                     </h2>
                                     <div className="prose prose-lg prose-neutral max-w-none">
@@ -279,11 +284,11 @@ export default async function BusinessProfilePage({
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8">
                                     {/* Delivery Options */}
                                     {(biz.delivery_available || biz.pickup_available) && (
-                                        <div className="bg-neutral-50 rounded-3xl p-8 border border-neutral-100">
-                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-neutral-100">
+                                        <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
+                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-5 shadow-sm border border-neutral-100">
                                                 <ShoppingBag className="w-6 h-6 text-neutral-900" />
                                             </div>
-                                            <h3 className="text-xl font-bold text-neutral-900 mb-4">
+                                            <h3 className="text-lg font-black text-neutral-900 mb-4">
                                                 Ways to Shop
                                             </h3>
                                             <div className="space-y-4">
@@ -310,8 +315,8 @@ export default async function BusinessProfilePage({
                     {/* Sidebar */}
                     <div className="space-y-8 lg:sticky lg:top-32 h-fit">
                         {/* Contact Card */}
-                        <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow duration-500">
-                            <h3 className="text-xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
+                        <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <h3 className="text-lg font-black text-neutral-900 mb-6 flex items-center gap-2">
                                 <span className="w-8 h-1 bg-primary-600 rounded-full inline-block"></span>
                                 Connect
                             </h3>
@@ -379,7 +384,7 @@ export default async function BusinessProfilePage({
                         {/* Events Card */}
                         {events.length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="text-xl font-bold text-neutral-900 px-2">Upcoming Events</h3>
+                                <h3 className="text-lg font-black text-neutral-900 px-1">Upcoming Events</h3>
                                 {events.slice(0, 3).map((event: any) => (
                                     <Link key={event.id} href={`/markets/events/${event.id}`} className="block p-4 bg-white border border-neutral-200 rounded-2xl hover:border-primary-200 hover:shadow-md transition-all group">
                                         <div className="flex gap-4">

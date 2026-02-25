@@ -25,48 +25,48 @@ module.exports = {
       },
       // Color Palette - Muted with accent colors
       colors: {
-        // Primary accent - Asia Insights Blue (#0054b6)
+        // Primary accent - Jade Teal
         primary: {
-          50: '#e6f0ff',   // Very light blue
-          100: '#cce0ff',  // Light blue
-          200: '#99c1ff',  // Lighter blue
-          300: '#66a2ff',  // Light-medium blue
-          400: '#3383ff',  // Medium-light blue
-          500: '#0054b6',  // Main brand color (#0054b6)
-          600: '#004399',  // Medium-dark blue
-          700: '#00327d',  // Dark blue
-          800: '#002160',  // Darker blue
-          900: '#001044',  // Very dark blue
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
-        // Secondary accent
+        // Secondary accent - Warm Amber
         secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
         },
-        // Markets accent - Purple (for Markets/Sellers sections only)
+        // Markets accent - Teal (unified with primary)
         markets: {
-          50: '#f5f0ff',   // Very light purple
-          100: '#ede0ff',  // Light purple
-          200: '#dbc1ff',  // Lighter purple
-          300: '#c299ff',  // Light-medium purple
-          400: '#a866ff',  // Medium-light purple
-          500: '#8c52ff',  // Main Markets color (#8c52ff)
-          600: '#7a3df0',  // Medium-dark purple
-          700: '#6a2dd9',  // Dark purple
-          800: '#5a25b8',  // Darker purple
-          900: '#4d2096',  // Very dark purple
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
-        // Neutral grays (muted)
+        // Neutral grays (warm off-white base)
         neutral: {
-          50: '#fafafa',
+          50: '#F9F7F4',
           100: '#f5f5f5',
           200: '#e5e5e5',
           300: '#d4d4d4',
@@ -146,6 +146,10 @@ module.exports = {
         'modal-backdrop': '2000',
         'modal': '2100',
         'toast': '3000',
+      },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-up': 'fadeUp 0.5s ease-out forwards',

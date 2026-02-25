@@ -92,7 +92,7 @@ export default function CustomerInfoModal({ isOpen, onClose, onComplete }: Custo
       >
         <div
           className={cn(
-            'bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300',
+            'bg-white rounded-2xl shadow-xl max-w-md w-full transform transition-all duration-300',
             isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
           )}
           onClick={(e) => e.stopPropagation()}

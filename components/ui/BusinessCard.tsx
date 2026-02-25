@@ -26,7 +26,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
     return (
         <article
             className={cn(
-                "group bg-white rounded-3xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
+                "group bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
                 className
             )}
         >

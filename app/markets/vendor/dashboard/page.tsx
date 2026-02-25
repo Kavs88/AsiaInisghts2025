@@ -110,7 +110,7 @@ export default async function VendorDashboardPage() {
         <div className="container-custom py-8">
           <div className="mb-8">
             {/* LANGUAGE GUARDRAIL: "Business Hub" not "Dashboard" */}
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Your Business Hub</h1>
+            <h1 className="text-3xl font-black text-neutral-900 mb-2">Your Business Hub</h1>
             <p className="text-neutral-600">
               Admin access - <span className="font-semibold text-primary-600">Manage Vendors</span>
             </p>
@@ -120,7 +120,7 @@ export default async function VendorDashboardPage() {
               <svg className="w-16 h-16 text-neutral-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <h2 className="text-xl font-bold text-neutral-900 mb-2">No Vendor Profile</h2>
+              <h2 className="text-xl font-black text-neutral-900 mb-2">No Vendor Profile</h2>
               <p className="text-neutral-600 mb-6">
                 You don't have a vendor profile. As an admin, you can manage all vendors from the admin panel.
               </p>
@@ -151,7 +151,7 @@ export default async function VendorDashboardPage() {
         {/* Dashboard Header */}
         <div className="mb-8 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Your Business Hub</h1>
+            <h1 className="text-3xl font-black text-neutral-900 mb-2">Your Business Hub</h1>
             <p className="text-neutral-600">
               Welcome back, <span className="font-semibold text-primary-600">{vendorData.name}</span>
             </p>
@@ -165,20 +165,20 @@ export default async function VendorDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
             <div className="text-sm text-neutral-600 mb-1">Total Products</div>
-            <div className="text-3xl font-bold text-neutral-900">{stats.totalProducts}</div>
+            <div className="text-3xl font-black text-neutral-900">{stats.totalProducts}</div>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
             <div className="text-sm text-neutral-600 mb-1">Active Products</div>
-            <div className="text-3xl font-bold text-success-600">{stats.activeProducts}</div>
+            <div className="text-3xl font-black text-success-600">{stats.activeProducts}</div>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
             {/* VENDOR VOICE: Ownership, service, and purpose — never urgency or control */}
             <div className="text-sm text-neutral-600 mb-1">Orders to Fulfill</div>
-            <div className="text-3xl font-bold text-neutral-900">{stats.pendingOrders}</div>
+            <div className="text-3xl font-black text-neutral-900">{stats.pendingOrders}</div>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
             <div className="text-sm text-neutral-600 mb-1">Total Sales</div>
-            <div className="text-3xl font-bold text-primary-600">
+            <div className="text-3xl font-black text-primary-600">
               ${stats.totalSales.toFixed(2)}
             </div>
           </div>
@@ -190,7 +190,7 @@ export default async function VendorDashboardPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-soft p-6 border border-neutral-100">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-neutral-900">Recent Orders</h2>
+                <h2 className="text-xl font-black text-neutral-900">Recent Orders</h2>
                 <a href="/markets/vendor/dashboard/orders" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
                   View All →
                 </a>
@@ -231,7 +231,7 @@ export default async function VendorDashboardPage() {
           {/* Quick Actions */}
           <div>
             <div className="bg-white rounded-2xl shadow-soft p-6 mb-6 border border-neutral-100">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Quick Actions</h2>
+              <h2 className="text-xl font-black text-neutral-900 mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 gap-3">
                 <a
                   href="/markets/vendor/profile/edit"
@@ -262,9 +262,9 @@ export default async function VendorDashboardPage() {
 
             {/* My Market Schedule */}
             <div className="bg-white rounded-2xl shadow-soft p-6 border border-neutral-100">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">My Market Schedule</h2>
+              <h2 className="text-xl font-black text-neutral-900 mb-4">My Market Schedule</h2>
               <div className="space-y-3">
-                <div className="flex items-start gap-4 p-4 bg-primary-50/50 border border-primary-100 rounded-xl">
+                <div className="flex items-start gap-4 p-4 bg-primary-50 border border-primary-100 rounded-xl">
                   <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary-200">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -289,7 +289,7 @@ export default async function VendorDashboardPage() {
         {/* Products List */}
         <div className="mt-8 bg-white rounded-2xl shadow-soft p-6 border border-neutral-100">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-neutral-900">Portfolio & Inventory</h2>
+            <h2 className="text-xl font-black text-neutral-900">Portfolio & Inventory</h2>
             <a href="/markets/vendor/dashboard/products" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
               Manage All →
             </a>

@@ -4,8 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
-import { Check, Shield, Globe, Users, ArrowRight, Mail, Linkedin, Twitter, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Check, Shield, Globe, Users, ArrowRight, Mail, Linkedin, X } from 'lucide-react'
 
 interface TeamMember {
   id: string
@@ -161,7 +160,7 @@ export default function MeetTheTeamClient() {
       {/* Mission & Purpose */}
       <section className="py-12 bg-white relative">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
               <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-8 tracking-tight">
                 Bridging the <span className="text-primary-600">Gap.</span>
@@ -177,7 +176,7 @@ export default function MeetTheTeamClient() {
             </div>
             <div className="grid grid-cols-1 gap-6">
               {values.map((value, i) => (
-                <div key={i} className="flex gap-6 p-8 rounded-3xl bg-neutral-50 hover:bg-white border border-neutral-100 hover:border-primary-100 hover:shadow-xl transition-all duration-500 group">
+                <div key={i} className="flex gap-6 p-8 rounded-2xl bg-neutral-50 hover:bg-white border border-neutral-100 hover:border-primary-100 hover:shadow-xl transition-all duration-500 group">
                   <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary-600 shadow-sm group-hover:bg-primary-600 group-hover:text-white transition-colors duration-500">
                     {value.icon}
                   </div>
@@ -208,69 +207,60 @@ export default function MeetTheTeamClient() {
             {teamMembers.map((member) => (
               <div
                 key={member.id}
-                className="group relative"
+                className="group relative cursor-pointer"
                 onClick={() => setSelectedMember(member)}
               >
-                <div className="relative bg-white rounded-2xl p-4 lg:p-6 border border-neutral-200 overflow-hidden hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-xl">
-                  {/* Image Holder */}
-                  <div className="aspect-square relative rounded-xl overflow-hidden mb-6 bg-neutral-100">
+                <div className="bg-white rounded-2xl p-6 border border-neutral-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col h-full">
+
+                  {/* Contained square image — inside card padding */}
+                  <div className="aspect-square relative rounded-xl overflow-hidden mb-5 bg-neutral-100">
                     {member.image && !imageErrors[member.id] ? (
                       <Image
                         src={member.image}
                         alt={member.name}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        style={{ objectPosition: member.imagePosition || 'center' }}
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        style={{ objectPosition: member.imagePosition === 'top' ? 'center top' : 'center center' }}
                         onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 text-primary-200 text-8xl font-black italic select-none">
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 text-primary-300 text-8xl font-black italic select-none">
                         {member.name.charAt(0)}
                       </div>
                     )}
                   </div>
 
-                  {/* Specialty Tags - Below Image */}
-                  <div className="flex flex-wrap gap-2 mb-6 min-h-[32px]">
+                  {/* Specialty tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-5">
                     {member.areasOfSpecialty.slice(0, 2).map((area, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-neutral-50 border border-neutral-200 text-[11px] font-bold uppercase tracking-wider text-neutral-700 rounded-lg">
+                      <span key={i} className="px-2.5 py-1 bg-neutral-50 border border-neutral-200 text-xs font-bold uppercase tracking-wider text-neutral-600 rounded-lg">
                         {area}
                       </span>
                     ))}
                   </div>
 
-                  <div className="px-2 pb-4">
-                    <h3 className="text-3xl font-black text-neutral-900 mb-1 group-hover:text-primary-600 transition-colors">
-                      {member.name}
-                    </h3>
-                    <p className="text-primary-600 font-bold mb-4 flex items-center gap-2">
-                      <span className="w-8 h-[2px] bg-primary-200" />
-                      {member.role}
-                    </p>
-                    <p className="text-neutral-600 line-clamp-2 leading-relaxed mb-8 h-[48px]">
-                      {member.shortBlurb}
-                    </p>
+                  {/* Name + role */}
+                  <h3 className="text-2xl font-black text-neutral-900 mb-0.5 group-hover:text-primary-600 transition-colors">
+                    {member.name}
+                  </h3>
+                  <p className="text-sm font-bold text-primary-600 mb-3 flex items-center gap-2">
+                    <span className="w-6 h-[2px] bg-primary-200 shrink-0" />
+                    {member.role}
+                  </p>
+                  <p className="text-sm text-neutral-600 line-clamp-2 leading-relaxed mb-auto">
+                    {member.shortBlurb}
+                  </p>
 
-                    <div className="flex items-center justify-between border-t border-neutral-100 pt-6">
-                      <button className="flex items-center gap-2 text-sm font-black text-neutral-900 group-hover:gap-4 transition-all uppercase tracking-widest">
-                        Full Profile
-                        <ArrowRight className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
-                      </button>
-
-                      <div className="flex gap-3">
-                        {member.social?.linkedin && !member.social.linkedin.endsWith('linkedin.com') && !member.social.linkedin.endsWith('linkedin.com/') && (
-                          <div className="w-8 h-8 rounded-lg bg-neutral-50 flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-colors">
-                            <Linkedin className="w-4 h-4" strokeWidth={1.5} />
-                          </div>
-                        )}
-                        {member.social?.email && member.social.email !== 'sam@asiainsights.com' && (
-                          <div className="w-8 h-8 rounded-lg bg-neutral-50 flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-colors">
-                            <Mail className="w-4 h-4" strokeWidth={1.5} />
-                          </div>
-                        )}
-                      </div>
+                  {/* CTA footer */}
+                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-neutral-100">
+                    <span className="text-xs font-black text-neutral-500 uppercase tracking-widest group-hover:text-primary-600 transition-colors">
+                      Full Profile
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:border-primary-600 group-hover:text-white transition-all duration-300">
+                      <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
                     </div>
                   </div>
+
                 </div>
               </div>
             ))}
@@ -311,7 +301,7 @@ export default function MeetTheTeamClient() {
                 className="object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
               />
               <div className="absolute bottom-12 left-12 right-12 z-20">
-                <div className="p-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl">
+                <div className="p-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl">
                   <p className="text-2xl font-bold italic mb-4 leading-relaxed">
                     "Real insight isn't found in a brochure. It's found in the living, breathing reality of on-the-ground experience."
                   </p>
@@ -324,25 +314,25 @@ export default function MeetTheTeamClient() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-neutral-900 text-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-black mb-6 leading-tight">
+          <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 leading-tight">
             Ready to start your journey?
           </h2>
-          <p className="text-xl text-neutral-300 mb-10 font-medium max-w-2xl mx-auto">
+          <p className="text-xl text-neutral-600 mb-10 font-medium max-w-2xl mx-auto">
             Our team is ready to help you navigate Southeast Asia with the confidence of a local.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/concierge"
-              className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               Explore Concierge
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/businesses"
-              className="inline-flex items-center justify-center px-10 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-2xl transition-all duration-200"
+              className="inline-flex items-center justify-center px-10 py-4 bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 font-bold rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md"
             >
               Browse Local Hubs
             </Link>
@@ -356,132 +346,133 @@ export default function MeetTheTeamClient() {
           isOpen={!!selectedMember}
           onClose={() => setSelectedMember(null)}
           size="xl"
-          className="max-h-[90vh] overflow-y-auto"
+          className="max-h-[90vh] overflow-y-auto p-0"
           hideHeader={true}
           noPadding={true}
         >
-          <div className="relative bg-white min-h-[600px] flex flex-col md:flex-row">
-            {/* Close Button - Desktop (Top Right of Modal) */}
+          <div className="relative bg-white flex flex-col md:flex-row">
+
+            {/* Close button — always top-right, never in layout flow */}
             <button
               onClick={() => setSelectedMember(null)}
-              className="absolute top-4 right-4 z-50 p-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900 rounded-full transition-all"
+              className="absolute top-4 right-4 z-30 p-2 bg-white/90 backdrop-blur-sm hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-full shadow-md border border-neutral-200/60 transition-all"
               aria-label="Close profile"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            {/* Sidebar (Left) */}
-            <div className="w-full md:w-[320px] shrink-0 bg-neutral-50 border-b md:border-b-0 md:border-r border-neutral-100 p-6 md:p-8 flex flex-col gap-6">
-              {/* Profile Image */}
-              <div className="aspect-[3/4] relative rounded-2xl overflow-hidden shadow-md bg-neutral-200 ring-1 ring-black/5">
+            {/* Sidebar — portrait photo */}
+            <div className="w-full md:w-[260px] shrink-0">
+              <div className="aspect-[3/4] relative bg-neutral-100 overflow-hidden md:rounded-l-2xl">
                 {selectedMember.image && !imageErrors[selectedMember.id] ? (
                   <Image
                     src={selectedMember.image}
                     alt={selectedMember.name}
                     fill
                     className="object-cover"
+                    style={{ objectPosition: selectedMember.imagePosition === 'top' ? 'center top' : 'center center' }}
                     onError={() => setImageErrors(prev => ({ ...prev, [selectedMember.id]: true }))}
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-100 to-secondary-100 text-primary-300 text-6xl font-black">
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 text-primary-300 text-6xl font-black">
                     {selectedMember.name.charAt(0)}
                   </div>
                 )}
+                {/* Subtle bottom fade for depth */}
+                <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent z-10 pointer-events-none" />
               </div>
+            </div>
 
-              {/* Connect Section */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Connect</h3>
-                <div className="flex flex-col gap-2">
-                  {selectedMember.social?.email && selectedMember.social.email !== 'sam@asiainsights.com' && (
-                    <a href={`mailto:${selectedMember.social.email}`} className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-primary-500 hover:text-primary-600 transition-all text-sm font-bold shadow-sm group">
-                      <Mail className="w-4 h-4 text-neutral-400 group-hover:text-primary-500 transition-colors" strokeWidth={1.5} />
-                      <span className="truncate">{selectedMember.social.email}</span>
+            {/* Content */}
+            <div className="flex-1 p-6 md:p-8 flex flex-col gap-5 min-w-0">
+
+              {/* Identity — name and role at the very top */}
+              <div className="pr-10">
+                <p className="text-xs font-black text-primary-600 uppercase tracking-widest mb-1.5">
+                  {selectedMember.role}
+                </p>
+                <h2 className="text-3xl font-black text-neutral-900 leading-tight mb-4">
+                  {selectedMember.name}
+                </h2>
+                {/* Languages + social links inline under name */}
+                <div className="flex flex-wrap gap-2 items-center">
+                  {selectedMember.languages.map((lang, i) => (
+                    <span key={i} className="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg text-xs font-bold">
+                      {lang}
+                    </span>
+                  ))}
+                  {selectedMember.social?.email && (
+                    <a
+                      href={`mailto:${selectedMember.social.email}`}
+                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-primary-400 hover:text-primary-600 transition-all"
+                    >
+                      <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      Email
                     </a>
                   )}
                   {selectedMember.social?.linkedin && !selectedMember.social.linkedin.endsWith('linkedin.com') && !selectedMember.social.linkedin.endsWith('linkedin.com/') && (
-                    <a href={selectedMember.social.linkedin} target="_blank" rel="noopener" className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-[#0077b5] hover:text-[#0077b5] transition-all text-sm font-bold shadow-sm group">
-                      <Linkedin className="w-4 h-4 text-neutral-400 group-hover:text-[#0077b5] transition-colors" strokeWidth={1.5} />
-                      <span>LinkedIn Profile</span>
+                    <a
+                      href={selectedMember.social.linkedin}
+                      target="_blank"
+                      rel="noopener"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-[#0077b5] hover:text-[#0077b5] transition-all"
+                    >
+                      <Linkedin className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      LinkedIn
                     </a>
                   )}
                   {selectedMember.social?.instagram && !selectedMember.social.instagram.endsWith('instagram.com') && !selectedMember.social.instagram.endsWith('instagram.com/') && (
-                    <a href={selectedMember.social.instagram} target="_blank" rel="noopener" className="flex items-center gap-3 p-3 bg-white border border-neutral-200 rounded-xl hover:border-[#E1306C] hover:text-[#E1306C] transition-all text-sm font-bold shadow-sm group">
-                      <svg className="w-4 h-4 text-neutral-400 group-hover:text-[#E1306C] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                      <span>Instagram</span>
+                    <a
+                      href={selectedMember.social.instagram}
+                      target="_blank"
+                      rel="noopener"
+                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-[#E1306C] hover:text-[#E1306C] transition-all"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                      Instagram
                     </a>
                   )}
                 </div>
               </div>
 
-              {/* Languages */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Languages</h3>
+              {/* Divider */}
+              <div className="w-10 h-[2px] bg-primary-200 rounded-full" />
+
+              {/* About */}
+              <div>
+                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">About</h3>
+                <p className="text-[15px] text-neutral-600 leading-relaxed font-medium">
+                  {selectedMember.bio}
+                </p>
+              </div>
+
+              {/* Focus Areas */}
+              <div>
+                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">Focus Areas</h3>
                 <div className="flex flex-wrap gap-2">
-                  {selectedMember.languages.map((language, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1.5 bg-white border border-neutral-200 text-neutral-600 rounded-lg font-bold text-xs shadow-sm"
-                    >
-                      {language}
+                  {selectedMember.areasOfSpecialty.map((area, index) => (
+                    <span key={index} className="px-3 py-1.5 bg-neutral-50 border border-neutral-100 text-neutral-700 rounded-xl font-bold text-sm">
+                      {area}
                     </span>
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Content (Right) */}
-            <div className="flex-1 p-8 md:p-12 overflow-y-auto max-h-[90vh]">
-              <div className="max-w-2xl">
-                <div className="mb-10">
-                  <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3 tracking-tight leading-none">
-                    {selectedMember.name}
-                  </h2>
-                  <p className="text-primary-600 font-bold text-xl flex items-center gap-2">
-                    {selectedMember.role}
-                  </p>
-                </div>
-
-                <div className="space-y-12">
-                  {/* Bio */}
-                  <div>
-                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4">Background</h3>
-                    <p className="text-lg md:text-xl text-neutral-600 leading-relaxed font-medium">
-                      {selectedMember.bio}
-                    </p>
-                  </div>
-
-                  {/* Specialties */}
-                  <div>
-                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4">Focus Areas</h3>
-                    <div className="flex flex-wrap gap-2.5">
-                      {selectedMember.areasOfSpecialty.map((area, index) => (
-                        <span
-                          key={index}
-                          className="px-5 py-2.5 bg-neutral-50 border border-neutral-100 text-neutral-700 rounded-xl font-bold text-sm hover:bg-white hover:shadow-md transition-all cursor-default"
-                        >
-                          {area}
-                        </span>
-                      ))}
+              {/* At a Glance */}
+              <div>
+                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">At a Glance</h3>
+                <div className="flex flex-col gap-2">
+                  {selectedMember.atAGlance.map((item, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                      <div className="w-5 h-5 rounded-full bg-white text-primary-600 flex items-center justify-center shrink-0 shadow-sm mt-0.5 border border-primary-100">
+                        <Check className="w-3 h-3 stroke-[3px]" />
+                      </div>
+                      <span className="text-sm text-neutral-700 font-medium leading-relaxed">{item}</span>
                     </div>
-                  </div>
-
-                  {/* At a Glance */}
-                  <div>
-                    <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest mb-4">At a Glance</h3>
-                    <div className="grid grid-cols-1 gap-3">
-                      {selectedMember.atAGlance.map((item, index) => (
-                        <div key={index} className="flex items-start gap-4 p-4 rounded-2xl bg-primary-50/30 border border-primary-100/50">
-                          <div className="w-6 h-6 rounded-full bg-white text-primary-600 flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                            <Check className="w-3.5 h-3.5 stroke-[3px]" />
-                          </div>
-                          <span className="text-neutral-700 font-bold leading-relaxed">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
+
             </div>
           </div>
         </Modal>

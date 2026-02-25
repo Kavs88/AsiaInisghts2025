@@ -18,7 +18,7 @@ export default function InteractiveMap(props: InteractiveMapProps) {
         () =>
             dynamic(() => import('./MapInner'), {
                 loading: () => (
-                    <div className={`bg-neutral-100 animate-pulse flex items-center justify-center rounded-2xl ${props.className}`} style={{ minHeight: '300px' }}>
+                    <div className={`bg-neutral-100 flex items-center justify-center rounded-2xl ${props.className}`} style={{ minHeight: '300px' }}>
                         <div className="text-neutral-400 font-medium">Loading Map...</div>
                     </div>
                 ),

@@ -66,7 +66,7 @@ function VendorCard({
   return (
     <article
       className={cn(
-        'group bg-white rounded-3xl overflow-hidden',
+        'group bg-white rounded-2xl overflow-hidden',
         'border border-neutral-100/50',
         'shadow-sm hover:shadow-xl hover:-translate-y-1',
         'transition-all duration-300',

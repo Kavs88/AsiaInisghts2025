@@ -42,7 +42,7 @@ function FooterLinkList({ links }: { links: FooterLink[] }) {
           {link.comingSoon ? (
             <span className="text-sm text-neutral-500 cursor-default flex items-center gap-2">
               {link.label}
-              <span className="text-[9px] uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
+              <span className="text-xs uppercase tracking-wider bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">Soon</span>
             </span>
           ) : (
             <Link
@@ -64,7 +64,7 @@ export default function Footer() {
   return (
     <footer className="bg-neutral-900 text-neutral-300" role="contentinfo">
       <div className="container-custom py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <Link

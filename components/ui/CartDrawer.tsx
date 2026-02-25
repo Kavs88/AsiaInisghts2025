@@ -62,7 +62,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
       {/* Drawer */}
       <div
         className={cn(
-          'fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[9999] transform transition-transform duration-300 ease-out flex flex-col',
+          'fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-[9999] transform transition-transform duration-300 ease-out flex flex-col',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
         role="dialog"

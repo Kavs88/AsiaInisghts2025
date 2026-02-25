@@ -76,7 +76,7 @@ export default function VendorDealsPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+                        <h1 className="text-3xl font-black text-neutral-900 mb-2">
                             My Deals
                         </h1>
                         <p className="text-neutral-600">
@@ -94,21 +94,21 @@ export default function VendorDealsPage() {
                 {/* Quick Stats */}
                 {deals.length > 0 && (
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Active</div>
-                            <div className="text-2xl font-bold text-success-600">
+                            <div className="text-2xl font-black text-success-600">
                                 {deals.filter(d => d.status === 'active').length}
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Drafts</div>
-                            <div className="text-2xl font-bold text-warning-600">
+                            <div className="text-2xl font-black text-warning-600">
                                 {deals.filter(d => d.status === 'draft').length}
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Expired</div>
-                            <div className="text-2xl font-bold text-neutral-400">
+                            <div className="text-2xl font-black text-neutral-400">
                                 {deals.filter(d => d.status === 'expired').length}
                             </div>
                         </div>
@@ -147,7 +147,7 @@ export default function VendorDealsPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-semibold text-neutral-900 mb-2">
+                            <h2 className="text-2xl font-black text-neutral-900 mb-2">
                                 Create Your First Deal
                             </h2>
                             <p className="text-neutral-600 mb-6">
@@ -197,7 +197,7 @@ export default function VendorDealsPage() {
                                     </div>
 
                                     <div className="pr-20">
-                                        <h3 className="text-lg font-semibold text-neutral-900 mb-2 line-clamp-2">{deal.title}</h3>
+                                        <h3 className="text-lg font-bold text-neutral-900 mb-2 line-clamp-2">{deal.title}</h3>
                                     </div>
 
                                     {deal.description && (

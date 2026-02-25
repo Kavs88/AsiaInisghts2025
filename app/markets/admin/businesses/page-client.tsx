@@ -80,7 +80,7 @@ export default function AdminBusinessesPageClient() {
       <div className="container-custom py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Business Directory</h1>
+            <h1 className="text-3xl font-black text-neutral-900 mb-2">Business Directory</h1>
             <p className="text-neutral-600">Curate the business directory</p>
           </div>
           <Link

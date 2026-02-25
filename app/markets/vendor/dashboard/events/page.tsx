@@ -77,7 +77,7 @@ export default function VendorEventsPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+                        <h1 className="text-3xl font-black text-neutral-900 mb-2">
                             My Events
                         </h1>
                         <p className="text-neutral-600">
@@ -95,21 +95,21 @@ export default function VendorEventsPage() {
                 {/* Quick Stats */}
                 {events.length > 0 && (
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Published</div>
-                            <div className="text-2xl font-bold text-success-600">
+                            <div className="text-2xl font-black text-success-600">
                                 {events.filter(e => e.status === 'published').length}
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Drafts</div>
-                            <div className="text-2xl font-bold text-warning-600">
+                            <div className="text-2xl font-black text-warning-600">
                                 {events.filter(e => e.status === 'draft').length}
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl border border-neutral-200 p-4">
+                        <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Archived</div>
-                            <div className="text-2xl font-bold text-neutral-400">
+                            <div className="text-2xl font-black text-neutral-400">
                                 {events.filter(e => e.status === 'archived').length}
                             </div>
                         </div>
@@ -130,7 +130,7 @@ export default function VendorEventsPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-semibold text-neutral-900 mb-2">
+                            <h2 className="text-2xl font-black text-neutral-900 mb-2">
                                 Create Your First Event
                             </h2>
                             <p className="text-neutral-600 mb-6">

@@ -1,0 +1,205 @@
+﻿commit 25023c27aa4b73170a304d887c5a8804ff18c839
+Author: Kavs88 <kavs88@users.noreply.github.com>
+Date:   Sat Feb 21 17:37:53 2026 +0700
+
+    chore: execute Phase 9 structural hardening and contract enforcement
+
+diff --git a/components/ui/Header.tsx b/components/ui/Header.tsx
+index e78eb346..d6f06e0e 100644
+--- a/components/ui/Header.tsx
++++ b/components/ui/Header.tsx
+@@ -26,6 +26,12 @@ interface HeaderProps {
+   className?: string
+ }
+ 
++interface NavItem {
++  label: string;
++  href: string;
++  subItems?: { label: string; href: string; comingSoon?: boolean }[];
++}
++
+ function Header({ className }: HeaderProps) {
+   // Track which menu is open by its label/ID
+   const [activeMenu, setActiveMenu] = useState<string | null>(null)
+@@ -280,64 +286,58 @@ function Header({ className }: HeaderProps) {
+     }
+   }, [activeMenu])
+ 
+-  const navItems = useMemo(() => [
+-    {
+-      label: 'Events',
+-      href: '/markets/discovery',
+-      subItems: [
+-        { label: 'Discovery Hub', href: '/markets/discovery' },
+-        { label: 'My Saved Events', href: '/markets/my-events' },
+-        { label: 'Hosting & Applicants', href: '/contact' },
+-      ]
+-    },
+-    {
+-      label: 'Businesses',
+-      href: '/businesses',
+-      subItems: [
+-        { label: 'Discovery Hub', href: '/businesses' },
+-        { label: 'Food & Drink', href: '/businesses?category=food' },
+-        { label: 'Retail & Shops', href: '/businesses?category=retail' },
+-        { label: 'Professional Services', href: '/businesses?category=service' },
+-      ]
+-    },
+-    {
+-      label: 'Markets',
+-      href: '/markets/market-days',
+-      subItems: [
+-        { label: 'Upcoming Markets', href: '/markets/market-days' },
+-        { label: 'Market Sellers', href: '/markets/sellers' },
+-        { label: 'Artisan Products', href: '/markets/products' },
+-      ]
+-    },
+-    {
+-      label: 'Stays',
+-      href: '/properties',
+-      subItems: [
+-        { label: 'All Stays', href: '/properties' },
+-        { label: 'Premium Villas', href: '/properties?type=villa' },
+-        { label: 'Apartments', href: '/properties?type=apartment' },
+-        { label: 'Event Venues', href: '/properties?property_type=event_space' },
+-      ]
+-    },
+-    {
+-      label: 'Concierge',
+-      href: '/concierge',
+-      subItems: [
+-        { label: 'Relocation Services', href: '/concierge' },
+-        { label: 'Meet the Team', href: '/meet-the-team' },
+-        { label: 'Local Guides', href: '/concierge/guides', comingSoon: true },
+-        { label: 'Expat Support', href: '/concierge/expat-support', comingSoon: true },
+-      ]
+-    },
+-    {
+-      label: 'About',
+-      href: '/meet-the-team',
+-      subItems: [
+-        { label: 'Meet the Team', href: '/meet-the-team' },
+-        { label: 'Contact Us', href: '/contact' },
+-      ]
+-    },
+-  ], [])
++  const navItems = useMemo(() => {
++    const items: (NavItem | null)[] = [
++      {
++        label: 'Events',
++        href: '/markets/discovery',
++        subItems: [
++          { label: 'Discovery Hub', href: '/markets/discovery' },
++          { label: 'My Saved Events', href: '/markets/my-events' },
++          { label: 'Hosting & Applicants', href: '/contact' },
++        ]
++      },
++      {
++        label: 'Businesses',
++        href: '/businesses',
++        subItems: [
++          { label: 'Discovery Hub', href: '/businesses' },
++          { label: 'Services Stack', href: '/businesses?category=setup' },
++          { label: 'Food & Drink', href: '/businesses?category=food' },
++          { label: 'Retail & Shops', href: '/businesses?category=retail' },
++          { label: 'Professional Services', href: '/businesses?category=service' },
++        ]
++      },
++      {
++        label: 'Markets',
++        href: '/markets/market-days',
++        subItems: [
++          { label: 'Upcoming Markets', href: '/markets/market-days' },
++          { label: 'Market Sellers', href: '/markets/sellers' },
++          { label: 'Artisan Products', href: '/markets/products' },
++        ]
++      },
++      {
++        label: 'Stays',
++        href: '/properties',
++        subItems: [
++          { label: 'All Stays', href: '/properties' },
++          { label: 'Premium Villas', href: '/properties?type=villa' },
++          { label: 'Apartments', href: '/properties?type=apartment' },
++          { label: 'Event Venues', href: '/properties?property_type=event_space' },
++        ]
++      },
++      {
++        label: 'About',
++        href: '/meet-the-team',
++        subItems: [
++          { label: 'Meet the Team', href: '/meet-the-team' },
++          { label: 'Contact Us', href: '/contact' },
++        ]
++      }
++    ]
++    return items.filter((i): i is NavItem => i !== null)
++  }, [])
+ 
+   const handleMobileMenuToggle = useCallback(() => {
+     setIsMobileMenuOpen(prev => !prev)
+@@ -392,7 +392,7 @@ function Header({ className }: HeaderProps) {
+ 
+               {/* Desktop Navigation */}
+               <nav className="hidden lg:flex items-center gap-0.5" aria-label="Main navigation">
+-                {navItems.map((item) => {
++                {navItems.map((item: NavItem) => {
+                   // Items with sub-items render as dropdown
+                   if (item.subItems && item.subItems.length > 0) {
+                     const isOpen = activeMenu === item.label
+@@ -704,19 +704,19 @@ function Header({ className }: HeaderProps) {
+                   <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                   </svg>
+-                  <div className="flex flex-col min-w-[35px]">
++                  <span className="flex flex-col min-w-[35px]">
+                     <span className="text-[9px] text-primary-600 font-medium leading-tight">
+                       Next
+                     </span>
+                     <span className="text-[10px] font-bold text-neutral-900 group-hover:text-primary-700 leading-tight">
+                       Dec 17
+                     </span>
+-                  </div>
++                  </span>
+                 </Link>
+               )}
+ 
+-              {/* List Your Stall CTA - Desktop - Hidden on Discovery page */}
+-              {pathname !== '/markets/discovery' && (
++              {/* List Your Stall CTA - Desktop - EARNED NAVIGATION: Only show if user is likely a potential vendor (logged in or on vendor paths) */}
++              {(user || pathname.includes('/vendor')) && pathname !== '/markets/discovery' && (
+                 <Link
+                   href="/markets/vendor/apply"
+                   className="hidden xl:inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap h-9"
+@@ -770,7 +770,7 @@ function Header({ className }: HeaderProps) {
+               )}
+               aria-label="Mobile navigation"
+             >
+-              {navItems.map((item) => {
++              {navItems.map((item: NavItem) => {
+                 // Markets has sub-items - render with expandable sub-menu
+                 if (item.subItems && item.subItems.length > 0) {
+                   return (
+@@ -807,13 +807,15 @@ function Header({ className }: HeaderProps) {
+                   </Link>
+                 )
+               })}
+-              <Link
+-                href="/markets/vendor/apply"
+-                className="block px-4 py-3 mt-2 text-base font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors min-h-[44px] flex items-center"
+-                onClick={() => setIsMobileMenuOpen(false)}
+-              >
+-                List your stall
+-              </Link>
++              {!vendor && (
++                <Link
++                  href="/markets/vendor/apply"
++                  className="block px-4 py-3 mt-2 text-base font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors min-h-[44px] flex items-center"
++                  onClick={() => setIsMobileMenuOpen(false)}
++                >
++                  List your stall
++                </Link>
++              )}
+               {user ? (
+                 <>
+                   {vendor ? (

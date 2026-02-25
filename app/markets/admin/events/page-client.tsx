@@ -97,7 +97,7 @@ export default function AdminEventsPageClient() {
       <div className="container-custom py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Events</h1>
+            <h1 className="text-3xl font-black text-neutral-900 mb-2">Events</h1>
             <p className="text-neutral-600">Shape the community calendar</p>
           </div>
           <Link

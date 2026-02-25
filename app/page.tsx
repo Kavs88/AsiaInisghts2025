@@ -46,7 +46,7 @@ async function FeaturedBusinesses() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-0" />
               <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 z-20 pointer-events-none">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
+                  <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
                     {biz.category}
                   </span>
                 </div>
@@ -74,7 +74,7 @@ async function FeaturedBusinesses() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-0" />
             <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6 z-20 pointer-events-none">
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
+                <span className="px-2 py-1 bg-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-tighter text-white rounded-md border border-white/30">
                   Premium Support
                 </span>
               </div>
@@ -88,7 +88,7 @@ async function FeaturedBusinesses() {
           </div>
         </>
       ) : (
-        <div className="col-span-full text-center py-12 bg-neutral-50 rounded-3xl border border-neutral-100 border-dashed">
+        <div className="col-span-full text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
             <Building2 className="w-8 h-8 text-neutral-300" />
           </div>
@@ -123,7 +123,7 @@ async function FeaturedProperties() {
           />
         ))
       ) : (
-        <div className="col-span-full text-center py-12 bg-white/50 rounded-3xl border border-neutral-200 border-dashed backdrop-blur-sm">
+        <div className="col-span-full text-center py-12 bg-neutral-50 rounded-2xl border border-neutral-100 border-dashed">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-neutral-100">
             <Building2 className="w-8 h-8 text-neutral-300" />
           </div>
@@ -158,7 +158,7 @@ export default async function Home() {
         {/* Large Hero Image Background */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/Stalls 6.jpg"
+            src="/images/contact-banner.jpg"
             alt="Asia Insights"
             fill
             className="object-cover opacity-40"
@@ -247,10 +247,20 @@ export default async function Home() {
                     className="object-cover hover:scale-105 transition-transform duration-700"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 border-[6px] border-white/20 rounded-[2.5rem] pointer-events-none" />
+                  <div className="absolute inset-0 border-[6px] border-white/20 rounded-2xl pointer-events-none" />
                 </div>
-                {/* Decorative element */}
-
+                {/* Community Vouched Badge */}
+                <div className="absolute -bottom-6 -right-2 lg:-bottom-8 lg:-right-8 bg-white p-4 lg:p-5 rounded-2xl shadow-xl border border-neutral-100 animate-fade-up z-20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-green-600" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <div className="font-black text-neutral-900 leading-tight">Community Vouched</div>
+                      <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mt-0.5">Since 2014</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Story */}
@@ -260,7 +270,7 @@ export default async function Home() {
                 </h2>
                 <div className="prose prose-lg prose-neutral mb-8">
                   <p className="text-xl text-neutral-600 leading-relaxed font-medium">
-                    "I moved to South East Asia in 2024 and built this platform to help others do the same.
+                    "I moved to South East Asia in 2014 and built this platform to help others do the same.
                     We're not a faceless corporation — we're expats who've walked this path."
                   </p>
                 </div>

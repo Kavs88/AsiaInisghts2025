@@ -76,7 +76,7 @@ function ProductCard({
 
   return (
     <article className={cn(
-      'group bg-white rounded-3xl shadow-sm hover:shadow-xl border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
+      'group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
       !isAvailable && isOutOfStock && 'opacity-60',
       className
     )}>

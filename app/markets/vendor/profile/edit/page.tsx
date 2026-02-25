@@ -67,7 +67,7 @@ export default async function VendorProfileEditPage() {
     <main id="main-content" className="min-h-screen bg-neutral-50">
       <div className="container-custom py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">Request Profile Changes</h1>
+          <h1 className="text-3xl font-black text-neutral-900 mb-2">Request Profile Changes</h1>
           <p className="text-neutral-600">Submit a request to update your business information. Changes require admin approval.</p>
         </div>
         <VendorProfileEditClient vendor={vendor} />

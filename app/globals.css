@@ -4,9 +4,14 @@
 
 @layer base {
   :root {
-    --color-primary: 0 84 182;
-    /* #0054b6 - Asia Insights Brand Blue */
-    --color-secondary: 217 70 239;
+    --color-primary: 13 148 136;
+    /* #0d9488 - Jade Teal */
+    --color-secondary: 245 158 11;
+    /* #f59e0b - Warm Amber */
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
   }
 
   html {
@@ -52,9 +57,8 @@
 
   /* Reusable component classes */
   .container-custom {
-    @apply max-w-[1400px] mx-auto px-2 sm:px-4 lg:px-6;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
     /* overflow-x: hidden; - Removed to allow sticky elements/tooltips */
   }
