@@ -76,7 +76,7 @@ function ProductCard({
 
   return (
     <article className={cn(
-      'group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
+      'group bg-white rounded-2xl shadow-sm hover:shadow-md border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
       !isAvailable && isOutOfStock && 'opacity-60',
       className
     )}>
@@ -115,17 +115,17 @@ function ProductCard({
         {/* Badges - Top Left - Minimalist */}
         <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-20 pointer-events-none">
           {discountPercentage && (
-            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold text-white bg-error-500/90 backdrop-blur-sm shadow-sm">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-error-500/90 backdrop-blur-sm shadow-sm">
               -{discountPercentage}%
             </span>
           )}
           {requiresPreorder && (
-            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold text-white bg-primary-600/90 backdrop-blur-sm shadow-sm">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-primary-600/90 backdrop-blur-sm shadow-sm">
               Preorder
             </span>
           )}
           {isLowStock && !requiresPreorder && (
-            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold text-white bg-amber-500/90 backdrop-blur-sm shadow-sm">
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-amber-500/90 backdrop-blur-sm shadow-sm">
               Low Stock
             </span>
           )}

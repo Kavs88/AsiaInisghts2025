@@ -118,7 +118,7 @@ export default async function MarketsHomePage() {
           <div className="absolute inset-0 bg-neutral-900/20 z-0" />
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             <div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl font-black text-white mb-6 sm:mb-8 leading-[0.9] tracking-tighter drop-shadow-xl">
@@ -131,13 +131,13 @@ export default async function MarketsHomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/markets/market-days"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary-600/30 text-lg hover:-translate-y-1"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary-600/30 text-lg hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
                   Find Next Event
                 </Link>
                 <Link
                   href="/markets/vendor/apply"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-2xl transition-all duration-200 border-2 border-white/30 hover:border-white/50 text-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-2xl transition-all duration-200 border-2 border-white/30 hover:border-white/50 text-lg focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-neutral-900"
                 >
                   List Your Stall
                 </Link>
@@ -152,11 +152,11 @@ export default async function MarketsHomePage() {
 
       {/* Upcoming Market Preview */}
       <section className="py-12 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="bg-white rounded-2xl p-8 lg:p-12 border border-markets-100 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl p-8 lg:p-12 border border-primary-100 shadow-md">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
               <div className="flex-1">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-markets-100 text-markets-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -172,7 +172,7 @@ export default async function MarketsHomePage() {
                     {nextMarketDay?.location_name || nextMarketDay?.location || 'Central Park, Downtown'}
                   </p>
                   <p className="text-xl text-neutral-600 font-medium flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-markets-500"></span>
+                    <span className="w-2 h-2 rounded-full bg-primary-500"></span>
                     {nextMarketDay?.start_time && nextMarketDay?.end_time
                       ? `${nextMarketDay.start_time} - ${nextMarketDay.end_time}`
                       : '9:00 AM - 2:00 PM'}
@@ -184,7 +184,7 @@ export default async function MarketsHomePage() {
               </div>
               <Link
                 href="/markets/market-days"
-                className="inline-flex items-center justify-center px-10 py-5 bg-markets-600 hover:bg-markets-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-md hover:shadow-xl hover:-translate-y-1 text-lg whitespace-nowrap"
+                className="inline-flex items-center justify-center px-10 py-5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-1 text-lg whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 View Details
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,7 +198,7 @@ export default async function MarketsHomePage() {
 
       {/* Featured Sellers */}
       <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3">
@@ -210,9 +210,9 @@ export default async function MarketsHomePage() {
             </div>
             <Link
               href="/markets/sellers"
-              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-markets-600 hover:text-markets-700 font-bold text-lg hover:bg-markets-50 rounded-xl transition-all duration-200"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-bold text-lg hover:bg-primary-50 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
-              View All
+              View All Sellers
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -242,7 +242,7 @@ export default async function MarketsHomePage() {
 
       {/* Featured Products */}
       <section className="py-12 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-3">
@@ -254,7 +254,7 @@ export default async function MarketsHomePage() {
             </div>
             <Link
               href="/products"
-              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-markets-600 hover:text-markets-700 font-bold text-lg hover:bg-markets-50 rounded-xl transition-all duration-200"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-bold text-lg hover:bg-primary-50 rounded-xl transition-all duration-200"
             >
               View All
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ export default async function MarketsHomePage() {
 
       {/* CTA Section */}
       <section className="py-12 bg-neutral-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-black mb-6">
             Are you a business or service provider?
           </h2>

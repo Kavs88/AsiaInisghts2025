@@ -3,6 +3,7 @@
 import { memo, useCallback, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Badge from './Badge'
 
@@ -67,8 +68,8 @@ function VendorCard({
     <article
       className={cn(
         'group bg-white rounded-2xl overflow-hidden',
-        'border border-neutral-100/50',
-        'shadow-sm hover:shadow-xl hover:-translate-y-1',
+        'border border-neutral-200/60',
+        'shadow-sm hover:shadow-md hover:-translate-y-1',
         'transition-all duration-300',
         'h-full flex flex-col relative',
         className
@@ -95,8 +96,8 @@ function VendorCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-300">
-            <div className="w-full h-full bg-gradient-to-br from-markets-50 to-secondary-50 flex items-center justify-center">
-              <span className="text-4xl text-markets-300 font-black">{name.charAt(0)}</span>
+            <div className="w-full h-full bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+              <span className="text-4xl text-primary-300 font-black">{name.charAt(0)}</span>
             </div>
           </div>
         )}
@@ -117,9 +118,12 @@ function VendorCard({
 
       {/* Card Content */}
       <div className="p-6 flex-1 flex flex-col relative z-20 pointer-events-none text-left">
-        <h3 className="text-lg font-bold text-neutral-900 group-hover:text-markets-600 transition-colors line-clamp-1 leading-snug mb-3">
-          {name}
-        </h3>
+        <div className="flex items-center gap-1.5 mb-3">
+          <h3 className="text-lg font-bold text-neutral-900 group-hover:text-primary-600 transition-colors line-clamp-1 leading-snug">
+            {name}
+          </h3>
+          {isVerified && <ShieldCheck className="w-4 h-4 text-primary-500 flex-shrink-0" strokeWidth={2} aria-label="Verified vendor" />}
+        </div>
 
         {tagline && (
           <p className="text-base text-neutral-600 mb-4 line-clamp-2 leading-relaxed font-medium">
@@ -132,7 +136,7 @@ function VendorCard({
             {deliveryAvailable && <span className="text-neutral-900 font-semibold">Delivery</span>}
             {pickupAvailable && <span className="text-neutral-900 font-semibold">Pickup</span>}
           </div>
-          <span className="text-markets-600 font-bold group-hover:underline">Visit Shop</span>
+          <span className="text-primary-600 font-bold group-hover:underline">Visit Shop</span>
         </div>
       </div>
     </article>

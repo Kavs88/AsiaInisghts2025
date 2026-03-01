@@ -1,29 +1,26 @@
+// Revalidate the page every 60 seconds (ISR) instead of force-dynamic.
+// This ensures instant TTFB (Time To First Byte) for a premium feel,
+// while keeping the Supabase data relatively fresh.
+export const revalidate = 60
+
 import Link from 'next/link'
 import Image from 'next/image'
 import HeroSearchBar from '@/components/ui/HeroSearchBar'
 import { ShieldCheck, Building2 } from 'lucide-react'
-import { getBusinesses } from '@/lib/actions/businesses'
+import { getBusinesses, type Business } from '@/lib/actions/businesses'
 import { getProperties } from '@/lib/actions/properties'
 import { getUpcomingMarketDays } from '@/lib/supabase/queries'
 import PropertyCard from '@/components/ui/PropertyCard'
 
-import { Suspense } from 'react'
-import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
+// --- Rendering Components (data passed as props, no async fetching) ---
 
-// QA FIX: Hub → Markets Decoupling
-// REMOVED: Direct Markets data fetching (getVendors, getProducts, getUpcomingMarketDays)
-// QA FIX: Hub → Markets Decoupling
-// REASON: Hub must not depend on Markets internals to maintain section independence
-// NOTE: Forcing HMR update
-
-async function FeaturedBusinesses() {
-  const businesses = await getBusinesses({ limit: 3, featuredOnly: true })
+function BusinessGrid({ businesses }: { businesses: Business[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {businesses.length > 0 || true ? (
+      {businesses.length > 0 ? (
         <>
-          {businesses.map((biz: any) => (
-            <div key={biz.id} className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-neutral-100 h-full aspect-[4/3]">
+          {businesses.map((biz) => (
+            <div key={biz.id} className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 bg-neutral-100 h-full aspect-[4/3]">
               {/* Absolute Link Overlay */}
               <Link
                 href={`/businesses/${biz.slug}`}
@@ -37,6 +34,7 @@ async function FeaturedBusinesses() {
                   alt={biz.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 text-neutral-300">
@@ -61,7 +59,7 @@ async function FeaturedBusinesses() {
           ))}
 
           {/* Premium Access Point - Concierge */}
-          <div className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-neutral-900 h-full aspect-[4/3]">
+          <div className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 bg-neutral-900 h-full aspect-[4/3]">
             <Link
               href="/concierge"
               className="absolute inset-0 z-10"
@@ -102,8 +100,7 @@ async function FeaturedBusinesses() {
   )
 }
 
-async function FeaturedProperties() {
-  const properties = await getProperties({ limit: 4, featuredOnly: true })
+function PropertyGrid({ properties }: { properties: any[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {properties.length > 0 ? (
@@ -137,9 +134,15 @@ async function FeaturedProperties() {
   )
 }
 
+// --- Page ---
+
 export default async function Home() {
-  // Fetch non-blocking UI data (markets cache hit)
-  const upcomingMarkets = await getUpcomingMarketDays(1).catch((): any[] => [])
+  // Fire all three Supabase queries in parallel — no waterfall
+  const [upcomingMarkets, businesses, properties] = await Promise.all([
+    getUpcomingMarketDays(1).catch((): any[] => []),
+    getBusinesses({ limit: 3, featuredOnly: true }).catch((): any[] => []),
+    getProperties({ limit: 4, featuredOnly: true }).catch((): any[] => []),
+  ])
 
   const nextMarket = upcomingMarkets?.[0] ?? null
   const nextMarketDate = nextMarket?.market_date
@@ -163,6 +166,7 @@ export default async function Home() {
             fill
             className="object-cover opacity-40"
             priority
+            fetchPriority="high"
             sizes="100vw"
           />
           {/* Cinema Gradient Overlay */}
@@ -170,7 +174,7 @@ export default async function Home() {
           <div className="absolute inset-0 bg-neutral-900/20 z-0" />
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full mt-12 sm:mt-0">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12 sm:mt-0">
           <div className="max-w-4xl">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 sm:mb-10 leading-[0.9] tracking-tighter drop-shadow-xl">
               Find trusted local <span className="text-primary-400">services</span> & <span className="text-secondary-400">events.</span>
@@ -178,11 +182,10 @@ export default async function Home() {
             <p className="text-xl sm:text-2xl md:text-3xl text-neutral-200 mb-10 sm:mb-12 leading-relaxed max-w-2xl font-medium drop-shadow-md">
               Your bridge to the best people and places in Southeast Asia.
             </p>
-            {/* PHASE 7: Reduced CTA - One primary action to reduce decision fatigue */}
             <div className="flex flex-col sm:flex-row gap-4 mb-10 sm:mb-14">
               <a
                 href="#explore-asia-insights"
-                className="inline-flex items-center justify-center px-10 py-5 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary-600/30 text-lg hover:-translate-y-1"
+                className="inline-flex items-center justify-center px-10 py-5 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary-600/30 text-lg hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 Explore What's Nearby
               </a>
@@ -194,10 +197,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Next Market Widget - Dark Mode for Contrast */}
+      {/* Next Market Widget */}
       {nextMarketDate && (
         <section className="bg-neutral-900 border-t border-neutral-800 relative z-30">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <Link
               href="/markets/market-days"
               className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8 group"
@@ -234,7 +237,7 @@ export default async function Home() {
 
       {/* Why Trust Us - Human Connection */}
       <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Sam's Photo */}
@@ -245,15 +248,15 @@ export default async function Home() {
                     alt="Sam - Founder of Asia Insights"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    sizes="(max-width: 1024px) min(100vw, 448px), 50vw"
                   />
                   <div className="absolute inset-0 border-[6px] border-white/20 rounded-2xl pointer-events-none" />
                 </div>
                 {/* Community Vouched Badge */}
                 <div className="absolute -bottom-6 -right-2 lg:-bottom-8 lg:-right-8 bg-white p-4 lg:p-5 rounded-2xl shadow-xl border border-neutral-100 animate-fade-up z-20">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-5 h-5 text-green-600" strokeWidth={1.5} />
+                    <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-primary-600" strokeWidth={1.5} />
                     </div>
                     <div>
                       <div className="font-black text-neutral-900 leading-tight">Community Vouched</div>
@@ -276,7 +279,7 @@ export default async function Home() {
                 </div>
                 <div className="flex items-center gap-4 mb-10">
                   <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden relative">
-                    <Image src="/images/team/SNM.jpg" alt="Sam" fill className="object-cover" />
+                    <Image src="/images/team/SNM.jpg" alt="Sam" fill className="object-cover" sizes="40px" />
                   </div>
                   <div>
                     <div className="font-bold text-neutral-900">Sam Kavanagh</div>
@@ -286,8 +289,8 @@ export default async function Home() {
 
                 <div className="space-y-5 mb-10">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <ShieldCheck className="w-5 h-5 text-green-600" strokeWidth={1.5} />
+                    <div className="w-8 h-8 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <ShieldCheck className="w-5 h-5 text-primary-600" strokeWidth={1.5} />
                     </div>
                     <div>
                       <h4 className="font-bold text-neutral-900 mb-1">7+ years of local expertise</h4>
@@ -295,8 +298,8 @@ export default async function Home() {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Building2 className="w-5 h-5 text-blue-600" strokeWidth={1.5} />
+                    <div className="w-8 h-8 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Building2 className="w-5 h-5 text-primary-600" strokeWidth={1.5} />
                     </div>
                     <div>
                       <h4 className="font-bold text-neutral-900 mb-1">Verified local businesses</h4>
@@ -307,7 +310,7 @@ export default async function Home() {
 
                 <Link
                   href="/meet-the-team"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2"
                 >
                   Meet Our Team
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,7 +325,7 @@ export default async function Home() {
 
       {/* PHASE 2: Directory Overview */}
       <section id="explore-asia-insights" className="py-12 bg-neutral-50 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
           <div className="mb-12">
             <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
               Explore Asia Insights
@@ -336,7 +339,7 @@ export default async function Home() {
             {/* Stays */}
             <Link
               href="/properties"
-              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[400px]"
             >
               <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500 shrink-0">
                 <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,14 +349,17 @@ export default async function Home() {
               <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Find a Stay</h4>
               <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Vetted apartments, villas, and co-living spaces for your first 30 days.</p>
               <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
-                Browse Stays <span className="group-hover:translate-x-1 transition-transform">→</span>
+                Browse Stays
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
             </Link>
 
             {/* Relocation Services */}
             <Link
               href="/concierge"
-              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-amber-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-amber-200 hover:-translate-y-1 transition-all duration-300 group min-h-[400px]"
             >
               <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-all duration-500 shrink-0">
                 <svg className="w-7 h-7 text-amber-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,35 +369,41 @@ export default async function Home() {
               <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-amber-500 transition-colors">Relocation Services</h4>
               <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Expert guidance for moving to, settling in, and navigating life in Vietnam.</p>
               <span className="text-sm font-bold text-amber-600 flex items-center gap-2 mt-auto">
-                Get Support <span className="group-hover:translate-x-1 transition-transform">→</span>
+                Get Support
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
             </Link>
 
             {/* Essentials */}
             <Link
               href="/businesses"
-              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-blue-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-brand-200 hover:-translate-y-1 transition-all duration-300 group min-h-[400px]"
             >
-              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-all duration-500 shrink-0">
-                <svg className="w-7 h-7 text-blue-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-blue-600 transition-colors">Local Essentials</h4>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Local Essentials</h4>
               <p className="text-neutral-600 text-base leading-relaxed font-medium mb-6 grow">Banking, high-speed internet, legal advice, and visa support.</p>
               <div className="flex flex-wrap gap-2 mb-6">
                 <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-[10px] font-bold rounded-lg uppercase tracking-wider">Visa</span>
                 <span className="px-3 py-1 bg-neutral-100 text-neutral-500 text-[10px] font-bold rounded-lg uppercase tracking-wider">Legal</span>
               </div>
-              <span className="text-sm font-bold text-blue-600 flex items-center gap-2 mt-auto">
-                Browse Directory <span className="group-hover:translate-x-1 transition-transform">→</span>
+              <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
+                Browse Directory
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
             </Link>
 
             {/* Events */}
             <Link
               href="/markets/discovery"
-              className="lg:col-span-2 lg:col-start-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+              className="lg:col-span-2 lg:col-start-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[400px]"
             >
               <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500 shrink-0">
                 <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,33 +413,39 @@ export default async function Home() {
               <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Local Events</h4>
               <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Discover festivals, workshops, and gatherings happening this week.</p>
               <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
-                Explore Events <span className="group-hover:translate-x-1 transition-transform">→</span>
+                Explore Events
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
             </Link>
 
             {/* Markets */}
             <Link
               href="/markets"
-              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group min-h-[520px]"
+              className="lg:col-span-2 flex flex-col bg-white rounded-2xl p-8 shadow-sm border border-neutral-200/60 hover:shadow-xl hover:border-primary-200 hover:-translate-y-1 transition-all duration-300 group min-h-[400px]"
             >
-              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-all duration-500 shrink-0">
-                <svg className="w-7 h-7 text-green-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 transition-all duration-500 shrink-0">
+                <svg className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-green-600 transition-colors">Sunday Markets</h4>
+              <h4 className="text-2xl font-black text-neutral-900 mb-3 group-hover:text-primary-600 transition-colors">Sunday Markets</h4>
               <p className="text-neutral-600 text-base leading-relaxed font-medium mb-8 grow">Our flagship community gatherings. Shop local, meet the makers.</p>
-              <span className="text-sm font-bold text-green-600 flex items-center gap-2 mt-auto">
-                View Schedule <span className="group-hover:translate-x-1 transition-transform">→</span>
+              <span className="text-sm font-bold text-primary-600 flex items-center gap-2 mt-auto">
+                View Schedule
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
               </span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* PHASE 4: New in Town - Featured Businesses */}
+      {/* PHASE 4: Vetted Listings - Featured Businesses */}
       <section className="py-12 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
               <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4 tracking-tight">
@@ -448,16 +466,13 @@ export default async function Home() {
             </Link>
           </div>
 
-          <Suspense fallback={<GridSkeleton count={4} columns={4} />}>
-            <FeaturedBusinesses />
-          </Suspense>
+          <BusinessGrid businesses={businesses} />
         </div>
       </section>
 
-      {/* NEW: Top Stays & Spaces Elevation */}
+      {/* Top Stays & Spaces */}
       <section className="py-12 bg-neutral-50 relative overflow-hidden">
-
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 lg:mb-12">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-primary-600 font-bold text-sm uppercase tracking-wider mb-4">
@@ -480,20 +495,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <Suspense fallback={<GridSkeleton count={4} columns={4} />}>
-            <FeaturedProperties />
-          </Suspense>
+          <PropertyGrid properties={properties} />
         </div>
       </section>
-
-
-
-      {/* QA FIX: Markets content section removed for hub independence
-          REMOVED: Featured from Markets, Upcoming Market Preview, Featured Sellers, Featured Products, Markets CTA
-          REASON: Hub must not depend on Markets data to maintain section independence
-          RESULT: Hub is now section-agnostic and will not fail if Markets database is unavailable
-          NOTE: Users can access Markets content via /markets route or section card
-      */}
-    </main >
+    </main>
   )
 }

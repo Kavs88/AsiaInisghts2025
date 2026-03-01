@@ -65,9 +65,13 @@ export default function EventCard({
 
   return (
     <>
-      <div
+      <article
+        role="button"
+        tabIndex={0}
         onClick={() => setIsModalOpen(true)}
-        className={`group cursor-pointer bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 select-none flex flex-col h-full ${className}`}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsModalOpen(true) } }}
+        aria-label={`View event details: ${title}`}
+        className={`group cursor-pointer bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 select-none flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${className}`}
       >
         {/* Hero Image - 4:3 Aspect Ratio Standard */}
         <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden shrink-0">
@@ -144,7 +148,7 @@ export default function EventCard({
                 <>
                   <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
                     {hosting_business.logo_url ? (
-                      <img src={hosting_business.logo_url} alt="" className="w-full h-full object-cover" />
+                      <img src={hosting_business.logo_url} alt={hosting_business.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-primary-100 text-xs font-bold text-primary-600">
                         {hosting_business.name.substring(0, 1)}
@@ -174,7 +178,7 @@ export default function EventCard({
             </div>
           )}
         </div>
-      </div>
+      </article>
 
       {/* Progressive Disclosure Modal */}
       <EventDetailModal
