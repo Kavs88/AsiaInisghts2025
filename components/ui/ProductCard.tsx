@@ -76,7 +76,7 @@ function ProductCard({
 
   return (
     <article className={cn(
-      'group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
+      'group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
       !isAvailable && isOutOfStock && 'opacity-60',
       className
     )}>
@@ -177,7 +177,7 @@ function ProductCard({
           <div className="relative h-12 mt-4 pointer-events-auto">
             {/* View Details Default */}
             <div className="absolute inset-0 group-hover:opacity-0 transition-opacity duration-300">
-              <div className="w-full h-full bg-neutral-50 text-neutral-500 font-bold rounded-xl border border-neutral-100 flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
+              <div className="w-full h-full bg-neutral-50 text-neutral-500 font-bold rounded-2xl border border-neutral-100 flex items-center justify-center gap-2 text-xs uppercase tracking-wide">
                 View Details <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
               </div>
             </div>
@@ -185,8 +185,9 @@ function ProductCard({
             {/* Quick Add Hover */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <button
+                type="button"
                 onClick={handleQuickAdd}
-                className="w-full h-full bg-neutral-900 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors shadow-lg flex items-center justify-center gap-2 text-sm"
+                className="w-full h-full bg-neutral-900 text-white font-bold rounded-2xl hover:bg-primary-600 transition-colors shadow-lg flex items-center justify-center gap-2 text-sm"
               >
                 Order from {vendorName || 'Member'}
               </button>

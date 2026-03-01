@@ -85,7 +85,7 @@ export default function Toast({
         typeStyles[type]
       )}
       role="alert"
-      aria-live="assertive"
+      aria-live={type === 'error' || type === 'warning' ? 'assertive' : 'polite'}
     >
       <div className="flex-shrink-0">{icons[type]}</div>
       <p className="flex-1 text-sm font-medium">{message}</p>

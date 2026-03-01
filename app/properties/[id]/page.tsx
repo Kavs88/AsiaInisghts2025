@@ -1,13 +1,20 @@
-import { getPropertyById } from '@/lib/actions/properties'
+import { getPropertyById, getUpcomingEventsForProperty } from '@/lib/actions/properties'
 import { getBusinesses } from '@/lib/actions/businesses'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Bed, Bath, Users, Building2, Phone, Mail, ChevronLeft, Star, ShieldCheck, Heart, Share2, Clock, DollarSign } from 'lucide-react'
+import { MapPin, Bed, Bath, Users, Building2, Phone, Mail, ChevronLeft, Star, ShieldCheck, Share2, Clock, DollarSign, Calendar } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import BusinessCard from '@/components/ui/BusinessCard'
 import InteractiveMap from '@/components/ui/InteractiveMap'
 import Badge from '@/components/ui/Badge'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
+import { createClient } from '@/lib/supabase/server'
+import PropertyEnquiryButton from '@/components/ui/PropertyEnquiryButton'
+import { SaveButton } from '@/components/ui/SoftActionButtons'
+import ShareButton from '@/components/ui/ShareButton'
+import MobileActionBar from '@/components/ui/MobileActionBar'
+import PropertyWatchlistButton from '@/components/ui/PropertyWatchlistButton'
+import { getWatchlistStatus, getWatchlistCount } from '@/lib/actions/engagements'
 
 interface PropertyPageProps {
     params: Promise<{
@@ -49,8 +56,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     if (!property) notFound()
 
     // Fetch nearby businesses for synergy
-    // In a real app, we'd use coordinates. For now, we'll fetch a relevant subset.
     const nearbyBusinesses = await getBusinesses({ category: 'food', limit: 4 }).catch(() => [])
+
+    // Fetch current user for enquiry modal pre-fill
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const currentUser = user ? { id: user.id, email: user.email, user_metadata: user.user_metadata } : null
+
+    // Fetch watchlist state + upcoming events server-side
+    const [watchlistWatching, watchlistCount, upcomingEvents] = await Promise.all([
+        getWatchlistStatus(property.id).catch(() => false),
+        getWatchlistCount(property.id).catch(() => 0),
+        getUpcomingEventsForProperty(property.id).catch(() => []),
+    ])
 
     const displayPrice = property.price ? new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -78,14 +96,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         <span>Back to Stays</span>
                     </Link>
                     <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 rounded-xl transition-all">
-                            <Share2 className="w-4 h-4" />
-                            <span className="text-sm font-semibold">Share</span>
-                        </button>
-                        <button className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 rounded-xl transition-all">
-                            <Heart className="w-4 h-4" />
-                            <span className="text-sm font-semibold">Save</span>
-                        </button>
+                        <ShareButton name={property.address} />
+                        <SaveButton
+                            itemType="property"
+                            itemId={property.id}
+                            minimal={false}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 rounded-xl transition-all"
+                        />
                     </div>
                 </div>
             </div>
@@ -228,6 +245,51 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                 )}
                             </div>
 
+                            {/* Upcoming Events at this Venue */}
+                            {upcomingEvents.length > 0 && (
+                                <div className="mt-12">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-neutral-900">Upcoming Events Here</h3>
+                                            <p className="text-neutral-500 mt-1">Hosted at this venue</p>
+                                        </div>
+                                        <Link href="/markets/discovery" className="text-primary-600 font-bold hover:underline">View All Events</Link>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {upcomingEvents.map((event: any) => {
+                                            const startDate = new Date(event.start_at)
+                                            const endDate = event.end_at ? new Date(event.end_at) : null
+                                            return (
+                                                <div key={event.id} className="flex items-center gap-5 p-5 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-primary-100 hover:bg-primary-50/30 transition-all">
+                                                    <div className="w-14 h-14 bg-white rounded-2xl border border-neutral-200 flex flex-col items-center justify-center shrink-0 text-primary-600">
+                                                        <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 leading-none">
+                                                            {startDate.toLocaleDateString('en-US', { month: 'short' })}
+                                                        </span>
+                                                        <span className="text-xl font-black text-neutral-900 leading-none">
+                                                            {startDate.getDate()}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">
+                                                                {event.event_type === 'market' ? 'Market Day' : event.event_type}
+                                                            </span>
+                                                        </div>
+                                                        <p className="font-bold text-neutral-900 truncate">{event.title}</p>
+                                                        <p className="text-sm text-neutral-500 flex items-center gap-1.5 mt-0.5">
+                                                            <Clock className="w-3.5 h-3.5 shrink-0" />
+                                                            {startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                                                            {endDate && ` – ${endDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`}
+                                                        </p>
+                                                    </div>
+                                                    <Calendar className="w-5 h-5 text-neutral-300 shrink-0" />
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Synergy Section: Nearby Hotspots */}
                             <div className="mt-12">
                                 <div className="flex items-center justify-between mb-8">
@@ -302,24 +364,47 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                 )}
 
                                 <div className="space-y-4 mb-8">
-                                    <button className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-black rounded-2xl transition-all shadow-lg shadow-primary-200 transform hover:-translate-y-0.5">
-                                        Check Availability
-                                    </button>
+                                    <PropertyEnquiryButton
+                                        propertyId={property.id}
+                                        propertyAddress={property.address}
+                                        propertyType={property.property_type}
+                                        currentUser={currentUser}
+                                    />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <a href={`tel:${property.host_phone || property.contact_phone || '#'}`} className="flex items-center justify-center gap-2 py-3 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition-all">
+                                        {(property.host_phone || property.contact_phone) ? (
+                                        <a href={`tel:${property.host_phone || property.contact_phone}`} className="flex items-center justify-center gap-2 py-3 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition-all">
                                             <Phone className="w-4 h-4" />
                                             Call Host
                                         </a>
-                                        <a href={`mailto:${property.host_email || property.contact_email || '#'}`} className="flex items-center justify-center gap-2 py-3 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition-all">
-                                            <Mail className="w-4 h-4" />
-                                            Email
-                                        </a>
+                                    ) : (
+                                        <span className="flex items-center justify-center gap-2 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-400 cursor-not-allowed">
+                                            <Phone className="w-4 h-4" />
+                                            Call Host
+                                        </span>
+                                    )}
+                                        {(property.host_email || property.contact_email) ? (
+                                            <a href={`mailto:${property.host_email || property.contact_email}?subject=${encodeURIComponent(`Inquiry about ${property.address} via Asia Insights`)}&body=${encodeURIComponent(`Hi,\n\nI found your listing for ${property.address} on Asia Insights and wanted to ask about...`)}`} className="flex items-center justify-center gap-2 py-3 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition-all">
+                                                <Mail className="w-4 h-4" />
+                                                Email
+                                            </a>
+                                        ) : (
+                                            <span className="flex items-center justify-center gap-2 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-400 cursor-not-allowed">
+                                                <Mail className="w-4 h-4" />
+                                                Email
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="text-center pt-2">
                                         <Link href="/concierge" className="inline-block text-sm font-semibold text-neutral-500 hover:text-primary-600 transition-colors">
                                             Need integrated support? Contact Concierge.
                                         </Link>
                                     </div>
+                                    <PropertyWatchlistButton
+                                        propertyId={property.id}
+                                        initialWatching={watchlistWatching}
+                                        initialCount={watchlistCount}
+                                        className="w-full justify-center"
+                                    />
                                 </div>
 
                                 <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-100 flex items-center gap-4">
@@ -342,6 +427,39 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     </div>
                 </div>
             </section>
+
+            {/* Mobile bottom padding spacer */}
+            <div className="h-24 lg:hidden" />
+
+            {/* Mobile Sticky Action Bar */}
+            <MobileActionBar className="flex items-center gap-3">
+                <div className="flex-1">
+                    <PropertyEnquiryButton
+                        propertyId={property.id}
+                        propertyAddress={property.address}
+                        propertyType={property.property_type}
+                        currentUser={currentUser}
+                        className="h-[52px] py-0 m-0"
+                    />
+                </div>
+                <div className="flex-shrink-0">
+                    <PropertyWatchlistButton
+                        propertyId={property.id}
+                        initialWatching={watchlistWatching}
+                        initialCount={watchlistCount}
+                        minimal={true}
+                        className="h-[52px] w-[52px]"
+                    />
+                </div>
+                <div className="flex-shrink-0">
+                    <SaveButton
+                        itemType="property"
+                        itemId={property.id}
+                        minimal={false}
+                        className="h-[52px] px-5"
+                    />
+                </div>
+            </MobileActionBar>
         </div>
     )
 }

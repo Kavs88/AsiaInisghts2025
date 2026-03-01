@@ -181,6 +181,42 @@ export async function uploadPortfolioImage(
 }
 
 /**
+ * Upload a product image to the product-images bucket.
+ * Path format: products/{vendorId}/{productId}/{timestamp}[-{index}].{ext}
+ */
+export async function uploadProductImage(
+  vendorId: string,
+  productId: string,
+  file: File,
+  index?: number,
+): Promise<ImageUploadResult> {
+  const validation = validateImageFile(file)
+  if (!validation.valid) {
+    return { url: '', path: '', error: validation.error }
+  }
+
+  const supabase = createClient()
+  const filePath = generateProductImagePath(vendorId, productId, file.name, index)
+
+  const { error } = await supabase.storage
+    .from('product-images')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+  if (error) {
+    return { url: '', path: '', error: error.message }
+  }
+
+  const { data: urlData } = supabase.storage
+    .from('product-images')
+    .getPublicUrl(filePath)
+
+  return { url: urlData.publicUrl, path: filePath }
+}
+
+/**
  * Delete an image from storage
  */
 export async function deleteImage(bucket: 'vendor-assets' | 'product-images' | 'vendor-portfolio', path: string): Promise<{ success: boolean; error?: string }> {

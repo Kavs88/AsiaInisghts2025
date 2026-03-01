@@ -9,8 +9,10 @@ import { createServerClient } from '@supabase/ssr'
  */
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const isProtectedRoute = pathname.startsWith('/admin') || pathname.startsWith('/markets/admin') || pathname.startsWith('/landlord')
+
   try {
-    const { pathname } = request.nextUrl
 
     // Create an unmodified response
     let response = NextResponse.next({
@@ -45,49 +47,53 @@ export async function middleware(request: NextRequest) {
     // Refresh session if expired - required for Server Components
     const { data: { user }, error } = await supabase.auth.getUser()
 
-    // Check if this is an admin route
-    // Protected admin routes require the user to be an admin
     const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/markets/admin')
+    const isLandlordRoute = pathname.startsWith('/landlord')
 
-    if (isAdminRoute) {
+    if (isAdminRoute || isLandlordRoute) {
       if (error || !user) {
-        // Not logged in, redirect to login
         const loginUrl = new URL('/auth/login', request.url)
         loginUrl.searchParams.set('redirect', pathname)
         return NextResponse.redirect(loginUrl)
       }
 
-      // Check admin status
-      // Check super_users table first (highest authority)
-      const { data: superUserData } = await supabase
-        .from('super_users')
-        .select('uid')
-        .eq('uid', user.id)
-        .maybeSingle()
-
-      if (superUserData) {
-        return response // Super user has admin access
-      }
-
-      // Check user role in database
+      // Check user role in database — super_user role handled via users.role column
       const { data: userRecord, error: dbError } = await supabase
         .from('users')
         .select('role')
         .eq('id', user.id)
         .single()
 
-      if (dbError || !userRecord || userRecord.role !== 'admin') {
-        // Not an admin, redirect to login or home
+      const role = userRecord?.role
+
+      if (dbError || !role) {
         const loginUrl = new URL('/auth/login', request.url)
         loginUrl.searchParams.set('redirect', pathname)
         return NextResponse.redirect(loginUrl)
+      }
+
+      const adminRoles = ['admin', 'super_user', 'superadmin', 'founder']
+
+      if (isAdminRoute && !adminRoles.includes(role)) {
+        return NextResponse.redirect(new URL('/?error=access_denied', request.url))
+      }
+
+      if (isLandlordRoute && role !== 'landlord' && !adminRoles.includes(role)) {
+        // Redirect non-landlords to home with a message
+        return NextResponse.redirect(new URL('/?error=access_denied', request.url))
       }
     }
 
     return response
 
   } catch (e) {
-    // If you are here, a Supabase client could not be created!
+    // Supabase client failure — deny access to protected routes rather than failing open
+    console.error('[middleware] Supabase client error on %s:', pathname, e)
+    if (isProtectedRoute) {
+      const loginUrl = new URL('/auth/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
     return NextResponse.next({
       request: {
         headers: request.headers,
@@ -98,13 +104,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Only match admin routes that require authentication checking.
-     * Public pages no longer run through middleware at all,
-     * eliminating unnecessary auth overhead on every request.
-     */
     '/admin/:path*',
     '/markets/admin/:path*',
+    '/landlord/:path*',
   ],
 }
 
