@@ -29,6 +29,7 @@ const footerLinks: { [key: string]: FooterLink[] } = {
     { label: 'Vendor Dashboard', href: '/markets/vendor/dashboard' },
   ],
   about: [
+    { label: 'Local Legends', href: '/stories' },
     { label: 'Meet the Team', href: '/meet-the-team' },
     { label: 'Contact Us', href: '/contact' },
   ],

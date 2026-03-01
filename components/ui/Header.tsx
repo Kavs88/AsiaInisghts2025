@@ -346,6 +346,10 @@ function Header({ className }: HeaderProps) {
         href: '/concierge',
       },
       {
+        label: 'Stories',
+        href: '/stories',
+      },
+      {
         label: 'About',
         href: '/meet-the-team',
         subItems: [
