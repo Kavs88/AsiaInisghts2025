@@ -309,6 +309,7 @@ function Header({ className }: HeaderProps) {
           { label: 'Discovery Hub', href: '/markets/discovery' },
           { label: 'My Saved Events', href: '/markets/my-events' },
           { label: 'Hosting & Applicants', href: '/contact' },
+          { label: 'Event Spaces', href: '/properties?property_type=event_space' },
         ]
       },
       {
@@ -338,7 +339,6 @@ function Header({ className }: HeaderProps) {
           { label: 'All Stays', href: '/properties' },
           { label: 'Premium Villas', href: '/properties?type=villa' },
           { label: 'Apartments', href: '/properties?type=apartment' },
-          { label: 'Event Venues', href: '/properties?property_type=event_space' },
         ]
       },
       {
@@ -387,7 +387,6 @@ function Header({ className }: HeaderProps) {
           className
         )}
         role="banner"
-        style={{ willChange: 'transform' }}
       >
         <div className="container-custom">
           <div className={cn(
@@ -785,15 +784,6 @@ function Header({ className }: HeaderProps) {
                 </Link>
               )}
 
-              {/* List Your Stall CTA - Desktop - EARNED NAVIGATION: Only show if user is likely a potential vendor (logged in or on vendor paths) */}
-              {(user || pathname.includes('/vendor')) && pathname !== '/markets/discovery' && (
-                <Link
-                  href="/markets/vendor/apply"
-                  className="hidden xl:inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap h-9"
-                >
-                  List your stall
-                </Link>
-              )}
 
 
               {/* Mobile Menu Button */}
@@ -877,15 +867,6 @@ function Header({ className }: HeaderProps) {
                   </Link>
                 )
               })}
-              {!vendor && (
-                <Link
-                  href="/markets/vendor/apply"
-                  className="block px-4 py-3 mt-2 text-base font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors min-h-[44px] flex items-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  List your stall
-                </Link>
-              )}
               {user ? (
                 <>
                   {vendor ? (
