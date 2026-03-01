@@ -6,6 +6,7 @@ import BusinessCard from '@/components/ui/BusinessCard'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Suspense } from 'react'
+import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
 
 interface SearchPageProps {
     searchParams: {
@@ -54,7 +55,7 @@ async function SearchResults({ query }: { query: string }) {
             {businesses.length > 0 && (
                 <section>
                     <div className="flex items-center justify-between mb-8 border-b border-neutral-200 pb-4">
-                        <h2 className="text-3xl font-black text-neutral-900">Local Businesses</h2>
+                        <h2 className="text-3xl font-bold text-neutral-900">Local Businesses</h2>
                         <span className="text-sm font-bold text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">{businesses.length}</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -69,7 +70,7 @@ async function SearchResults({ query }: { query: string }) {
             {properties.length > 0 && (
                 <section>
                     <div className="flex items-center justify-between mb-8 border-b border-neutral-200 pb-4">
-                        <h2 className="text-3xl font-black text-neutral-900">Curated Spaces</h2>
+                        <h2 className="text-3xl font-bold text-neutral-900">Curated Spaces</h2>
                         <span className="text-sm font-bold text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">{properties.length}</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -96,7 +97,7 @@ async function SearchResults({ query }: { query: string }) {
             {vendors.length > 0 && (
                 <section>
                     <div className="flex items-center justify-between mb-8 border-b border-neutral-200 pb-4">
-                        <h2 className="text-3xl font-black text-neutral-900">Sellers & Artisans</h2>
+                        <h2 className="text-3xl font-bold text-neutral-900">Sellers & Artisans</h2>
                         <span className="text-sm font-bold text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">{vendors.length}</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -123,7 +124,7 @@ async function SearchResults({ query }: { query: string }) {
             {products.length > 0 && (
                 <section>
                     <div className="flex items-center justify-between mb-8 border-b border-neutral-200 pb-4">
-                        <h2 className="text-3xl font-black text-neutral-900">Products</h2>
+                        <h2 className="text-3xl font-bold text-neutral-900">Products</h2>
                         <span className="text-sm font-bold text-neutral-500 bg-neutral-100 px-3 py-1 rounded-full">{products.length}</span>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -156,7 +157,7 @@ export default async function GlobalSearchPage({ searchParams }: { searchParams:
         <main className="min-h-screen bg-neutral-50 pt-24 px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
-                    <h1 className="text-4xl md:text-5xl font-black text-neutral-900 tracking-tight mb-4">
+                    <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 tracking-tight mb-4">
                         Search Results
                     </h1>
                     {query ? (
@@ -170,12 +171,7 @@ export default async function GlobalSearchPage({ searchParams }: { searchParams:
                     )}
                 </div>
 
-                <Suspense fallback={
-                    <div className="py-12 text-center">
-                        <div className="w-12 h-12 border-4 border-neutral-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-neutral-500 font-medium">Searching the directory...</p>
-                    </div>
-                }>
+                <Suspense fallback={<GridSkeleton count={4} columns={2} />}>
                     <SearchResults query={query} />
                 </Suspense>
             </div>

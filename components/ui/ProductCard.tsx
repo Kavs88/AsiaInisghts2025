@@ -59,7 +59,7 @@ function ProductCard({
 
   return (
     <article className={cn(
-      'group bg-white rounded-2xl shadow-sm hover:shadow-md border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:-translate-y-1 relative h-full flex flex-col',
+      'group bg-white rounded-2xl shadow-sm hover:shadow-md border border-neutral-200/60 overflow-hidden transition-[box-shadow,transform] duration-300 hover:-translate-y-1 relative h-full flex flex-col',
       !isAvailable && isOutOfStock && 'opacity-60',
       className
     )}>

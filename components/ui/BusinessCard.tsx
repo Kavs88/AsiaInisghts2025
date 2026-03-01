@@ -1,12 +1,9 @@
-
-'use client'
-
 import Link from 'next/link'
 import Image from 'next/image'
 import { MapPin, Phone, ArrowRight, Building2, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Badge from './Badge'
-import { SaveButton } from './SoftActionButtons'
+import BusinessCardSaveButton from './BusinessCardSaveButton'
 
 interface BusinessCardProps {
     business: {
@@ -27,7 +24,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
     return (
         <article
             className={cn(
-                "group bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
+                "group bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
                 className
             )}
         >
@@ -66,12 +63,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
 
                 {/* Save Button - Top Right */}
                 <div className="absolute top-4 right-4 z-20">
-                    <SaveButton
-                        itemType="entity"
-                        itemId={business.id}
-                        minimal
-                        className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
-                    />
+                    <BusinessCardSaveButton id={business.id} />
                 </div>
             </div>
 

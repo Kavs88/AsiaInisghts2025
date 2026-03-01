@@ -70,7 +70,7 @@ function VendorCard({
         'group bg-white rounded-2xl overflow-hidden',
         'border border-neutral-200/60',
         'shadow-sm hover:shadow-md hover:-translate-y-1',
-        'transition-all duration-300',
+        'transition-[box-shadow,transform] duration-300',
         'h-full flex flex-col relative',
         className
       )}
@@ -97,7 +97,7 @@ function VendorCard({
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-300">
             <div className="w-full h-full bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-              <span className="text-4xl text-primary-300 font-black">{name.charAt(0)}</span>
+              <span className="text-4xl text-primary-300 font-bold">{name.charAt(0)}</span>
             </div>
           </div>
         )}
