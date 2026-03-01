@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Route reads searchParams and auth cookies on every request — must not be statically cached.
+export const dynamic = 'force-dynamic'
+
 // GET /api/discovery - Time-based event discovery
 export async function GET(request: NextRequest) {
   try {
@@ -289,8 +292,13 @@ export async function GET(request: NextRequest) {
       limit,
     })
 
-    // Cache public discovery data for 60s, allow stale for 5 min
-    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+    // Authenticated filter responses contain user-specific data — must never be publicly cached.
+    // Only the unfiltered 'all' response is safe to cache at the CDN layer.
+    if (filter === 'all') {
+      response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+    } else {
+      response.headers.set('Cache-Control', 'private, no-store')
+    }
 
     return response
   } catch (error: any) {

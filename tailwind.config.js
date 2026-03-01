@@ -51,6 +51,19 @@ module.exports = {
           800: '#92400e',
           900: '#78350f',
         },
+        // Brand blue - Logo cobalt #0047ff (Asia Insights identity anchor)
+        brand: {
+          50: '#eff3ff',
+          100: '#dce4ff',
+          200: '#b9c8ff',
+          300: '#84a3ff',
+          400: '#4168ff',
+          500: '#0047ff',
+          600: '#0038cc',
+          700: '#002aa3',
+          800: '#001d7a',
+          900: '#001054',
+        },
         // Markets accent - Teal (unified with primary)
         markets: {
           50: '#f0fdfa',
@@ -148,12 +161,14 @@ module.exports = {
         'toast': '3000',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        // Plus Jakarta Sans is loaded for all weights. system-ui is the zero-cost fallback.
+        sans: ['var(--font-display)', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['var(--font-display)', 'system-ui', '-apple-system', 'sans-serif'],
       },
       animation: {
         'fade-up': 'fadeUp 0.5s ease-out forwards',
         'fade-in': 'fadeIn 0.4s ease-out forwards',
+        'enter': 'fadeUp 0.5s ease-out forwards',
       },
       keyframes: {
         fadeUp: {

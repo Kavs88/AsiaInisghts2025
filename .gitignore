@@ -56,3 +56,14 @@ create_clean_package.ps1
 # logs
 *.log
 process_investigation.txt
+nul
+
+# e2e test auth state (contains live JWT tokens)
+tests/e2e/.auth/
+
+# supabase CLI temp files (contain connection strings)
+supabase/.temp/
+
+# playwright output (generated)
+playwright-report/
+test-results/

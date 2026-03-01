@@ -1,14 +1,22 @@
 'use client'
 
-import SearchBar from './SearchBar'
+import dynamic from 'next/dynamic'
 
 interface HeroSearchBarProps {
   helperText?: string
 }
 
+// Lazy-load SearchBar so it doesn't inflate the initial JS bundle.
+// The search input is not required for LCP or FID — it's interactive-only.
+const SearchBar = dynamic(() => import('./SearchBar'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full pl-12 pr-12 py-4 text-base lg:text-lg border-2 border-white/50 bg-white rounded-xl shadow-lg text-neutral-400">
+      Search products, vendors, markets...
+    </div>
+  ),
+})
+
 export default function HeroSearchBar({ helperText }: HeroSearchBarProps) {
-  // Render SearchBar directly - Next.js will handle SSR/hydration automatically
-  // No placeholder needed to avoid flash - SearchBar will hydrate seamlessly
   return <SearchBar variant="hero" placeholder={helperText} />
 }
-

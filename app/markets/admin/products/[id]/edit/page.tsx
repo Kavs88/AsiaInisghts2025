@@ -1,11 +1,25 @@
 import { requireAdmin } from '@/lib/auth/server-admin-check'
+import { createClient } from '@/lib/supabase/server'
+import { notFound } from 'next/navigation'
 import AdminProductEditPageClient from './page-client'
 
-/**
- * Edit Product Page - Server Component
- * Verifies admin access before rendering client component
- */
-export default async function AdminProductEditPage() {
+interface Props {
+  params: { id: string }
+}
+
+export default async function AdminProductEditPage({ params }: Props) {
   await requireAdmin()
-  return <AdminProductEditPageClient />
+  const supabase = await createClient()
+
+  const { data, error } = await (supabase as any)
+    .from('products')
+    .select('*, vendors(id, name, slug)')
+    .eq('id', params.id)
+    .single()
+
+  if (error || !data) {
+    notFound()
+  }
+
+  return <AdminProductEditPageClient product={data} />
 }

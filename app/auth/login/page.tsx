@@ -86,7 +86,7 @@ export default function LoginPage() {
             redirectUrl = '/markets/vendor/apply'
           }
         } else if (result.authority.effectiveRole === 'customer') {
-          redirectUrl = '/markets/discovery'
+          redirectUrl = '/account'
         }
       }
 
@@ -110,8 +110,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-soft p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Vendor Login</h1>
-            <p className="text-neutral-600">Sign in to manage your vendor account</p>
+            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Sign In</h1>
+            <p className="text-neutral-600">Welcome back to Asia Insights</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

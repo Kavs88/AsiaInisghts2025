@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { searchProducts, getVendors, searchBusinesses } from '@/lib/supabase/queries'
+import { searchAll } from '@/lib/actions/search'
 
 interface SearchResult {
   id: string
@@ -57,61 +57,7 @@ export default function SearchBar({
 
     setIsSearching(true)
     try {
-      // Search products and vendors in parallel
-      // Only run on client side to avoid server/client boundary issues
-      if (typeof window === 'undefined') {
-        setIsSearching(false)
-        return
-      }
-
-      const [productResults, vendorResults, businessResults] = await Promise.all([
-        searchProducts(searchQuery, 5).catch((err) => {
-          console.error('Product search error:', err)
-          return []
-        }),
-        getVendors({ searchQuery, limit: 3 }).catch((err) => {
-          console.error('Vendor search error:', err)
-          return []
-        }),
-        searchBusinesses(searchQuery, 3).catch((err) => {
-          console.error('Business search error:', err)
-          return []
-        }),
-      ])
-
-      // Map products to SearchResult format
-      const mappedProducts: SearchResult[] = (productResults || []).map((product: any) => ({
-        id: product.id,
-        type: 'product' as const,
-        title: product.name,
-        subtitle: product.vendors ? `by ${product.vendors.name}` : undefined,
-        imageUrl: product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : undefined,
-        href: product.vendors?.slug ? `/products/${product.slug}` : `/products/${product.slug}`,
-      }))
-
-      // Map vendors to SearchResult format
-      const mappedVendors: SearchResult[] = (vendorResults || []).map((vendor: any) => ({
-        id: vendor.id,
-        type: 'vendor' as const,
-        title: vendor.name,
-        subtitle: vendor.short_tagline || vendor.tagline || undefined,
-        imageUrl: vendor.logo_url || vendor.hero_image_url || undefined,
-        href: `/vendors/${vendor.slug}`,
-      }))
-
-      // Map businesses to SearchResult format
-      const mappedBusinesses: SearchResult[] = (businessResults || []).map((business: any) => ({
-        id: business.id,
-        type: 'business' as const,
-        title: business.name,
-        subtitle: business.category || undefined,
-        imageUrl: business.logo_url || undefined,
-        href: `/businesses/${business.slug}`,
-      }))
-
-      // Combine and limit to 10 results total
-      const combinedResults = [...mappedProducts, ...mappedVendors, ...mappedBusinesses].slice(0, 10)
-
+      const combinedResults = await searchAll(searchQuery)
       setResults(combinedResults)
       setIsOpen(combinedResults.length > 0)
     } catch (error) {

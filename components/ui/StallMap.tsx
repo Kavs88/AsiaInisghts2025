@@ -171,7 +171,7 @@ export default function StallMap({
             onClick={(e) => {
               e.stopPropagation()
               if (hoveredStall.vendorId) {
-                window.location.href = `/vendors/${hoveredStall.vendorId}`
+                window.location.href = `/markets/sellers/${hoveredStall.vendorId}`
               }
             }}
           >

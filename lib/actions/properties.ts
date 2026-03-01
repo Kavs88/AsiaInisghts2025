@@ -1,162 +1,199 @@
+'use server'
+
 import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { unstable_cache } from 'next/cache'
 
-export async function getProperties(options: {
-    property_type?: 'rental' | 'event_space',
-    type?: string,
-    limit?: number,
-    vettedOnly?: boolean,
-    featuredOnly?: boolean
-} = {}) {
-    const { property_type, type, limit, vettedOnly, featuredOnly } = options;
-    const supabase = await createClient()
+// unstable_cache defined at module level — created once, not re-instantiated per call.
+const _fetchProperties = unstable_cache(
+  async (
+    prop_type?: string,
+    prop_t?: string,
+    lim?: number,
+    vetted?: boolean,
+    featured?: boolean,
+  ) => {
+    // Use the cookie-free public client — unstable_cache runs outside request context
+    const supabase = createPublicClient()
 
-    // Select all fields needed by components
-    // Include business_id for the join to work properly
-    // NOTE: host_phone and host_email excluded pending migration 016
     let query = supabase
-        .from('properties')
-        .select(`
+      .from('properties')
+      .select(`
+        id,
+        address,
+        type,
+        property_type,
+        price,
+        bedrooms,
+        bathrooms,
+        capacity,
+        images,
+        location_coords,
+        description,
+        hourly_rate,
+        daily_rate,
+        contact_phone,
+        contact_email,
+        business_id,
+        availability,
+        created_at,
+        businesses (
             id,
-            address,
-            type,
-            property_type,
-            price,
-            bedrooms,
-            bathrooms,
-            capacity,
-            images,
-            location_coords,
-            description,
-            hourly_rate,
-            daily_rate,
-            contact_phone,
-            contact_email,
-            business_id,
-            availability,
-            created_at,
-            businesses (
-                id,
-                name,
-                slug,
-                logo_url,
-                is_verified
-            )
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+            name,
+            slug,
+            logo_url,
+            is_verified
+        )
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
 
-    if (options.property_type) {
-        query = query.eq('property_type', options.property_type)
-    }
-
-    if (options.type) {
-        query = query.eq('type', options.type)
-    }
-
-    if (vettedOnly) {
-        // Find properties where the business is vetted (high confidence)
-        query = query.not('businesses', 'is', null).gte('businesses.is_verified', true)
-    }
-
-    if (featuredOnly) {
-        query = query.eq('availability', 'available').order('created_at', { ascending: false })
-    }
-
-    if (limit) {
-        query = query.limit(limit)
-    }
+    if (prop_type) query = query.eq('property_type', prop_type as 'rental' | 'event_space')
+    if (prop_t) query = query.eq('type', prop_t)
+    if (vetted) query = query.not('businesses', 'is', null).gte('businesses.is_verified', true)
+    if (featured) query = query.eq('availability', 'available').order('created_at', { ascending: false })
+    if (lim) query = query.limit(lim)
 
     const { data, error } = await query
 
     if (error) {
-        console.error('[getProperties] Query error:', error)
-        return []
+      console.error('[getProperties] Query error:', error)
+      return []
     }
 
     return data || []
+  },
+  ['properties-list'],
+  { revalidate: 1800, tags: ['properties'] },
+)
+
+export async function getProperties(options: {
+  property_type?: 'rental' | 'event_space'
+  type?: string
+  limit?: number
+  vettedOnly?: boolean
+  featuredOnly?: boolean
+} = {}) {
+  const { property_type, type, limit, vettedOnly, featuredOnly } = options
+  return _fetchProperties(property_type, type, limit, vettedOnly, featuredOnly)
 }
 
 export async function getPropertyById(id: string) {
-    const supabase = await createClient()
+  const supabase = await createClient()
 
-    // Select all fields needed by components
-    // Include business_id for the join to work properly
-    // NOTE: host_phone and host_email excluded pending migration 016
-    const { data, error } = await supabase
-        .from('properties')
-        .select(`
-            id,
-            address,
-            type,
-            property_type,
-            price,
-            bedrooms,
-            bathrooms,
-            capacity,
-            images,
-            location_coords,
-            description,
-            hourly_rate,
-            daily_rate,
-            contact_phone,
-            contact_email,
-            business_id,
-            created_at,
-            businesses (
-                id,
-                name,
-                slug,
-                description,
-                logo_url,
-                is_verified,
-                address,
-                contact_phone
-            )
-        `)
-        .eq('id', id)
-        .single()
+  const { data, error } = await supabase
+    .from('properties')
+    .select(`
+      id,
+      address,
+      type,
+      property_type,
+      price,
+      bedrooms,
+      bathrooms,
+      capacity,
+      images,
+      location_coords,
+      description,
+      hourly_rate,
+      daily_rate,
+      contact_phone,
+      contact_email,
+      business_id,
+      created_at,
+      businesses (
+        id,
+        name,
+        slug,
+        description,
+        logo_url,
+        is_verified,
+        address,
+        contact_phone
+      )
+    `)
+    .eq('id', id)
+    .single()
 
-    if (error) {
-        console.error('Error fetching property by id:', error)
-        return null
-    }
+  if (error) {
+    console.error('Error fetching property by id:', error)
+    return null
+  }
 
-    return data
+  return data
+}
+
+export async function getUpcomingEventsForProperty(propertyId: string) {
+  const supabase = createPublicClient()
+  const now = new Date().toISOString()
+
+  const { data, error } = await supabase
+    .from('events')
+    .select('id, title, event_type, start_at, end_at, status')
+    .eq('property_id', propertyId)
+    .eq('status', 'published')
+    .gte('start_at', now)
+    .order('start_at', { ascending: true })
+    .limit(5)
+
+  if (error) {
+    console.error('[getUpcomingEventsForProperty] Query error:', error)
+    return []
+  }
+
+  return data || []
+}
+
+export async function getEventSpaceProperties() {
+  const supabase = createPublicClient()
+
+  const { data, error } = await supabase
+    .from('properties')
+    .select('id, address, capacity')
+    .eq('property_type', 'event_space')
+    .eq('is_active', true)
+    .order('address', { ascending: true })
+
+  if (error) {
+    console.error('[getEventSpaceProperties] Query error:', error)
+    return []
+  }
+
+  return data || []
 }
 
 export async function getPropertiesByBusiness(businessId: string) {
-    const supabase = await createClient()
+  const supabase = await createClient()
 
-    // NOTE: host_phone and host_email excluded pending migration 016
-    const { data, error } = await supabase
-        .from('properties')
-        .select(`
-            id,
-            address,
-            type,
-            property_type,
-            price,
-            bedrooms,
-            bathrooms,
-            capacity,
-            images,
-            location_coords,
-            description,
-            hourly_rate,
-            daily_rate,
-            contact_phone,
-            contact_email,
-            business_id,
-            availability,
-            created_at
-        `)
-        .eq('business_id', businessId)
-        .eq('is_active', true)
+  const { data, error } = await supabase
+    .from('properties')
+    .select(`
+      id,
+      address,
+      type,
+      property_type,
+      price,
+      bedrooms,
+      bathrooms,
+      capacity,
+      images,
+      location_coords,
+      description,
+      hourly_rate,
+      daily_rate,
+      contact_phone,
+      contact_email,
+      business_id,
+      availability,
+      created_at
+    `)
+    .eq('business_id', businessId)
+    .eq('is_active', true)
 
-    if (error) {
-        console.error('Error fetching properties for business:', error)
-        return []
-    }
+  if (error) {
+    console.error('Error fetching properties for business:', error)
+    return []
+  }
 
-    return data || []
+  return data || []
 }

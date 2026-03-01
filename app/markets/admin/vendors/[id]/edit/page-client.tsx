@@ -1,30 +1,29 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { useAuth } from '@/components/contexts/AuthContext'
-import { isAdminOrSuperUser } from '@/lib/auth/admin'
 import { updateVendor, UpdateVendorData } from '@/lib/auth/admin-vendor-creation'
 import { uploadVendorLogo, uploadVendorHero, validateImageFile, deleteImage } from '@/lib/supabase/storage'
 import Link from 'next/link'
 
-export default function AdminVendorEditPageClient() {
+interface Props {
+  vendor: any
+  vendorId: string
+}
+
+export default function AdminVendorEditPageClient({ vendor, vendorId }: Props) {
   const router = useRouter()
-  const params = useParams()
-  const { user, loading: authLoading } = useAuth()
-  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
-  const [vendor, setVendor] = useState<any>(null)
+  const [currentVendor, setCurrentVendor] = useState<any>(vendor)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
   // Image state
   const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(vendor.logo_url)
   const [heroFile, setHeroFile] = useState<File | null>(null)
-  const [heroPreview, setHeroPreview] = useState<string | null>(null)
+  const [heroPreview, setHeroPreview] = useState<string | null>(vendor.hero_image_url)
   const [logoUploadError, setLogoUploadError] = useState<string | null>(null)
   const [heroUploadError, setHeroUploadError] = useState<string | null>(null)
 
@@ -32,84 +31,20 @@ export default function AdminVendorEditPageClient() {
   const heroInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<UpdateVendorData>({
-    vendorName: '',
-    tagline: '',
-    bio: '',
-    contactEmail: '',
-    contactPhone: '',
-    category: '',
-    websiteUrl: '',
-    instagramHandle: '',
-    facebookUrl: '',
-    deliveryAvailable: false,
-    pickupAvailable: true,
-    isActive: true,
-    isVerified: false,
+    vendorName: vendor.name || '',
+    tagline: vendor.tagline || '',
+    bio: vendor.bio || '',
+    contactEmail: vendor.contact_email || '',
+    contactPhone: vendor.contact_phone || '',
+    category: vendor.category || '',
+    websiteUrl: vendor.website_url || '',
+    instagramHandle: vendor.instagram_handle || '',
+    facebookUrl: vendor.facebook_url || '',
+    deliveryAvailable: vendor.delivery_available || false,
+    pickupAvailable: vendor.pickup_available !== undefined ? vendor.pickup_available : true,
+    isActive: vendor.is_active !== undefined ? vendor.is_active : true,
+    isVerified: vendor.is_verified || false,
   })
-
-  useEffect(() => {
-    const checkAdminAndLoad = async () => {
-      if (authLoading) return
-
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
-
-      try {
-        const adminStatus = await isAdminOrSuperUser()
-        setIsAdminUser(adminStatus)
-        setIsChecking(false)
-
-        if (!adminStatus) {
-          return
-        }
-
-        // Fetch vendor
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
-
-        const { data, error: vendorError } = await supabase
-          .from('vendors')
-          .select('*')
-          .eq('id', params.id as string)
-          .single()
-
-        if (vendorError) {
-          setError(vendorError.message)
-        } else {
-          const vendorData = data as any
-          setVendor(vendorData)
-          // Set image previews from existing vendor data
-          setLogoPreview(vendorData.logo_url)
-          setHeroPreview(vendorData.hero_image_url)
-          // Pre-fill form with vendor data
-          setFormData({
-            vendorName: vendorData.name || '',
-            tagline: vendorData.tagline || '',
-            bio: vendorData.bio || '',
-            contactEmail: vendorData.contact_email || '',
-            contactPhone: vendorData.contact_phone || '',
-            category: vendorData.category || '',
-            websiteUrl: vendorData.website_url || '',
-            instagramHandle: vendorData.instagram_handle || '',
-            facebookUrl: vendorData.facebook_url || '',
-            deliveryAvailable: vendorData.delivery_available || false,
-            pickupAvailable: vendorData.pickup_available !== undefined ? vendorData.pickup_available : true,
-            isActive: vendorData.is_active !== undefined ? vendorData.is_active : true,
-            isVerified: vendorData.is_verified || false,
-          })
-        }
-      } catch (err: any) {
-        console.error('[AdminVendorEdit] Error:', err)
-        setIsAdminUser(false)
-        setIsChecking(false)
-        setError(err.message)
-      }
-    }
-
-    checkAdminAndLoad()
-  }, [user, authLoading, router, params.id])
 
   // Handle image file selection
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,20 +122,20 @@ export default function AdminVendorEditPageClient() {
       }
 
       // Upload new images if provided
-      let logoUrl = vendor.logo_url || null
-      let heroImageUrl = vendor.hero_image_url || null
+      let logoUrl = currentVendor.logo_url || null
+      let heroImageUrl = currentVendor.hero_image_url || null
 
       if (logoFile) {
-        const logoResult = await uploadVendorLogo(params.id as string, logoFile)
+        const logoResult = await uploadVendorLogo(vendorId, logoFile)
         if (logoResult.error) {
           setError(`Logo upload failed: ${logoResult.error}`)
           setLoading(false)
           return
         } else {
           // Delete old logo if it exists and is different
-          if (vendor.logo_url && vendor.logo_url !== logoResult.url) {
+          if (currentVendor.logo_url && currentVendor.logo_url !== logoResult.url) {
             // Extract path from full URL: https://.../vendor-assets/vendors/{id}/logo-{timestamp}.ext
-            const urlParts = vendor.logo_url.split('/vendor-assets/')
+            const urlParts = currentVendor.logo_url.split('/vendor-assets/')
             if (urlParts.length > 1) {
               const oldPath = urlParts[1]
               await deleteImage('vendor-assets', oldPath).catch(console.error)
@@ -211,16 +146,16 @@ export default function AdminVendorEditPageClient() {
       }
 
       if (heroFile) {
-        const heroResult = await uploadVendorHero(params.id as string, heroFile)
+        const heroResult = await uploadVendorHero(vendorId, heroFile)
         if (heroResult.error) {
           setError(`Hero image upload failed: ${heroResult.error}`)
           setLoading(false)
           return
         } else {
           // Delete old hero if it exists and is different
-          if (vendor.hero_image_url && vendor.hero_image_url !== heroResult.url) {
+          if (currentVendor.hero_image_url && currentVendor.hero_image_url !== heroResult.url) {
             // Extract path from full URL: https://.../vendor-assets/vendors/{id}/hero-{timestamp}.ext
-            const urlParts = vendor.hero_image_url.split('/vendor-assets/')
+            const urlParts = currentVendor.hero_image_url.split('/vendor-assets/')
             if (urlParts.length > 1) {
               const oldPath = urlParts[1]
               await deleteImage('vendor-assets', oldPath).catch(console.error)
@@ -231,7 +166,7 @@ export default function AdminVendorEditPageClient() {
       }
 
       // Update vendor with form data
-      const result = await updateVendor(params.id as string, normalizedData)
+      const result = await updateVendor(vendorId, normalizedData)
 
       // If images were uploaded, update vendor record with new image URLs
       if ((logoFile || heroFile) && result.success) {
@@ -245,7 +180,7 @@ export default function AdminVendorEditPageClient() {
           .from('vendors')
           // @ts-ignore
           .update(updateData)
-          .eq('id', params.id as string)
+          .eq('id', vendorId)
 
         if (imageUpdateError) {
           console.error('Failed to update image URLs:', imageUpdateError)
@@ -261,11 +196,11 @@ export default function AdminVendorEditPageClient() {
         const { data: updatedVendor } = await supabase
           .from('vendors')
           .select('*')
-          .eq('id', params.id as string)
+          .eq('id', vendorId)
           .single()
 
         if (updatedVendor) {
-          setVendor(updatedVendor)
+          setCurrentVendor(updatedVendor)
           // Update image previews if images were uploaded
           if (logoFile && logoUrl) {
             setLogoPreview(logoUrl)
@@ -279,7 +214,7 @@ export default function AdminVendorEditPageClient() {
 
         // Redirect after a short delay
         setTimeout(() => {
-          router.push('/admin/vendors')
+          router.push('/markets/admin/vendors')
         }, 2000)
       } else {
         setError(result.error || 'Failed to update vendor')
@@ -292,57 +227,6 @@ export default function AdminVendorEditPageClient() {
     }
   }
 
-  if (authLoading || isChecking) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Checking admin access...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return null // Will redirect
-  }
-
-  if (!isAdminUser) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
-            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
-            <Link href="/admin/vendors" className="text-primary-600 hover:underline">
-              ← Back to Vendors
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (error || !vendor) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Vendor Not Found</h2>
-            <p className="text-error-800 mb-4">{error || 'The vendor you are looking for does not exist.'}</p>
-            <Link href="/admin/vendors" className="text-primary-600 hover:underline">
-              ← Back to Vendors
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
   return (
     <main className="min-h-screen bg-neutral-50">
       {/* GUARDRAIL: Admin form width constraint. Why: Forms wider than max-w-4xl (896px) become hard to read. DO NOT: Remove max-w-4xl or increase beyond max-w-5xl. Standard: All admin edit/create forms use max-w-4xl. */}
@@ -350,10 +234,10 @@ export default function AdminVendorEditPageClient() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-neutral-900 mb-2">Edit Vendor</h1>
-            <p className="text-neutral-600">Edit vendor: {vendor.name}</p>
+            <p className="text-neutral-600">Edit vendor: {currentVendor.name}</p>
           </div>
           <Link
-            href="/admin/vendors"
+            href="/markets/admin/vendors"
             className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
           >
             ← Back to Vendors
@@ -406,7 +290,7 @@ export default function AdminVendorEditPageClient() {
                           type="button"
                           onClick={() => {
                             setLogoFile(null)
-                            setLogoPreview(vendor.logo_url)
+                            setLogoPreview(currentVendor.logo_url)
                             if (logoInputRef.current) logoInputRef.current.value = ''
                           }}
                           className="absolute top-2 right-2 p-1.5 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
@@ -462,7 +346,7 @@ export default function AdminVendorEditPageClient() {
                           type="button"
                           onClick={() => {
                             setHeroFile(null)
-                            setHeroPreview(vendor.hero_image_url)
+                            setHeroPreview(currentVendor.hero_image_url)
                             if (heroInputRef.current) heroInputRef.current.value = ''
                           }}
                           className="absolute top-2 right-2 p-1.5 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
@@ -690,13 +574,13 @@ export default function AdminVendorEditPageClient() {
                 {loading ? 'Updating Vendor...' : 'Update Vendor'}
               </button>
               <Link
-                href="/admin/vendors"
+                href="/markets/admin/vendors"
                 className="px-6 py-3 text-neutral-700 font-medium border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
               >
                 Cancel
               </Link>
               <Link
-                href={`/vendors/${vendor.slug}`}
+                href={`/vendors/${currentVendor.slug}`}
                 target="_blank"
                 className="px-6 py-3 text-neutral-700 font-medium border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
               >
@@ -709,7 +593,3 @@ export default function AdminVendorEditPageClient() {
     </main>
   )
 }
-
-
-
-

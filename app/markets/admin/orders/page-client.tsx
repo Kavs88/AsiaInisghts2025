@@ -1,228 +1,145 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
-import { isAdminOrSuperUser } from '@/lib/auth/admin'
 import Link from 'next/link'
 
-export default function AdminOrdersPageClient() {
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
-  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
-  const [orders, setOrders] = useState<any[]>([])
-  const [error, setError] = useState<string | null>(null)
+interface Vendor {
+  id: string
+  name: string
+  slug: string
+}
 
-  useEffect(() => {
-    const checkAdminAndLoad = async () => {
-      if (authLoading) return
+interface Order {
+  id: string
+  order_number: string | null
+  status: string
+  total_amount: number
+  customer_name: string | null
+  customer_email: string | null
+  created_at: string
+  vendors: Vendor | null
+}
 
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
+interface Props {
+  orders: Order[]
+  page: number
+  totalPages: number
+  total: number
+  error: string | null
+}
 
-      try {
-        const adminStatus = await isAdminOrSuperUser()
-        setIsAdminUser(adminStatus)
-        setIsChecking(false)
+const STATUS_STYLES: Record<string, string> = {
+  completed: 'bg-green-100 text-green-700',
+  pending:   'bg-amber-100 text-amber-700',
+  cancelled: 'bg-red-100 text-red-700',
+}
 
-        if (!adminStatus) {
-          return
-        }
-
-        // Fetch orders
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
-
-        const { data, error: ordersError } = await supabase
-          .from('orders')
-          .select(`
-            *,
-            vendors (
-              id,
-              name,
-              slug
-            )
-          `)
-          .order('created_at', { ascending: false })
-          .limit(100)
-
-        if (ordersError) {
-          setError(ordersError.message)
-        } else {
-          setOrders(data || [])
-        }
-      } catch (err: any) {
-        console.error('[AdminOrders] Error:', err)
-        setIsAdminUser(false)
-        setIsChecking(false)
-        setError(err.message)
-      }
-    }
-
-    checkAdminAndLoad()
-  }, [user, authLoading, router])
-
-  if (authLoading || isChecking) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Checking admin access...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return null // Will redirect
-  }
-
-  if (!isAdminUser) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
-            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
-            <Link href="/admin" className="text-primary-600 hover:underline">
-              ← Back to Overview
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
+export default function AdminOrdersPageClient({ orders, page, totalPages, total, error }: Props) {
   return (
-    <main className="min-h-screen bg-neutral-50">
-      <div className="container-custom py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <main className="min-h-screen bg-neutral-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            {/* LANGUAGE GUARDRAIL: Use stewardship verbs, never "manage" */}
-            <h1 className="text-4xl font-bold text-neutral-900 mb-2">Order Fulfillment</h1>
+            <h1 className="text-3xl font-black text-neutral-900">Order Fulfillment</h1>
             <p className="text-neutral-600">Support order processing and delivery</p>
           </div>
-          <Link
-            href="/admin"
-            className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
-          >
-            ← Back to Overview
-          </Link>
         </div>
 
         {error && (
-          <div className="mb-6 bg-error-50 border border-error-200 rounded-xl p-4">
-            <p className="text-sm text-error-800">Error: {error}</p>
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-700 text-sm font-medium">Failed to load orders.</p>
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-neutral-50 border-b border-neutral-200">
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-neutral-200">
+            <p className="text-sm text-neutral-500">{total} order{total !== 1 ? 's' : ''}</p>
+          </div>
+          <table className="w-full text-left">
+            <thead className="bg-neutral-50 border-b border-neutral-200">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Order</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Vendor</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Customer</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Total</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {orders.length === 0 ? (
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Order Number
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Vendor
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <td colSpan={7} className="px-6 py-12 text-center text-neutral-500">
+                    No orders found.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200">
-                {orders && orders.length > 0 ? (
-                  orders.map((order: any) => (
-                    <tr key={order.id} className="hover:bg-neutral-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-semibold text-neutral-900">{order.order_number || order.id.slice(0, 8)}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {order.vendors ? (
-                          <Link
-                            href={`/vendors/${order.vendors.slug}`}
-                            className="text-sm text-primary-600 hover:text-primary-700 hover:underline"
-                          >
-                            {order.vendors.name}
-                          </Link>
-                        ) : (
-                          <span className="text-sm text-neutral-500">Unknown</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm">
-                          <div className="text-neutral-900">{order.customer_name || 'N/A'}</div>
-                          {order.customer_email && (
-                            <div className="text-neutral-600 text-xs">{order.customer_email}</div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-semibold text-neutral-900">
-                          ${parseFloat(order.total_amount || 0).toFixed(2)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${order.status === 'completed' ? 'bg-success-50 text-success-700' :
-                            order.status === 'pending' ? 'bg-warning-50 text-warning-700' :
-                              order.status === 'cancelled' ? 'bg-error-50 text-error-700' :
-                                'bg-neutral-100 text-neutral-700'
-                          }`}>
-                          {order.status || 'pending'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-neutral-600">
-                        {order.created_at
-                          ? new Date(order.created_at).toLocaleDateString()
-                          : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link
-                          href={`/admin/orders/${order.id}`}
-                          className="px-3 py-1.5 text-xs font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                        >
-                          View Details
+              ) : (
+                orders.map((order) => (
+                  <tr key={order.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-4 font-semibold text-neutral-900">
+                      {order.order_number ?? order.id.slice(0, 8)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">
+                      {order.vendors ? (
+                        <Link href={`/vendors/${order.vendors.slug}`} className="hover:underline">
+                          {order.vendors.name}
                         </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-neutral-500">
-                      {error ? 'Error loading orders' : 'No orders found'}
+                      ) : '—'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">
+                      <div>{order.customer_name ?? '—'}</div>
+                      {order.customer_email && (
+                        <div className="text-xs text-neutral-400">{order.customer_email}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-semibold text-neutral-900">
+                      ${(order.total_amount ?? 0).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${STATUS_STYLES[order.status] ?? 'bg-neutral-100 text-neutral-600'}`}>
+                        {order.status ?? 'pending'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">
+                      {new Date(order.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link
+                        href={`/markets/admin/orders/${order.id}`}
+                        className="text-sm font-semibold text-primary-600 hover:text-primary-700"
+                      >
+                        View
+                      </Link>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-neutral-500">Page {page} of {totalPages}</p>
+            <div className="flex gap-2">
+              {page > 1 && (
+                <Link
+                  href={`?page=${page - 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Previous
+                </Link>
+              )}
+              {page < totalPages && (
+                <Link
+                  href={`?page=${page + 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Next
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )
 }
-
-
-
-

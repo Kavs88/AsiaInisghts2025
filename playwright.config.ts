@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
+  globalSetup: './tests/e2e/global-setup.ts',
   testDir: './tests/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -20,6 +21,8 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3001',
+    /* Reuse the admin auth session saved by globalSetup */
+    storageState: 'tests/e2e/.auth/admin.json',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },

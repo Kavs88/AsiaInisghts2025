@@ -1,0 +1,3 @@
+app/account/community/page.tsx(140,136): error TS2339: Property 'created_at' does not exist on type 'never'.
+app/account/community/page.tsx(163,136): error TS2339: Property 'created_at' does not exist on type 'never'.
+old_page.tsx(18,30): error TS2554: Expected 0-1 arguments, but got 2.

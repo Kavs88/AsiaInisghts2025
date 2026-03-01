@@ -204,7 +204,7 @@ function Header({ className }: HeaderProps) {
           setNextMarketLabel(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
         }
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   // Scroll handler
@@ -445,13 +445,13 @@ function Header({ className }: HeaderProps) {
                         {isOpen && typeof window !== 'undefined' && menuPosition && (
                           <div
                             ref={menuRef}
-                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/50 py-3 z-dropdown min-w-[220px] overflow-hidden"
+                            className="fixed bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/60 py-3 z-dropdown min-w-[220px] overflow-hidden"
                             style={{
                               top: `${menuPosition.top}px`,
                               left: `${menuPosition.left}px`,
                             }}
                           >
-                            <div className="px-4 pb-2 mb-2 border-b border-neutral-100/50">
+                            <div className="px-4 pb-2 mb-2 border-b border-neutral-100">
                               <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                                 {item.label}
                               </span>
@@ -558,18 +558,35 @@ function Header({ className }: HeaderProps) {
                       />
                     </svg>
                   </button>
+
+                  {/* Mobile Backdrop */}
                   {isAccountMenuOpen && typeof window !== 'undefined' && accountMenuPosition && (
                     <div
-                      className="fixed w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200/60 py-2 z-dropdown"
-                      style={{
+                      className="fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+                      onClick={() => setIsAccountMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                  )}
+
+                  {isAccountMenuOpen && typeof window !== 'undefined' && accountMenuPosition && (
+                    <div
+                      className="fixed inset-x-0 bottom-0 mt-0 w-full rounded-t-3xl pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom flex flex-col max-h-[85vh] overflow-y-auto z-50 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border-t border-neutral-100 md:absolute md:top-auto md:bottom-auto md:w-64 md:rounded-2xl md:bg-white/95 md:backdrop-blur-xl md:shadow-xl md:border md:border-neutral-200/60 md:py-2 md:z-dropdown md:pb-2 md:animate-in md:slide-in-from-top-2"
+                      style={window.innerWidth >= 768 ? {
                         top: `${accountMenuPosition.top}px`,
                         right: `${accountMenuPosition.right}px`,
-                      }}
+                        left: 'auto',
+                        bottom: 'auto'
+                      } : {}}
                     >
+                      {/* Mobile Pull Indicator */}
+                      <div className="md:hidden w-full flex justify-center py-3">
+                        <div className="w-10 h-1 bg-neutral-200 rounded-full" />
+                      </div>
+
                       {/* User Info - Premium Link to Account Hub */}
                       <Link
                         href="/account"
-                        className="block px-4 py-4 bg-neutral-50/50 hover:bg-neutral-100 transition-colors border-b border-neutral-100 group"
+                        className="block px-4 py-4 md:py-4 bg-neutral-50/50 hover:bg-neutral-100 transition-colors border-b border-neutral-100 group min-h-[48px]"
                         onClick={() => setIsAccountMenuOpen(false)}
                       >
                         <div className="flex items-center gap-3">
@@ -578,107 +595,140 @@ function Header({ className }: HeaderProps) {
                           </div>
                           <div>
                             <div className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors truncate max-w-[150px]">
-                              {vendor ? vendor.name : 'My Account'}
+                              {vendor ? vendor.name : (user.user_metadata?.full_name || user.email?.split('@')[0] || 'My Account')}
                             </div>
                             <div className="text-xs text-neutral-500 font-medium group-hover:text-primary-600/70">
-                              Identity & Settings
+                              {vendor ? 'Business' : 'Member'}
                             </div>
                           </div>
                         </div>
                       </Link>
 
-                      {/* Quick Access Menu */}
-                      <div className="py-2">
-                        {/* Vendor Dashboard - For vendors and admins */}
+                      {/* My Discovery Section */}
+                      <div className="py-2 border-b border-neutral-100/60">
+                        <div className="px-4 py-2 md:py-1 mb-1">
+                          <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">My Discovery</div>
+                        </div>
+
+                        {/* My Activity */}
+                        <Link
+                          href="/account/community"
+                          className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                            <span>Saved Items</span>
+                          </div>
+                        </Link>
+
+                        {/* My Events */}
+                        <Link
+                          href="/markets/my-events"
+                          className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Saved Events</span>
+                          </div>
+                        </Link>
+
+                        {/* My Orders */}
+                        <Link
+                          href="/markets/orders"
+                          className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span>My Orders</span>
+                          </div>
+                        </Link>
+                      </div>
+
+                      {/* Management Section */}
+                      <div className="py-2 border-b border-neutral-100/60">
+                        <div className="px-4 py-2 md:py-1 mb-1">
+                          <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Account & Settings</div>
+                        </div>
+
+                        {/* Vendor Dashboard - distinct transition state */}
                         {(vendor || userIsAdmin) && (
                           <Link
                             href="/markets/vendor/dashboard"
-                            className="block px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                            className="flex items-center px-4 py-3.5 min-h-[48px] text-sm font-medium text-neutral-900 transition-all bg-neutral-900 active:bg-neutral-800 md:bg-gradient-to-r md:from-slate-800 md:to-slate-900 md:hover:from-slate-700 md:hover:to-slate-800 text-white md:border-transparent md:border-l-0 mb-1 rounded-xl mx-2 md:mx-0 md:rounded-none group"
                             onClick={() => setIsAccountMenuOpen(false)}
                           >
                             <div className="flex items-center gap-3">
-                              <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-5 h-5 md:w-4 md:h-4 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                               </svg>
-                              <span>Business Hub</span>
+                              <span className="font-bold tracking-wide">Business Hub</span>
                             </div>
                           </Link>
                         )}
 
-                        {/* Edit Profile - For vendors */}
+                        {/* Edit Profile */}
                         {vendor && (
                           <Link
                             href="/markets/vendor/profile/edit"
-                            className="block px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                            className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
                             onClick={() => setIsAccountMenuOpen(false)}
                           >
                             <div className="flex items-center gap-3">
-                              <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
-                              <span>Edit Profile</span>
+                              <span>Edit Public Profile</span>
+                            </div>
+                          </Link>
+                        )}
+
+                        {/* My Account */}
+                        <Link
+                          href="/account"
+                          className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary-700 transition-colors"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span>Account Details</span>
+                          </div>
+                        </Link>
+
+                        {/* Admin Dashboard */}
+                        {userIsAdmin && (
+                          <Link
+                            href="/markets/admin"
+                            className="flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-700 hover:bg-red-50 hover:text-red-700 transition-colors mt-2 border-t border-neutral-100"
+                            onClick={() => setIsAccountMenuOpen(false)}
+                          >
+                            <div className="flex items-center gap-3 mt-1 text-red-600">
+                              <svg className="w-5 h-5 md:w-4 md:h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              <span className="font-semibold">Platform Admin</span>
                             </div>
                           </Link>
                         )}
                       </div>
 
-                      {/* My Orders - Available for all logged-in users */}
-                      <Link
-                        href="/markets/orders"
-                        className="block px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                        onClick={() => setIsAccountMenuOpen(false)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                          </svg>
-                          <span>My Orders</span>
-                        </div>
-                      </Link>
-
-                      {/* My Events - Available for all logged-in users */}
-                      <Link
-                        href="/markets/my-events"
-                        className="block px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                        onClick={() => setIsAccountMenuOpen(false)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span>My Events</span>
-                        </div>
-                      </Link>
-
-                      {/* Admin Dashboard - Only for admin users */}
-                      {userIsAdmin && (
-                        <>
-                          <div className="border-t border-neutral-100 my-1" />
-                          <div className="px-4 py-2">
-                            <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide">Administration</div>
-                          </div>
-                          <Link
-                            href="/markets/admin"
-                            className="block px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-                            onClick={() => setIsAccountMenuOpen(false)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                              </svg>
-                              <span>Platform Overview</span>
-                            </div>
-                          </Link>
-                        </>
-                      )}
-
                       {/* Sign Out */}
                       <button
                         onClick={handleSignOut}
-                        className="w-full text-left px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors border-t border-neutral-100"
+                        className="w-full flex items-center px-4 py-3 min-h-[48px] text-sm font-medium text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 md:w-4 md:h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
                           <span>Sign Out</span>

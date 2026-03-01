@@ -101,7 +101,7 @@ async function SearchResults({ query }: { query: string }) {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {vendors.map((vendor: any) => (
-                            <Link key={vendor.id} href={`/vendors/${vendor.slug}`} className="group block bg-white rounded-2xl shadow-sm border border-neutral-200 hover:shadow-xl transition-all overflow-hidden">
+                            <Link key={vendor.id} href={`/markets/sellers/${vendor.slug}`} className="group block bg-white rounded-2xl shadow-sm border border-neutral-200 hover:shadow-xl transition-all overflow-hidden">
                                 <div className="aspect-[4/3] bg-neutral-100 relative">
                                     {vendor.hero_image_url || vendor.logo_url ? (
                                         <Image src={vendor.hero_image_url || vendor.logo_url} alt={vendor.name} fill sizes="(max-width: 1024px) 50vw, 25vw" className="object-cover group-hover:scale-110 transition-transform duration-500" />

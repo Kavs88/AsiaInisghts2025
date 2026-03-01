@@ -184,7 +184,7 @@ export default function VendorChangeRequestsClient() {
               </p>
             </div>
             <Link
-              href={`/admin/vendors/${request.vendor_id}/edit`}
+              href={`/markets/admin/vendors/${request.vendor_id}/edit`}
               className="px-4 py-2 text-sm font-medium text-primary-600 border border-primary-200 rounded-xl hover:bg-primary-50 transition-colors"
             >
               View Vendor

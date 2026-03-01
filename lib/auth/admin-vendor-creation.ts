@@ -15,6 +15,7 @@ export interface CreateVendorAccountData {
   // Vendor info
   vendorName: string
   slug?: string
+  agencyId?: string // UUID of an existing agency; auto-provisioned when omitted
   tagline?: string
   bio?: string
   contactEmail?: string
@@ -106,6 +107,7 @@ export async function createVendorAccount(
         phone: data.phone,
         vendorName: data.vendorName,
         slug: data.slug,
+        agencyId: data.agencyId || undefined,
         tagline: data.tagline,
         bio: data.bio,
         category: data.category,

@@ -5,6 +5,8 @@ import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { recommendEntity, unrecommendEntity, getEntitySignals } from '@/lib/actions/signals'
 
+import Toast, { ToastType } from './Toast'
+
 interface EntitySignalButtonsProps {
     entityId: string
     initialUserSignals?: {
@@ -19,6 +21,7 @@ export function EntitySignalButtons({ entityId, initialUserSignals, className, m
     const [status, setStatus] = useState(initialUserSignals || { isRecommended: false })
     const [isPending, startTransition] = useTransition()
     const [hasLoaded, setHasLoaded] = useState(!!initialUserSignals)
+    const [toast, setToast] = useState<{ message: string; type: ToastType; visible: boolean }>({ message: '', type: 'info', visible: false })
 
     useEffect(() => {
         if (!initialUserSignals) {
@@ -44,6 +47,11 @@ export function EntitySignalButtons({ entityId, initialUserSignals, className, m
         const newIsRecommended = !status.isRecommended
         setStatus(prev => ({ ...prev, isRecommended: newIsRecommended }))
 
+        if (newIsRecommended && typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(50)
+            setToast({ message: 'Recommended this business!', type: 'success', visible: true })
+        }
+
         startTransition(async () => {
             try {
                 if (newIsRecommended) {
@@ -68,33 +76,42 @@ export function EntitySignalButtons({ entityId, initialUserSignals, className, m
     }
 
     return (
-        <div className={cn("flex items-center gap-2", className)}>
-            {/* Recommend Button */}
-            <button
-                onClick={handleRecommend}
-                disabled={isPending}
-                className={cn(
-                    "group transition-all duration-200 ease-out flex items-center justify-center gap-1.5",
-                    minimal
-                        ? "p-2 rounded-full hover:bg-amber-50"
-                        : "px-3 py-1.5 rounded-lg border text-xs font-semibold",
-                    status.isRecommended
-                        ? "bg-amber-100 border-amber-200 text-amber-700"
-                        : "bg-white border-neutral-200 text-neutral-500 hover:border-amber-200 hover:text-amber-600"
-                )}
-                title="I recommend this"
-            >
-                <Star
+        <>
+            <div className={cn("flex items-center gap-2", className)}>
+                {/* Recommend Button */}
+                <button
+                    onClick={handleRecommend}
+                    disabled={isPending}
                     className={cn(
-                        "transition-transform group-active:scale-95",
-                        minimal ? "w-4 h-4" : "w-3.5 h-3.5",
-                        status.isRecommended ? "fill-amber-600 text-amber-600" : "text-current"
+                        "group transition-all duration-300 ease-out flex items-center justify-center gap-1.5 transform active:scale-90",
+                        minimal
+                            ? "p-2 rounded-full hover:bg-amber-50"
+                            : "px-3 py-1.5 rounded-lg border text-xs font-semibold",
+                        status.isRecommended
+                            ? "bg-amber-100 border-amber-200 text-amber-700 shadow-[0_0_15px_rgba(251,191,36,0.2)]"
+                            : "bg-white border-neutral-200 text-neutral-500 hover:border-amber-200 hover:text-amber-600"
                     )}
-                />
-                {!minimal && (
-                    <span>{status.isRecommended ? 'Recommended' : 'Recommend'}</span>
-                )}
-            </button>
-        </div>
+                    title="I recommend this"
+                >
+                    <Star
+                        className={cn(
+                            "transition-all duration-300",
+                            minimal ? "w-4 h-4" : "w-3.5 h-3.5",
+                            status.isRecommended ? "fill-amber-500 text-amber-500 scale-110" : "text-current scale-100 group-hover:scale-110"
+                        )}
+                    />
+                    {!minimal && (
+                        <span>{status.isRecommended ? 'Recommended' : 'Recommend'}</span>
+                    )}
+                </button>
+            </div>
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.visible}
+                onClose={() => setToast(prev => ({ ...prev, visible: false }))}
+                duration={3000}
+            />
+        </>
     )
 }

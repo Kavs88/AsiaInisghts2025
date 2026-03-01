@@ -1,7 +1,6 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
 
 interface InteractiveMapProps {
     center: [number, number]
@@ -13,19 +12,22 @@ interface InteractiveMapProps {
     className?: string
 }
 
-export default function InteractiveMap(props: InteractiveMapProps) {
-    const Map = useMemo(
-        () =>
-            dynamic(() => import('./MapInner'), {
-                loading: () => (
-                    <div className={`bg-neutral-100 flex items-center justify-center rounded-2xl ${props.className}`} style={{ minHeight: '300px' }}>
-                        <div className="text-neutral-400 font-medium">Loading Map...</div>
-                    </div>
-                ),
-                ssr: false,
-            }),
-        [props.className]
-    )
+// Hoisted to module scope — created once at module initialisation, never recreated.
+// Previously called inside useMemo([props.className]) which created a new component
+// reference on every className change, causing full unmount → remount → tile refetch.
+const MapInnerDynamic = dynamic(() => import('./MapInner'), {
+    loading: () => (
+        <div className="w-full h-full bg-neutral-100 flex items-center justify-center rounded-2xl" style={{ minHeight: '300px' }}>
+            <div className="text-neutral-400 font-medium">Loading Map...</div>
+        </div>
+    ),
+    ssr: false,
+})
 
-    return <Map {...props} />
+export default function InteractiveMap({ className, ...props }: InteractiveMapProps) {
+    return (
+        <div className={className}>
+            <MapInnerDynamic className={className} {...props} />
+        </div>
+    )
 }

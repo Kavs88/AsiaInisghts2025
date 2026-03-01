@@ -5,8 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Share2, Check, Copy, Phone, Mail, ShoppingBag, Calendar, Tag, Image as ImageIcon, MessageSquare, MapPin } from 'lucide-react'
 import ReviewsSection from '@/components/ui/ReviewsSection'
+import ProductCard from '@/components/ui/ProductCard'
 import PropertyCard from '@/components/ui/PropertyCard'
 import ShareButton from '@/components/ui/ShareButton'
+import MobileActionBar from '@/components/ui/MobileActionBar'
+import BusinessEngagementButtons from '@/components/ui/BusinessEngagementButtons'
 
 interface BusinessProfileClientProps {
     business: any
@@ -16,6 +19,7 @@ interface BusinessProfileClientProps {
     nearbyProperties?: any[]
     contact_phone?: string | null
     contact_email?: string | null
+    entityId?: string | null
 }
 
 export default function BusinessProfileClient({
@@ -25,7 +29,8 @@ export default function BusinessProfileClient({
     deals,
     nearbyProperties = [],
     contact_phone,
-    contact_email
+    contact_email,
+    entityId
 }: BusinessProfileClientProps) {
     const [activeTab, setActiveTab] = useState<'shop' | 'events' | 'deals' | 'gallery' | 'reviews' | 'neighborhood'>('shop')
 
@@ -41,12 +46,13 @@ export default function BusinessProfileClient({
 
     return (
         <>
-            {/* Header Action Buttons - Fully aligned with Seller Profile */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            {/* Action Buttons — quick-access CTA row above tabs */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                 {contact_phone && contact_phone !== 'No Phone' && (
                     <a
                         href={`tel:${contact_phone}`}
-                        className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm sm:text-base font-semibold rounded-xl transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
+                        className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm sm:text-base font-semibold rounded-2xl transition-colors shadow-sm hover:shadow-md h-12 min-w-[48px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
                         aria-label="Call business"
                     >
                         <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,8 +64,8 @@ export default function BusinessProfileClient({
 
                 {contact_email && (
                     <a
-                        href={`mailto:${contact_email}`}
-                        className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-white hover:bg-neutral-50 text-neutral-700 text-sm sm:text-base font-semibold rounded-xl border border-neutral-200 transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
+                        href={`mailto:${contact_email}?subject=${encodeURIComponent(`Inquiry via Asia Insights`)}&body=${encodeURIComponent(`Hi,\n\nI found you on Asia Insights and wanted to ask about...`)}`}
+                        className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-white hover:bg-neutral-50 text-neutral-700 text-sm sm:text-base font-semibold rounded-2xl border border-neutral-200 transition-colors shadow-sm hover:shadow-md h-12 min-w-[48px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
                         aria-label="Email business"
                     >
                         <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,15 +76,21 @@ export default function BusinessProfileClient({
                 )}
 
                 <ShareButton name={business.name} />
+
+                <BusinessEngagementButtons
+                    businessId={business.id}
+                    className="flex-shrink-0"
+                />
+            </div>
             </div>
 
             {/* Tab Navigation */}
-            <section className="sticky top-16 lg:top-20 z-30 bg-white border-b border-neutral-200 mt-6">
+            <section className="sticky top-16 lg:top-20 z-30 bg-white border-b border-neutral-200 mt-2">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
                         <button
                             onClick={() => handleTabClick('shop')}
-                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'shop'
+                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'shop'
                                 ? 'border-primary-600 text-primary-600'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                 }`}
@@ -88,7 +100,7 @@ export default function BusinessProfileClient({
                         </button>
                         <button
                             onClick={() => handleTabClick('events')}
-                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'events'
+                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'events'
                                 ? 'border-primary-600 text-primary-600'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                 }`}
@@ -98,7 +110,7 @@ export default function BusinessProfileClient({
                         </button>
                         <button
                             onClick={() => handleTabClick('deals')}
-                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'deals'
+                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'deals'
                                 ? 'border-primary-600 text-primary-600'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                 }`}
@@ -109,7 +121,7 @@ export default function BusinessProfileClient({
                         {business.images && business.images.length > 0 && (
                             <button
                                 onClick={() => handleTabClick('gallery')}
-                                className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'gallery'
+                                className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'gallery'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                     }`}
@@ -120,7 +132,7 @@ export default function BusinessProfileClient({
                         )}
                         <button
                             onClick={() => handleTabClick('reviews')}
-                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'reviews'
+                            className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'reviews'
                                 ? 'border-primary-600 text-primary-600'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                 }`}
@@ -131,7 +143,7 @@ export default function BusinessProfileClient({
                         {nearbyProperties.length > 0 && (
                             <button
                                 onClick={() => handleTabClick('neighborhood')}
-                                className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[44px] flex items-center gap-2 ${activeTab === 'neighborhood'
+                                className={`px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors min-h-[48px] flex items-center gap-2 ${activeTab === 'neighborhood'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-neutral-600 hover:text-neutral-900'
                                     }`}
@@ -144,7 +156,7 @@ export default function BusinessProfileClient({
                 </div>
             </section>
 
-            <div id="tab-content" className="scroll-mt-36 lg:scroll-mt-40">
+            <div id="tab-content" className="scroll-mt-24">
                 {/* Active Tab Content will be rendered here */}
                 {activeTab === 'shop' && (
                     <section className="py-12 bg-neutral-50">
@@ -153,30 +165,24 @@ export default function BusinessProfileClient({
                                 <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">Products</h2>
                             </div>
                             {products.length > 0 ? (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {products.map((product: any) => (
-                                        <div key={product.id} className="group bg-white rounded-2xl overflow-hidden border border-neutral-100 shadow-sm hover:shadow-md transition-all">
-                                            <div className="aspect-square relative bg-neutral-100">
-                                                {product.image_urls?.[0] && (
-                                                    <Image
-                                                        src={product.image_urls[0]}
-                                                        alt={product.name}
-                                                        fill
-                                                        sizes="(max-width: 768px) 50vw, 25vw"
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                )}
-                                                <div className="absolute top-3 right-3">
-                                                    <div className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
-                                                        <ShoppingBag className="w-4 h-4 text-primary-600" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <h3 className="font-bold text-neutral-900 mb-1 truncate">{product.name}</h3>
-                                                <p className="text-primary-600 font-bold">${product.price}</p>
-                                            </div>
-                                        </div>
+                                        <ProductCard
+                                            key={product.id}
+                                            id={product.id}
+                                            name={product.name}
+                                            slug={product.slug}
+                                            price={parseFloat(product.price)}
+                                            compareAtPrice={product.compare_at_price ? parseFloat(product.compare_at_price) : undefined}
+                                            imageUrl={product.image_urls?.[0] ?? null}
+                                            vendorName={business.name}
+                                            vendorSlug={business.slug}
+                                            stockQuantity={product.stock_quantity ?? 0}
+                                            isAvailable={product.is_available ?? true}
+                                            requiresPreorder={product.requires_preorder ?? false}
+                                            preorderLeadDays={product.preorder_lead_days}
+                                            category={product.category}
+                                        />
                                     ))}
                                 </div>
                             ) : (
@@ -315,6 +321,37 @@ export default function BusinessProfileClient({
                     </section>
                 )}
             </div>
+
+            {/* Mobile bottom padding spacer */}
+            <div className="h-24 lg:hidden" />
+
+            {/* Mobile Sticky Action Bar */}
+            <MobileActionBar className="flex items-center gap-3">
+                {contact_phone && contact_phone !== 'No Phone' ? (
+                    <a
+                        href={`tel:${contact_phone}`}
+                        className="flex-1 flex items-center justify-center gap-2 h-[52px] bg-primary-600 text-white font-bold rounded-2xl active:bg-primary-700 transition-colors"
+                    >
+                        <Phone className="w-5 h-5" />
+                        Call
+                    </a>
+                ) : contact_email ? (
+                    <a
+                        href={`mailto:${contact_email}?subject=${encodeURIComponent(`Inquiry via Asia Insights`)}&body=${encodeURIComponent(`Hi,\n\nI found you on Asia Insights and wanted to ask about...`)}`}
+                        className="flex-1 flex items-center justify-center gap-2 h-[52px] bg-primary-600 text-white font-bold rounded-2xl active:bg-primary-700 transition-colors"
+                    >
+                        <Mail className="w-5 h-5" />
+                        Email
+                    </a>
+                ) : null}
+
+                <div className="flex-shrink-0">
+                    <BusinessEngagementButtons
+                        businessId={business.id}
+                        className="h-[52px]"
+                    />
+                </div>
+            </MobileActionBar>
         </>
     )
 }

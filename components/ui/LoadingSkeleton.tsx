@@ -1,5 +1,3 @@
-'use client'
-
 import { cn } from '@/lib/utils'
 
 interface SkeletonProps {
@@ -13,7 +11,7 @@ export function Skeleton({ className, variant = 'text' }: SkeletonProps) {
   const variantClasses = {
     text: 'h-4 rounded',
     image: 'aspect-square rounded-lg',
-    card: 'h-64 rounded-xl',
+    card: 'h-64 rounded-2xl',
     circle: 'rounded-full aspect-square',
   }
 
@@ -51,7 +49,7 @@ export function GridSkeleton({ count = 4, columns = 4 }: { count?: number; colum
   }[columns]
 
   return (
-    <div className={`grid ${colClass} gap-8`}>
+    <div className={`grid ${colClass} gap-6`}>
       {Array.from({ length: count }).map((_, i) => (
         <CardSkeleton key={i} />
       ))}

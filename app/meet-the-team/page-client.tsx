@@ -1,10 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import Modal from '@/components/ui/Modal'
-import { Check, Shield, Globe, Users, ArrowRight, Mail, Linkedin, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Check,
+  Shield,
+  Globe,
+  Users,
+  ArrowRight,
+  Mail,
+  Linkedin,
+  X,
+  Instagram,
+  Star,
+  Zap,
+  Heart
+} from 'lucide-react'
+import HapticLink from '@/components/ui/HapticLink'
+
+// --- Types ---
 
 interface TeamMember {
   id: string
@@ -23,460 +39,495 @@ interface TeamMember {
     email?: string
   }
   imagePosition?: string
+  accentColor?: string
 }
+
+// --- Data ---
+
+const TEAM_MEMBERS: TeamMember[] = [
+  {
+    id: 'sam',
+    name: 'Sam Kavanagh',
+    role: 'Founder & Community Lead',
+    shortBlurb: 'A decade of on-the-ground experience guiding relocation and life transitions across Southeast Asia.',
+    bio: 'Sam has lived and worked across Southeast Asia for over a decade, helping people navigate relocation, travel, and life transitions with clarity and confidence. He founded Asia Insights with the belief that moving to a new country shouldn\'t mean starting from scratch. By bridging the gap between digital information and on-the-ground reality, Sam has helped hundreds of individuals and families find their footing in record time.',
+    atAGlance: [
+      '10+ years residency in SE Asia',
+      'Strategic community architect',
+      'Expert in cross-border logistics',
+      'Founded Asia Insights in 2022',
+    ],
+    languages: ['English'],
+    areasOfSpecialty: [
+      'Relocation Strategy',
+      'Community Building',
+      'Strategic Introductions',
+      'Problem Solving',
+    ],
+    image: '/images/team/sam.jpg',
+    social: {
+      linkedin: 'https://linkedin.com',
+      email: 'sam@asiainsights.com'
+    },
+    accentColor: 'primary'
+  },
+  {
+    id: 'greta',
+    name: 'Greta Pudan',
+    role: 'Operations & Client Support',
+    shortBlurb: 'The structural engine of Asia Insights, ensuring precision, calm, and follow-through in every client journey.',
+    bio: 'Operating in the background, Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience. With a background in project management and high-stakes logistics, she is the engine that keeps our concierge services running precisely. Clients know Greta as the reliable voice that turns complex plans into simple, actionable steps.',
+    atAGlance: [
+      'Precision logistics expert',
+      'Detail-oriented communicator',
+      'Project management background',
+      'Client relationship lead',
+    ],
+    languages: ['English'],
+    areasOfSpecialty: [
+      'Client Coordination',
+      'Logistics Management',
+      'Concierge Operations',
+      'Process Design',
+    ],
+    image: '/images/team/greta.jpg',
+    social: {
+      linkedin: 'https://www.linkedin.com/in/greta-pudan/',
+      email: 'greta@asiainsights.com'
+    },
+    accentColor: 'secondary'
+  },
+  {
+    id: 'tita',
+    name: 'Giovanni "Tita"',
+    role: 'Local Partnerships & Experiences',
+    shortBlurb: 'Unmatched local network connecting clients to the authentic heart of our communities.',
+    bio: 'Known locally as "Tita," Giovanni connects people with places, partners, and experiences that feel personal rather than packaged. A natural connector with an unparalleled network of local artisans, venue owners, and community leaders, Tita ensures that Asia Insights clients get access to the true heart of every destination, far beyond the typical expat bubble.',
+    atAGlance: [
+      'Veteran local connector',
+      'Community liaison expert',
+      'Artisan discovery lead',
+      'Experience curator',
+    ],
+    languages: ['English', 'Italian'],
+    areasOfSpecialty: [
+      'Local Partnerships',
+      'Cultural Curation',
+      'On-Ground Logistics',
+      'Asset Discovery',
+    ],
+    image: '/images/team/tita.jpg',
+    imagePosition: 'top',
+    social: {
+      instagram: 'https://instagram.com',
+      email: 'tita@asiainsights.com'
+    },
+    accentColor: 'primary'
+  },
+]
+
+// --- Components ---
+
+function BadgeCard({ icon, title, items }: { icon: React.ReactNode, title: string, items: string[] }) {
+  return (
+    <div className="bg-neutral-50 border border-neutral-200 rounded-2xl p-6 hover:border-teal-200 transition-all duration-300 group">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="text-neutral-400 group-hover:text-teal-600 transition-colors">
+          {icon}
+        </div>
+        <h4 className="text-xs font-black text-neutral-500 uppercase tracking-widest">{title}</h4>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.05 }}
+            className="px-3 py-1.5 bg-teal-50 border border-teal-100 text-teal-700 rounded-lg text-xs font-bold hover:bg-teal-100 hover:border-teal-200 transition-all cursor-default"
+          >
+            {item}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SocialLink({ href, icon: Icon, label }: { href: string, icon: any, label: string }) {
+  return (
+    <HapticLink
+      href={href}
+      className="flex items-center gap-2 px-3.5 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-semibold text-neutral-600 hover:border-teal-200 hover:text-teal-700 hover:bg-teal-50 transition-all duration-200 group"
+    >
+      <Icon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform duration-200" />
+      <span>{label}</span>
+    </HapticLink>
+  )
+}
+
+// --- Main Page Client ---
 
 export default function MeetTheTeamClient() {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
-  const teamMembers: TeamMember[] = [
-    {
-      id: 'sam',
-      name: 'Sam',
-      role: 'Founder & Community Lead',
-      shortBlurb: 'Sam has lived and worked across Southeast Asia for over a decade, helping people navigate relocation, travel, and life transitions with clarity and confidence.',
-      bio: 'Sam has lived and worked across Southeast Asia for over a decade, helping people navigate relocation, travel, and life transitions with clarity and confidence. He founded Asia Insights with the belief that moving to a new country shouldn\'t mean starting from scratch. By bridging the gap between digital information and on-the-ground reality, Sam has helped hundreds of individuals and families find their footing in record time.',
-      atAGlance: [
-        'Lived and worked across Southeast Asia for 10+ years',
-        'Built Asia Insights after helping friends relocate one message at a time',
-        'Strong believer in taking online connections offline',
-        'Known for solving complex, cross-border challenges',
-      ],
-      languages: ['English'],
-      areasOfSpecialty: [
-        'Relocation support',
-        'Community building',
-        'Strategic introductions',
-        'Complex problem-solving',
-      ],
-      image: '/images/team/sam.jpg',
-      social: {
-        linkedin: 'https://linkedin.com',
-        email: 'sam@asiainsights.com'
-      }
-    },
-    {
-      id: 'greta',
-      name: 'Greta',
-      role: 'Operations & Client Support',
-      shortBlurb: 'Operating in the background, Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience.',
-      bio: 'Operating in the background, Greta ensures every journey runs smoothly, bringing structure, calm, and follow-through to every client experience. With a background in project management and high-stakes logistics, she is the engine that keeps our concierge services running precisely. Clients know Greta as the reliable voice that turns complex plans into simple, actionable steps.',
-      atAGlance: [
-        'Calm and reliable point of contact',
-        'Keeps multi-step plans on track',
-        'Detail-oriented and highly organised',
-        'Trusted for clarity and consistency',
-      ],
-      languages: ['English'],
-      areasOfSpecialty: [
-        'Client coordination',
-        'Logistics support',
-        'Ongoing concierge care',
-      ],
-      image: '/images/team/greta.jpg',
-      social: {
-        linkedin: 'https://www.linkedin.com/in/greta-pudan/',
-        email: 'greta@asiainsights.com'
-      }
-    },
-    {
-      id: 'tita',
-      name: 'Tita',
-      role: 'Local Partnerships & Experiences',
-      shortBlurb: 'Known locally as "Tita," Giovanni connects people with places, partners, and experiences that feel personal rather than packaged.',
-      bio: 'Known locally as "Tita," Giovanni connects people with places, partners, and experiences that feel personal rather than packaged. A natural connector with an unparalleled network of local artisans, venue owners, and community leaders, Tita ensures that Asia Insights clients get access to the true heart of every destination, far beyond the typical expat bubble.',
-      atAGlance: [
-        'Known locally as "Tita"',
-        'Deeply connected to local communities',
-        'Enjoys creating authentic experiences',
-        'Natural connector of people and places',
-      ],
-      languages: ['English', 'Italian'],
-      areasOfSpecialty: [
-        'Local partnerships',
-        'Cultural experiences',
-        'On-the-ground coordination',
-      ],
-      image: '/images/team/tita.jpg',
-      imagePosition: 'top',
-      social: {
-        instagram: 'https://instagram.com',
-        email: 'tita@asiainsights.com'
-      }
-    },
-  ]
+  const handleClose = useCallback(() => setSelectedMember(null), [])
 
-  const values = [
-    {
-      icon: <Shield className="w-6 h-6" strokeWidth={1.5} />,
-      title: 'Radical Transparency',
-      description: 'We give you the "real talk" on neighborhoods, costs, and cultural nuances—not a sales pitch.'
-    },
-    {
-      icon: <Users className="w-6 h-6" strokeWidth={1.5} />,
-      title: 'Local First',
-      description: 'Our strength lies in our deep, authentic connections with the communities we operate in.'
-    },
-    {
-      icon: <Globe className="w-6 h-6" strokeWidth={1.5} />,
-      title: 'Global Standards',
-      description: 'We combine on-the-ground local knowledge with international standards of service and reliability.'
+  // Keyboard escape
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose()
     }
-  ]
-  return (
-    <main id="main-content" className="min-h-screen bg-neutral-50">
-      {/* Hero Section - Compacted */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-24 overflow-hidden bg-neutral-900">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/40 via-neutral-900 to-secondary-900/40" />
+    window.addEventListener('keydown', down)
+    return () => window.removeEventListener('keydown', down)
+  }, [handleClose])
 
+  // Prevent scroll when modal open
+  useEffect(() => {
+    if (selectedMember) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [selectedMember])
+
+  return (
+    <main id="main-content" className="min-h-screen bg-neutral-50 selection:bg-primary-100 selection:text-primary-900">
+
+      {/* Editorial Hero */}
+      <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden bg-neutral-900">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-neutral-900 to-secondary-900/20" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary-600/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-bold uppercase tracking-widest mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl"
+          >
+            <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-primary-400 text-[10px] font-black uppercase tracking-widest mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
               </span>
-              The People of Asia Insights
+              The Vision Carriers
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
-              Meet the <span className="text-primary-500">Guides.</span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[0.85] tracking-tighter">
+              Meet the <span className="text-primary-500 italic">Core.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-neutral-300 max-w-2xl font-medium leading-relaxed mb-8">
-              We aren't just consultants. We're your neighbors, fixers, and community connectors in Southeast Asia.
+            <p className="text-xl md:text-2xl text-neutral-400 max-w-2xl font-medium leading-relaxed mb-12">
+              We are not consultants. We are residents, fixers, and connectors. We build the infrastructure so you can build your life.
             </p>
-            <Link
+            <HapticLink
               href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center px-10 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-primary-900/40 hover:-translate-y-1"
             >
-              Get in Touch
-            </Link>
-          </div>
+              Start Your Journey
+            </HapticLink>
+          </motion.div>
         </div>
       </section>
 
-      {/* Mission & Purpose */}
-      <section className="py-12 bg-white relative">
+      {/* Team Grid */}
+      <section className="py-24 bg-neutral-50 relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-8 tracking-tight">
-                Bridging the <span className="text-primary-600">Gap.</span>
-              </h2>
-              <div className="space-y-6 text-lg text-neutral-600 leading-relaxed font-medium">
-                <p>
-                  Asia Insights was born from a simple realization: the internet is full of "expert" advice, but true peace of mind comes from having a real person you can trust on the ground.
-                </p>
-                <p>
-                  Our team brings together decades of residency, business building, and community leadership across the region. We don't just point you to a villa; we tell you which cafe has the best coffee and which landlord actually fixes things.
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-6">
-              {values.map((value, i) => (
-                <div key={i} className="flex gap-6 p-8 rounded-2xl bg-neutral-50 hover:bg-white border border-neutral-100 hover:border-primary-100 hover:shadow-xl transition-all duration-500 group">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary-600 shadow-sm group-hover:bg-primary-600 group-hover:text-white transition-colors duration-500">
-                    {value.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-neutral-900 mb-2 truncate">{value.title}</h3>
-                    <p className="text-neutral-600 leading-relaxed">{value.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team Grid - Premium Cards */}
-      <section className="py-12 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 tracking-tight">
-              Our Core <span className="text-primary-600">Team.</span>
-            </h2>
-            <p className="text-xl text-neutral-600 font-medium leading-relaxed">
-              Curated expertise from leaders who have built lives and businesses here.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {teamMembers.map((member) => (
-              <div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {TEAM_MEMBERS.map((member, idx) => (
+              <motion.div
                 key={member.id}
-                className="group relative cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                className="group relative"
                 onClick={() => setSelectedMember(member)}
               >
-                <div className="bg-white rounded-2xl p-6 border border-neutral-100 overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col h-full">
+                <div className="bg-white rounded-[2rem] p-4 border border-neutral-200/60 overflow-hidden cursor-pointer hover:shadow-xl hover:border-teal-100 transition-all duration-300 flex flex-col h-full active:scale-[0.98]">
 
-                  {/* Contained square image — inside card padding */}
-                  <div className="aspect-square relative rounded-xl overflow-hidden mb-5 bg-neutral-100">
-                    {member.image && !imageErrors[member.id] ? (
-                      <Image
-                        src={member.image}
-                        alt={member.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        style={{ objectPosition: member.imagePosition === 'top' ? 'center top' : 'center center' }}
-                        onError={() => setImageErrors(prev => ({ ...prev, [member.id]: true }))}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 text-primary-300 text-8xl font-black italic select-none">
-                        {member.name.charAt(0)}
-                      </div>
-                    )}
-                  </div>
+                  {/* Image */}
+                  <div className="aspect-[4/5] relative rounded-[1.5rem] overflow-hidden bg-neutral-100 mb-5">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      style={{ objectPosition: member.imagePosition === 'top' ? 'center top' : 'center center' }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  {/* Specialty tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {member.areasOfSpecialty.slice(0, 2).map((area, i) => (
-                      <span key={i} className="px-2.5 py-1 bg-neutral-50 border border-neutral-200 text-xs font-bold uppercase tracking-wider text-neutral-600 rounded-lg">
-                        {area}
+                    {/* Floating role on hover */}
+                    <div className="absolute bottom-5 left-5 right-5 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                      <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-semibold uppercase tracking-widest rounded-md">
+                        {member.role}
                       </span>
-                    ))}
-                  </div>
-
-                  {/* Name + role */}
-                  <h3 className="text-2xl font-black text-neutral-900 mb-0.5 group-hover:text-primary-600 transition-colors">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm font-bold text-primary-600 mb-3 flex items-center gap-2">
-                    <span className="w-6 h-[2px] bg-primary-200 shrink-0" />
-                    {member.role}
-                  </p>
-                  <p className="text-sm text-neutral-600 line-clamp-2 leading-relaxed mb-auto">
-                    {member.shortBlurb}
-                  </p>
-
-                  {/* CTA footer */}
-                  <div className="flex items-center justify-between mt-5 pt-5 border-t border-neutral-100">
-                    <span className="text-xs font-black text-neutral-500 uppercase tracking-widest group-hover:text-primary-600 transition-colors">
-                      Full Profile
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:border-primary-600 group-hover:text-white transition-all duration-300">
-                      <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
                     </div>
                   </div>
 
+                  {/* Text */}
+                  <div className="flex flex-col flex-1 px-1 pb-5">
+                    <h3 className="text-3xl font-black text-neutral-900 tracking-tight mb-2 group-hover:text-teal-600 transition-colors duration-200">
+                      {member.name}
+                    </h3>
+                    <p className="text-[11px] font-semibold text-teal-600 uppercase tracking-[0.2em] mb-3">
+                      {member.role}
+                    </p>
+                    <p className="text-[13px] text-neutral-500 leading-[1.7] mb-5 line-clamp-2">
+                      {member.shortBlurb}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex gap-1.5">
+                        {member.areasOfSpecialty.slice(0, 2).map((s, i) => (
+                          <span key={i} className="px-2.5 py-1 text-[10px] font-semibold text-neutral-400 uppercase tracking-wide bg-neutral-50 border border-neutral-100 rounded-md">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-400 group-hover:bg-teal-600 group-hover:border-teal-600 group-hover:text-white transition-all duration-200 shrink-0">
+                        <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-200" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Story / Timeline teaser */}
-      <section className="py-12 bg-neutral-900 text-white overflow-hidden">
+      {/* Values / Trust Section */}
+      <section className="py-24 bg-white border-y border-neutral-100 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative">
-
-              <h2 className="text-3xl lg:text-4xl font-black mb-8 leading-tight">
-                Over a decade of <span className="text-primary-500 italic">presence.</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+            <div className="flex flex-col justify-center">
+              <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-7 leading-[0.9] tracking-tighter">
+                Bridging the <br /><span className="text-teal-600">Reality Gap.</span>
               </h2>
-              <div className="space-y-8 relative z-10">
+              <p className="text-[15px] text-neutral-500 leading-[1.8] mb-8">
+                Asia Insights was born from a simple realization: the internet is full of "expert" advice, but true peace of mind comes from having a real person you can trust on the ground.
+              </p>
+
+              <div className="space-y-3">
                 {[
-                  { year: '2014', event: 'First foundation in Southeast Asia' },
-                  { year: '2018', event: 'Community grows to 1,000+ residents' },
-                  { year: '2022', event: 'Asia Insights officially launched' },
-                  { year: '2024', event: 'New Hub system activated' }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-6 items-start">
-                    <span className="text-2xl font-black text-primary-500 opacity-50 shrink-0">{item.year}</span>
-                    <p className="text-xl text-neutral-300 font-medium pt-1.5">{item.event}</p>
+                  { icon: <Shield className="w-4 h-4" />, title: 'Radical Transparency', desc: 'Real talk on neighborhoods and costs.' },
+                  { icon: <Users className="w-4 h-4" />, title: 'Local First', desc: 'Deep, authentic community connections.' },
+                  { icon: <Globe className="w-4 h-4" />, title: 'Global Standards', desc: 'International service levels.' }
+                ].map((v, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-teal-100 transition-colors duration-200 group">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:border-teal-600 group-hover:text-white transition-all duration-200 shrink-0">
+                      {v.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-neutral-900 text-[14px] mb-0.5">{v.title}</h4>
+                      <p className="text-[13px] text-neutral-500 leading-snug">{v.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-800 border border-white/10 group">
-              <div className="absolute inset-0 bg-neutral-950/20 z-10 group-hover:bg-transparent transition-all duration-700" />
+
+            <div className="relative h-[360px] md:h-[460px] lg:h-auto lg:min-h-[480px] rounded-[2rem] overflow-hidden bg-neutral-100">
               <Image
                 src="https://images.unsplash.com/photo-1493106819501-66d381c446a1?auto=format&fit=crop&w=1200&q=80"
-                alt="Asia Connections"
+                alt="Team on the ground in Southeast Asia"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
+                className="object-cover"
+                style={{ objectPosition: 'center center' }}
               />
-              <div className="absolute bottom-12 left-12 right-12 z-20">
-                <div className="p-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl">
-                  <p className="text-2xl font-bold italic mb-4 leading-relaxed">
-                    "Real insight isn't found in a brochure. It's found in the living, breathing reality of on-the-ground experience."
-                  </p>
-                  <span className="text-primary-400 font-black uppercase tracking-widest text-sm">— Sam Kavanagh</span>
-                </div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-neutral-900/50 via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8 p-6 backdrop-blur-md bg-white/10 border border-white/20 rounded-[1.5rem]">
+                <p className="text-lg md:text-xl font-semibold text-white italic leading-[1.6]">
+                  "Insight isn't in a brochure. It's in the actual daily reality of on-the-ground presence."
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-6 leading-tight">
-            Ready to start your journey?
-          </h2>
-          <p className="text-xl text-neutral-600 mb-10 font-medium max-w-2xl mx-auto">
-            Our team is ready to help you navigate Southeast Asia with the confidence of a local.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/concierge"
-              className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-            >
-              Explore Concierge
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/businesses"
-              className="inline-flex items-center justify-center px-10 py-4 bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 font-bold rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              Browse Local Hubs
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Team Member Modal */}
+      <AnimatePresence>
+        {selectedMember && (
+          <div className="fixed inset-0 z-[2100] flex items-center justify-center p-4 md:p-6 lg:p-8">
 
-      {/* Profile Modal */}
-      {selectedMember && (
-        <Modal
-          isOpen={!!selectedMember}
-          onClose={() => setSelectedMember(null)}
-          size="xl"
-          className="max-h-[90vh] overflow-y-auto p-0"
-          hideHeader={true}
-          noPadding={true}
-        >
-          <div className="relative bg-white flex flex-col md:flex-row">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={handleClose}
+              className="absolute inset-0 bg-neutral-900/60 backdrop-blur-md"
+            />
 
-            {/* Close button — always top-right, never in layout flow */}
-            <button
-              onClick={() => setSelectedMember(null)}
-              className="absolute top-4 right-4 z-30 p-2 bg-white/90 backdrop-blur-sm hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-full shadow-md border border-neutral-200/60 transition-all"
-              aria-label="Close profile"
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 12 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-4xl bg-white border border-neutral-200 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[92vh] z-50"
             >
-              <X className="w-4 h-4" />
-            </button>
 
-            {/* Sidebar — portrait photo */}
-            <div className="w-full md:w-[260px] shrink-0">
-              <div className="aspect-[3/4] relative bg-neutral-100 overflow-hidden md:rounded-l-2xl">
-                {selectedMember.image && !imageErrors[selectedMember.id] ? (
-                  <Image
-                    src={selectedMember.image}
-                    alt={selectedMember.name}
-                    fill
-                    className="object-cover"
-                    style={{ objectPosition: selectedMember.imagePosition === 'top' ? 'center top' : 'center center' }}
-                    onError={() => setImageErrors(prev => ({ ...prev, [selectedMember.id]: true }))}
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 text-primary-300 text-6xl font-black">
-                    {selectedMember.name.charAt(0)}
+              {/* Close */}
+              <button
+                onClick={handleClose}
+                aria-label="Close"
+                className="absolute top-5 right-5 z-[70] p-2.5 bg-white border border-neutral-200 hover:border-neutral-300 text-neutral-400 hover:text-neutral-800 rounded-full transition-all duration-200 active:scale-90 shadow-sm group"
+              >
+                <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+
+              {/* ── Left: Identity Panel ───────────────────────────── */}
+              <div className="w-full lg:w-[38%] shrink-0 relative flex flex-col items-center justify-center p-10 text-center border-b lg:border-b-0 lg:border-r border-neutral-100 bg-neutral-50">
+                <div className="absolute inset-0 bg-gradient-to-b from-teal-50/60 via-transparent to-transparent pointer-events-none" />
+
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, duration: 0.4 }}
+                  className="relative z-10 flex flex-col items-center"
+                >
+                  {/* Photo */}
+                  <div className="relative w-44 h-44 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-white ring-1 ring-teal-100 shadow-lg mb-6 shrink-0">
+                    <Image
+                      src={selectedMember.image}
+                      alt={selectedMember.name}
+                      fill
+                      className="object-cover"
+                      style={{ objectPosition: selectedMember.imagePosition === 'top' ? 'center top' : 'center center' }}
+                      priority
+                    />
                   </div>
-                )}
-                {/* Subtle bottom fade for depth */}
-                <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent z-10 pointer-events-none" />
-              </div>
-            </div>
 
-            {/* Content */}
-            <div className="flex-1 p-6 md:p-8 flex flex-col gap-5 min-w-0">
+                  {/* Role */}
+                  <p className="text-[10px] font-semibold text-teal-600 uppercase tracking-[0.3em] mb-2">
+                    {selectedMember.role}
+                  </p>
 
-              {/* Identity — name and role at the very top */}
-              <div className="pr-10">
-                <p className="text-xs font-black text-primary-600 uppercase tracking-widest mb-1.5">
-                  {selectedMember.role}
-                </p>
-                <h2 className="text-3xl font-black text-neutral-900 leading-tight mb-4">
-                  {selectedMember.name}
-                </h2>
-                {/* Languages + social links inline under name */}
-                <div className="flex flex-wrap gap-2 items-center">
-                  {selectedMember.languages.map((lang, i) => (
-                    <span key={i} className="px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg text-xs font-bold">
-                      {lang}
-                    </span>
-                  ))}
-                  {selectedMember.social?.email && (
-                    <a
-                      href={`mailto:${selectedMember.social.email}`}
-                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-primary-400 hover:text-primary-600 transition-all"
-                    >
-                      <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
-                      Email
-                    </a>
-                  )}
-                  {selectedMember.social?.linkedin && !selectedMember.social.linkedin.endsWith('linkedin.com') && !selectedMember.social.linkedin.endsWith('linkedin.com/') && (
-                    <a
-                      href={selectedMember.social.linkedin}
-                      target="_blank"
-                      rel="noopener"
-                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-[#0077b5] hover:text-[#0077b5] transition-all"
-                    >
-                      <Linkedin className="w-3.5 h-3.5" strokeWidth={1.5} />
-                      LinkedIn
-                    </a>
-                  )}
-                  {selectedMember.social?.instagram && !selectedMember.social.instagram.endsWith('instagram.com') && !selectedMember.social.instagram.endsWith('instagram.com/') && (
-                    <a
-                      href={selectedMember.social.instagram}
-                      target="_blank"
-                      rel="noopener"
-                      className="flex items-center gap-1.5 px-3 py-1 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:border-[#E1306C] hover:text-[#E1306C] transition-all"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                      Instagram
-                    </a>
-                  )}
-                </div>
+                  {/* Name */}
+                  <h2 className="text-3xl lg:text-[2.15rem] font-black text-neutral-900 tracking-tight leading-tight">
+                    {selectedMember.name}
+                  </h2>
+
+                  {/* Divider */}
+                  <div className="w-8 h-[2px] bg-teal-300 rounded-full mt-5 mb-6" />
+
+                  {/* Social links */}
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {selectedMember.social?.email && (
+                      <SocialLink href={`mailto:${selectedMember.social.email}`} icon={Mail} label="Email" />
+                    )}
+                    {selectedMember.social?.linkedin && (
+                      <SocialLink href={selectedMember.social.linkedin} icon={Linkedin} label="LinkedIn" />
+                    )}
+                    {selectedMember.social?.instagram && (
+                      <SocialLink href={selectedMember.social.instagram} icon={Instagram} label="Instagram" />
+                    )}
+                  </div>
+                </motion.div>
               </div>
 
-              {/* Divider */}
-              <div className="w-10 h-[2px] bg-primary-200 rounded-full" />
+              {/* ── Right: Content Panel ───────────────────────────── */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar bg-white flex flex-col">
+                <div className="p-8 lg:p-10 flex flex-col flex-1">
 
-              {/* About */}
-              <div>
-                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">About</h3>
-                <p className="text-[15px] text-neutral-600 leading-relaxed font-medium">
-                  {selectedMember.bio}
-                </p>
-              </div>
+                  {/* Languages */}
+                  <div className="flex items-center gap-2 mb-7">
+                    {selectedMember.languages.map((l, i) => (
+                      <span key={i} className="px-3 py-1 bg-teal-50 border border-teal-100 text-teal-700 rounded-md text-[10px] font-bold uppercase tracking-widest">
+                        {l}
+                      </span>
+                    ))}
+                  </div>
 
-              {/* Focus Areas */}
-              <div>
-                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">Focus Areas</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedMember.areasOfSpecialty.map((area, index) => (
-                    <span key={index} className="px-3 py-1.5 bg-neutral-50 border border-neutral-100 text-neutral-700 rounded-xl font-bold text-sm">
-                      {area}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                  {/* Bio */}
+                  <div className="mb-7">
+                    <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-[0.25em] mb-3">About</p>
+                    <p className="text-[14.5px] text-neutral-600 leading-[1.8]">
+                      {selectedMember.bio}
+                    </p>
+                  </div>
 
-              {/* At a Glance */}
-              <div>
-                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">At a Glance</h3>
-                <div className="flex flex-col gap-2">
-                  {selectedMember.atAGlance.map((item, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 border border-neutral-100">
-                      <div className="w-5 h-5 rounded-full bg-white text-primary-600 flex items-center justify-center shrink-0 shadow-sm mt-0.5 border border-primary-100">
-                        <Check className="w-3 h-3 stroke-[3px]" />
+                  <div className="border-t border-neutral-100 mb-7" />
+
+                  {/* Info modules */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-7 mb-7">
+
+                    {/* At a Glance */}
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-4">
+                        <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+                          <Zap className="w-3.5 h-3.5 text-teal-600" />
+                        </div>
+                        <p className="text-[10px] font-semibold text-neutral-500 uppercase tracking-[0.2em]">At a Glance</p>
                       </div>
-                      <span className="text-sm text-neutral-700 font-medium leading-relaxed">{item}</span>
+                      <ul className="space-y-3">
+                        {selectedMember.atAGlance.map((item, i) => (
+                          <li key={i} className="group/item flex items-start gap-2.5 text-[13px] font-medium text-neutral-700 leading-snug">
+                            <div className="w-1 h-1 rounded-full bg-teal-400 mt-[6px] shrink-0 group-hover/item:bg-teal-600 transition-colors duration-200" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  ))}
+
+                    {/* Focus Areas */}
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-4">
+                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                          <Star className="w-3.5 h-3.5 text-amber-500" />
+                        </div>
+                        <p className="text-[10px] font-semibold text-neutral-500 uppercase tracking-[0.2em]">Focus Areas</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMember.areasOfSpecialty.map((item, i) => (
+                          <span key={i} className="px-3 py-1.5 bg-amber-50 border border-amber-100 text-amber-700 rounded-lg text-[11px] font-semibold hover:border-amber-200 transition-colors duration-200 cursor-default">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer CTA */}
+                  <div className="border-t border-neutral-100 pt-6 mt-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 shrink-0">
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-semibold text-neutral-400 uppercase tracking-widest leading-none mb-1">Community Trusted</p>
+                        <p className="text-[13px] font-bold text-neutral-800 leading-none">Verified Resident Professional</p>
+                      </div>
+                    </div>
+                    <HapticLink
+                      href="/contact"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-sm shrink-0"
+                    >
+                      Book a Consultation
+                      <ArrowRight className="w-4 h-4" />
+                    </HapticLink>
+                  </div>
+
                 </div>
               </div>
-
-            </div>
+            </motion.div>
           </div>
-        </Modal>
-      )}
+        )}
+      </AnimatePresence>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+      `}</style>
     </main>
   )
 }

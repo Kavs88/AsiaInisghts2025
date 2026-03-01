@@ -1,4 +1,6 @@
 import { createClient } from './server'
+import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 
 /**
  * Get vendors with optional filters
@@ -207,23 +209,32 @@ export async function searchProducts(searchQuery: string, limit = 10) {
   return data || []
 }
 
+import { createPublicClient } from '@/lib/supabase/public'
+
 /**
  * Get upcoming market days
  */
-export async function getUpcomingMarketDays(limit = 10) {
-  const supabase = await createClient()
+export const getUpcomingMarketDays = cache(
+  unstable_cache(
+    async (limit = 10) => {
+      // Use public client to prevent Next.js dynamic bailing due to cookies()
+      const supabase = createPublicClient()
 
-  const { data, error } = await supabase
-    .from('market_days')
-    .select('*')
-    .eq('is_published', true)
-    .gte('market_date', new Date().toISOString().split('T')[0])
-    .order('market_date', { ascending: true })
-    .limit(limit)
+      const { data, error } = await supabase
+        .from('market_days')
+        .select('*')
+        .eq('is_published', true)
+        .gte('market_date', new Date().toISOString().split('T')[0])
+        .order('market_date', { ascending: true })
+        .limit(limit)
 
-  if (error) throw error
-  return data || []
-}
+      if (error) throw error
+      return data || []
+    },
+    ['upcoming-market-days'],
+    { revalidate: 3600, tags: ['market-days'] }
+  )
+)
 
 /**
  * Get venue by location name

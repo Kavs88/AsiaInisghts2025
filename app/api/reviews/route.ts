@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/server'
  * - sort: 'newest' | 'oldest' | 'highest' | 'lowest' | 'helpful' (default: 'newest')
  * - filter: 'all' | 'verified' | '5star' | '4star' | '3star' | '2star' | '1star' (default: 'all')
  */
+export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
     try {
         const supabase = await createClient()

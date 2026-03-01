@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
  * - subject_id: UUID of the subject
  * - subject_type: 'business' | 'vendor' | 'market_day'
  */
+export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
     try {
         const supabase = await createClient()

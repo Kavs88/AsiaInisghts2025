@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Suspense } from 'react'
 import Header from '@/components/ui/Header'
@@ -7,21 +7,20 @@ import Footer from '@/components/ui/Footer'
 import NextTopLoader from 'nextjs-toploader'
 import { AppProviders } from '@/components/providers/AppProviders'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
+import { Toaster } from 'sonner'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // Prevents invisible text during font load
-  preload: true,
-  variable: '--font-inter',
-  adjustFontFallback: true,
-})
-
+// Single font family — eliminates one Google Fonts download
+// system-ui is the fallback for body text (zero-cost, no layout shift)
+// Using 'variable' weight loads the variable-font file (one file for all weights),
+// which is smaller than loading multiple separate weight files.
+// The variable font covers 200–800; font-black (900) maps gracefully to 800.
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
   variable: '--font-display',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: 'variable',
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
@@ -66,14 +65,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
+    <html lang="en" className={plusJakartaSans.variable}>
       <head>
         {/* Preconnect to external domains for faster loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://hkssuvamxdnqptyprsom.supabase.co" />
+        <link rel="preconnect" href="https://hkssuvamxdnqptyprsom.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {/* Note: hero image preload is handled by Next.js <Image priority> automatically */}
       </head>
-      <body className={inter.className}>
+      <body className={plusJakartaSans.className}>
         <ErrorBoundary>
           <AppProviders>
             <a href="#main-content" className="skip-to-content">
@@ -101,6 +100,7 @@ export default function RootLayout({
             </Suspense>
           </AppProviders>
         </ErrorBoundary>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   )

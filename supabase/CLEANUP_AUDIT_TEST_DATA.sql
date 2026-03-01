@@ -1,0 +1,8 @@
+ALTER TABLE agency_members DISABLE TRIGGER USER;
+ALTER TABLE agencies DISABLE TRIGGER USER;
+
+DELETE FROM agency_members WHERE agency_id = 'b6c1fed4-6ec0-461a-89c6-0bd6afc040a6';
+DELETE FROM agencies WHERE id = 'b6c1fed4-6ec0-461a-89c6-0bd6afc040a6';
+
+ALTER TABLE agency_members ENABLE TRIGGER USER;
+ALTER TABLE agencies ENABLE TRIGGER USER;

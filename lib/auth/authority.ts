@@ -3,17 +3,27 @@
  * This file is for server components and server actions only
  * For client components, use authority-client.ts
  */
+import { cache } from 'react'
 
-export type UserRole = 'customer' | 'vendor' | 'admin' | 'super_user'
-export type EffectiveRole = 'super_user' | 'admin' | 'vendor' | 'customer' | 'visitor'
+export type UserRole = 'customer' | 'vendor' | 'admin' | 'super_user' | 'superadmin' | 'founder' | 'landlord'
+export type EffectiveRole = 'super_user' | 'admin' | 'landlord' | 'vendor' | 'customer' | 'visitor'
+
+export type AgencyMembership = {
+  id: string
+  name: string
+  slug: string
+  role: string
+}
 
 export interface UserAuthority {
   isSuperUser: boolean
   isAdmin: boolean
+  isLandlord: boolean
   role: UserRole | null
   effectiveRole: EffectiveRole
   hasVendorRecord: boolean
   vendorSlug: string | null
+  agencies: AgencyMembership[]
 }
 
 /**
@@ -23,18 +33,21 @@ function getDefaultAuthority(): UserAuthority {
   return {
     isSuperUser: false,
     isAdmin: false,
+    isLandlord: false,
     role: null,
     effectiveRole: 'visitor',
     hasVendorRecord: false,
     vendorSlug: null,
+    agencies: [],
   }
 }
 
 /**
  * Get user authority (server-side)
- * Reads from cookies and queries both super_users and users tables
+ * Reads from cookies and queries both super_users and users tables.
+ * Wrapped with React cache() to deduplicate DB calls within a single request.
  */
-export async function getUserAuthorityServer(): Promise<UserAuthority> {
+export const getUserAuthorityServer = cache(async (): Promise<UserAuthority> => {
   try {
     // Dynamic import to avoid pulling next/headers into client bundles
     const { createClient: createServerClient } = await import('@/lib/supabase/server')
@@ -51,14 +64,8 @@ export async function getUserAuthorityServer(): Promise<UserAuthority> {
       return getDefaultAuthority()
     }
 
-    // Check super_users table first (highest authority)
-    const { data: superUserData } = await supabase
-      .from('super_users')
-      .select('uid')
-      .eq('uid', user.id)
-      .maybeSingle()
-
-    const isSuperUser = !!superUserData
+    // super_users table was dropped — role-based checks handle authority
+    const isSuperUser = false
 
     // Get user role from users table
     const { data: userRecord } = await supabase
@@ -79,34 +86,54 @@ export async function getUserAuthorityServer(): Promise<UserAuthority> {
     const hasVendorRecord = !!vendorRecord
     const vendorSlug = vendorRecord ? ((vendorRecord as any).slug as string) : null
 
-    // Determine effective role (precedence: super_user > admin > vendor > customer)
+    // Get all agency memberships for this user
+    const { data: agencyMemberships } = await supabase
+      .from('agency_members')
+      .select('role, agencies(id, name, slug)')
+      .eq('user_id', user.id)
+
+    const agencies: AgencyMembership[] = (agencyMemberships ?? []).map((m: any) => ({
+      id: m.agencies.id,
+      name: m.agencies.name,
+      slug: m.agencies.slug,
+      role: m.role,
+    }))
+
+    // Determine effective role (precedence: super_user > admin > landlord > vendor > customer)
     let effectiveRole: EffectiveRole = 'visitor'
-    if (isSuperUser || role === 'super_user') {
+    if (isSuperUser || role === 'super_user' || role === 'superadmin' || role === 'founder') {
       effectiveRole = 'super_user'
     } else if (role === 'admin') {
       effectiveRole = 'admin'
+    } else if (role === 'landlord') {
+      effectiveRole = 'landlord'
     } else if (role === 'vendor') {
       effectiveRole = 'vendor'
     } else if (role === 'customer') {
       effectiveRole = 'customer'
     }
 
-    // Admin check: super user OR admin role OR super_user role
-    const isAdmin = isSuperUser || role === 'admin' || role === 'super_user'
+    // Admin check: super user OR admin role OR super_user role OR founder/superadmin
+    const isAdmin = isSuperUser || role === 'admin' || role === 'super_user' || role === 'superadmin' || role === 'founder'
+
+    // Landlord check: landlord role (admins also have access to landlord routes)
+    const isLandlord = role === 'landlord' || isAdmin
 
     return {
       isSuperUser,
       isAdmin,
+      isLandlord,
       role,
       effectiveRole,
       hasVendorRecord,
       vendorSlug,
+      agencies,
     }
   } catch (error) {
     console.error('[getUserAuthorityServer] Error:', error)
     return getDefaultAuthority()
   }
-}
+})
 
 /**
  * Check if user has admin access (server-side)
@@ -124,5 +151,14 @@ export async function hasAdminAccessServer(): Promise<boolean> {
 export async function hasVendorAccessServer(): Promise<boolean> {
   const authority = await getUserAuthorityServer()
   return authority.effectiveRole === 'vendor' || authority.isAdmin
+}
+
+/**
+ * Check if user has landlord access (server-side)
+ * Landlords and admins both have access to landlord routes.
+ */
+export async function hasLandlordAccessServer(): Promise<boolean> {
+  const authority = await getUserAuthorityServer()
+  return authority.isLandlord
 }
 

@@ -60,9 +60,9 @@ export default function HubHero({
             </div>
 
             {/* Content Layer */}
-            <div className={cn("max-w-7xl mx-auto px-6 lg:px-8 relative z-20 py-24 lg:py-32", contentClassName)}>
+            <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 py-14 sm:py-20 lg:py-32", contentClassName)}>
                 <div className="max-w-4xl animate-fade-up">
-                    <h1 className={cn("text-5xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tight", titleClassName)}>
+                    <h1 className={cn("text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tight", titleClassName)}>
                         {title}
                     </h1>
                     <p className="text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed font-light max-w-2xl">

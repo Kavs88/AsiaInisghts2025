@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Loader2 } from 'lucide-react';
 import BusinessCard from '@/components/ui/BusinessCard';
 import { GridSkeleton } from '@/components/ui/LoadingSkeleton';
+import EmptyState from '@/components/ui/EmptyState';
 import { getBusinesses, Business } from '@/lib/actions/businesses';
 import HubHero from '@/components/ui/HubHero';
 
@@ -107,16 +108,30 @@ export default function BusinessesPage() {
                 variant="businesses"
                 imageUrl="/images/Stalls 6.jpg"
             >
-                <div className="w-full max-w-xl mx-auto relative mt-8">
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={handleSearch}
-                        placeholder="Search businesses, services, or people... (Press Enter)"
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-lg"
-                    />
-                    <Search className="absolute left-4 top-4.5 h-5 w-5 text-neutral-400" />
+                <div className="w-full max-w-xl mx-auto relative mt-8 flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={handleSearch}
+                            placeholder="Search businesses, services or people..."
+                            className="w-full pl-12 pr-4 py-4 rounded-2xl text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-lg"
+                        />
+                        <Search className="absolute left-4 top-4.5 h-5 w-5 text-neutral-400" />
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const params = new URLSearchParams(searchParams.toString())
+                            if (currentCategory !== 'all') params.set('category', currentCategory)
+                            if (searchQuery) { params.set('search', searchQuery) } else { params.delete('search') }
+                            router.push(`/businesses?${params.toString()}`)
+                        }}
+                        className="px-6 py-4 bg-white text-neutral-900 font-bold rounded-2xl shadow-lg hover:bg-neutral-50 transition-colors whitespace-nowrap"
+                    >
+                        Search
+                    </button>
                 </div>
             </HubHero>
 
@@ -131,14 +146,14 @@ export default function BusinessesPage() {
                                 : (cat.id === 'setup' ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100' : 'bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 hover:border-primary-300')
                                 }`}
                         >
-                                {cat.label}
+                            {cat.label}
                         </button>
                     ))}
                 </div>
 
                 <div className={`transition-opacity duration-300 ${isPending || loading ? 'opacity-50' : 'opacity-100'}`}>
                     <div className="flex justify-between items-center mb-8">
-                        <h2 className="text-2xl font-bold text-neutral-900">
+                        <h2 className="text-3xl font-black text-neutral-900">
                             {currentCategory === 'all'
                                 ? 'All Businesses'
                                 : CATEGORIES.find(c => c.id === currentCategory)?.label || 'Businesses'}
@@ -159,13 +174,12 @@ export default function BusinessesPage() {
                     )}
 
                     {!loading && businesses.length === 0 && (
-                        <div className="text-center py-12">
-                            <div className="bg-neutral-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
-                                <Search className="h-10 w-10 text-neutral-400" />
-                            </div>
-                            <h3 className="text-xl font-bold text-neutral-900 mb-2">No businesses found</h3>
-                            <p className="text-neutral-500">Try adjusting your category filter.</p>
-                        </div>
+                        <EmptyState
+                            icon={<Search className="w-8 h-8 text-neutral-400" />}
+                            title="No businesses found"
+                            description="Try adjusting your search or category filter."
+                            action={{ label: 'View All Businesses', href: '/businesses' }}
+                        />
                     )}
                 </div>
             </div>

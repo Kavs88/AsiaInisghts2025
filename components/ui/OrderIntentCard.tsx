@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { updateOrderIntentStatus } from '@/lib/supabase/queries'
+import { createClient } from '@/lib/supabase/client'
 import Toast, { ToastType } from './Toast'
 
 interface OrderIntentCardProps {
@@ -55,7 +55,16 @@ export default function OrderIntentCard({ intent, vendorId, onStatusUpdate }: Or
     setToast({ message: '', type: 'info', visible: false })
 
     try {
-      await updateOrderIntentStatus(intent.id, newStatus)
+      const supabase = createClient()
+      const { error } = await (supabase.from('order_intents') as any)
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', intent.id)
+
+      if (error) throw error
+
       setToast({
         message: `Order intent ${newStatus} successfully`,
         type: 'success',

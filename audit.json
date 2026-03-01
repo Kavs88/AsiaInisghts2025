@@ -1,0 +1,47 @@
+{
+  "founders": [
+    {
+      "id": "3eaf883d-f14c-4545-9639-feae5412fc22",
+      "email": "sam@kavsulting.com"
+    }
+  ],
+  "madamLansSeafood_businesses": [],
+  "madamLansSeafood_entities": [
+    {
+      "id": "7bebb779-552b-4166-8b07-6d44708d348c",
+      "owner_id": null,
+      "type": "vendor",
+      "name": "Madam Lan's Grilled Seafood",
+      "slug": "madam-lan-seafood",
+      "description": "Fresh Son Tra Flavors",
+      "location_text": null,
+      "geo_scope": "local",
+      "tags": [
+        null
+      ],
+      "source": "migration_vendor",
+      "confidence_score": 100,
+      "last_verified_at": "2026-02-17T15:47:11.543061+00:00",
+      "is_locked_by_human": false,
+      "legacy_vendor_id": "ef248005-4ed4-4bf8-9f49-6fcced50dd24",
+      "legacy_business_id": null,
+      "created_at": "2026-01-22T04:34:09.303721+00:00",
+      "updated_at": "2026-02-26T07:13:19.071345+00:00",
+      "logo_url": "",
+      "hero_image_url": "",
+      "trust_badges": [],
+      "embedding": null,
+      "created_by": null,
+      "is_claimed": false,
+      "is_verified": false
+    }
+  ],
+  "madamLansSeafood_properties": null,
+  "stats": {
+    "total": 23,
+    "withOwner": 0,
+    "withoutOwner": 23,
+    "founderOwned": 0
+  },
+  "founderOwnedList": []
+}

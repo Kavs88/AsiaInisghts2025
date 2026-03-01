@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getBusinessBySlug } from '@/lib/actions/businesses'
+import { getPropertiesByBusiness } from '@/lib/actions/properties'
+import { getEntitySignals } from '@/lib/actions/signals'
 import { ShieldCheck, MapPin, Calendar, ShoppingBag, Home } from 'lucide-react'
 import ProductCard from '@/components/ui/ProductCard'
 import EventCard from '@/components/ui/EventCard'
@@ -13,6 +15,7 @@ import { SaveButton } from '@/components/ui/SoftActionButtons'
 import { getSavedStatus } from '@/lib/actions/social'
 import { EntitySignalSummary } from '@/components/ui/EntitySignalSummary'
 import StructuredData from '@/components/seo/StructuredData'
+import MakerAnchorNav from '@/components/ui/MakerAnchorNav'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -24,26 +27,17 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
     }
 
     const { events, products, activityStats } = business as any
-    // Note: getBusinessBySlug doesn't fetch properties yet based on my previous read, 
-    // but we should probably fetch them if this is a "Unified" profile.
-    // For now I'll stick to what is available and maybe fetch properties separately if needed.
-    // Actually, let's fetch properties client side or in a parallel server action if missing?
-    // Or just rely on what we have. The prompt said "Aggregates... Properties".
-    // I will check if getBusinessBySlug returns properties. It returned events, products, deals.
-    // I will add properties fetching here for completeness.
 
-    // Wait, I can't edit getBusinessBySlug easily without breaking return types. 
-    // I'll fetch properties separately here.
-    const { getPropertiesByBusiness } = await import('@/lib/actions/properties')
-    const properties = await getPropertiesByBusiness(business.id)
-
-    // Fetch Trust Signals
-    const { getEntitySignals } = await import('@/lib/actions/signals')
-    const signals = await getEntitySignals(business.id)
-
-    // Fetch Saved Status (Entity)
-    // We must fetch this explicitly as signals only covers public endorsements
-    const isSaved = await getSavedStatus('entity', business.id)
+    // Parallel fetch — all three are independent of each other
+    const [properties, signals, isSaved] = await Promise.all([
+        getPropertiesByBusiness(business.id).catch(() => []),
+        getEntitySignals(business.id).catch(() => ({
+            user: { isRecommended: false, isRegular: false },
+            community: { hasRecommendations: false, hasRegulars: false, recommendCount: 0, regularCount: 0 },
+            founder: { isRecommended: false },
+        })),
+        getSavedStatus('entity', business.id).catch(() => false),
+    ])
 
 
     const isVerified = business.is_verified || ((business as any).confidence_score && (business as any).confidence_score > 80)
@@ -52,18 +46,19 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
         <main className="min-h-screen bg-white pb-20">
             <StructuredData entity={business} />
             {/* Header / Cover */}
-            <div className="h-48 md:h-64 bg-neutral-100 relative overflow-hidden">
-                {/* Abstract pattern or cover image */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-50 to-neutral-50" />
+            <div className="h-56 md:h-72 bg-neutral-900 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-neutral-900" />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/10 to-transparent" />
             </div>
 
             <div className="container-custom relative -mt-20">
-                <div className="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-neutral-100">
+                <div className="bg-white rounded-2xl p-6 md:p-10 shadow-xl border border-neutral-100">
 
                     {/* Identity Section */}
                     <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
                         {/* Avatar */}
-                        <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden border-4 border-white shadow-lg flex-shrink-0 bg-neutral-50">
+                        <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-white shadow-lg flex-shrink-0 bg-neutral-50">
                             {business.logo_url ? (
                                 <Image src={business.logo_url} alt={business.name} fill sizes="(max-width: 768px) 128px, 160px" className="object-cover" />
                             ) : (
@@ -80,7 +75,7 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
                                     {business.name}
                                 </h1>
                                 {isVerified && (
-                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-100">
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-50 text-primary-700 text-xs font-bold rounded-full border border-primary-100">
                                         <ShieldCheck className="w-3.5 h-3.5" />
                                         Verified Member
                                     </span>
@@ -106,7 +101,7 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
                                 </div>
                             )}
 
-                            <div className="flex items-center gap-4 text-neutral-500 text-sm font-medium mb-6">
+                            <div className="flex items-center gap-4 text-neutral-500 text-sm font-medium mb-5">
                                 {business.address && (
                                     <>
                                         <div className="flex items-center gap-1">
@@ -119,13 +114,33 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
                                 <span>Member since {new Date(business.created_at).getFullYear()}</span>
                             </div>
 
+                            {/* Trust/Activity Stats — elevated above description for scanability */}
+                            <div className="flex gap-6 mb-6 pb-6 border-b border-neutral-100">
+                                {products.length > 0 && (
+                                    <div>
+                                        <div className="text-2xl font-black text-neutral-900">{products.length}</div>
+                                        <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Offers</div>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className="text-2xl font-black text-neutral-900">{properties.length}</div>
+                                    <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Properties</div>
+                                </div>
+                                {(activityStats?.hostedEventsCount || 0) > 0 && (
+                                    <div>
+                                        <div className="text-2xl font-black text-neutral-900">{activityStats?.hostedEventsCount || 0}</div>
+                                        <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Events</div>
+                                    </div>
+                                )}
+                            </div>
+
                             <p className="text-lg text-neutral-600 leading-relaxed max-w-2xl">
                                 {business.description || "No bio provided."}
                             </p>
 
                             {/* Founder Signals - Phase 4 Intelligence */}
                             {((business as any).founder_tags?.length > 0 || (business as any).founder_notes?.length > 0) && (
-                                <div className="mt-8 mb-4 p-6 bg-primary-50/50 rounded-2xl border border-primary-100">
+                                <div className="mt-8 mb-4 p-6 bg-primary-50 rounded-2xl border border-primary-100">
                                     <h3 className="text-xs font-black text-primary-800 uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse" />
                                         Founder Insight
@@ -161,40 +176,27 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
                                 </div>
                             )}
 
-                            {/* Trust/Activity Stats */}
-                            <div className="flex gap-8 mt-8 pt-8 border-t border-neutral-100">
-                                {products.length > 0 && (
-                                    <div>
-                                        <div className="text-2xl font-black text-neutral-900">{products.length}</div>
-                                        <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Offers</div>
-                                    </div>
-                                )}
-                                <div>
-                                    <div className="text-2xl font-black text-neutral-900">{properties.length}</div>
-                                    <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Properties</div>
-                                </div>
-                                {(activityStats?.hostedEventsCount || 0) > 0 && (
-                                    <div>
-                                        <div className="text-2xl font-black text-neutral-900">{activityStats?.hostedEventsCount || 0}</div>
-                                        <div className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Events</div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
 
+            <MakerAnchorNav sections={[
+                ...(products.length > 0 ? [{ id: 'products', label: `Products (${products.length})` }] : []),
+                ...(properties.length > 0 ? [{ id: 'properties', label: `Spaces (${properties.length})` }] : []),
+                ...(events.length > 0 ? [{ id: 'events', label: `Events (${events.length})` }] : []),
+            ]} />
+
             {/* Offerings Grid */}
-            <div className="container-custom mt-16 space-y-16">
+            <div className="container-custom pt-12 space-y-14">
 
                 {/* Products */}
                 {products.length > 0 && (
-                    <section>
+                    <section id="products" className="scroll-mt-24">
                         <div className="flex items-center gap-2 mb-6 text-primary-600">
                             <ShoppingBag className="w-5 h-5" />
-                            <h2 className="text-xl font-bold uppercase tracking-wide">Curated Offers</h2>
+                            <h2 className="text-2xl font-black">Curated Offers</h2>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {products.map((product: any) => (
@@ -213,10 +215,10 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
 
                 {/* Properties */}
                 {properties.length > 0 && (
-                    <section>
+                    <section id="properties" className="scroll-mt-24">
                         <div className="flex items-center gap-2 mb-6 text-primary-600">
                             <Home className="w-5 h-5" />
-                            <h2 className="text-xl font-bold uppercase tracking-wide">Managed Spaces</h2>
+                            <h2 className="text-2xl font-black">Managed Spaces</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {properties.map((property: any) => (
@@ -233,10 +235,10 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
 
                 {/* Events */}
                 {events.length > 0 && (
-                    <section>
+                    <section id="events" className="scroll-mt-24">
                         <div className="flex items-center gap-2 mb-6 text-primary-600">
                             <Calendar className="w-5 h-5" />
-                            <h2 className="text-xl font-bold uppercase tracking-wide">Upcoming Events</h2>
+                            <h2 className="text-2xl font-black">Upcoming Events</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {events.map((event: any) => (
@@ -252,7 +254,7 @@ export default async function MakerProfilePage({ params }: { params: { slug: str
                 )}
 
                 {products.length === 0 && properties.length === 0 && events.length === 0 && (
-                    <div className="text-center py-20 bg-neutral-50 rounded-3xl">
+                    <div className="text-center py-20 bg-neutral-50 rounded-2xl">
                         <p className="text-neutral-400 font-medium">This member has no active listings yet.</p>
                     </div>
                 )}

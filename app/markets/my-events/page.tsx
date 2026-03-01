@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/components/contexts/AuthContext'
+import EmptyState from '@/components/ui/EmptyState'
+import { Calendar } from 'lucide-react'
 
 interface Event {
   id: string
@@ -33,7 +35,7 @@ export default function MyEventsPage() {
     const loadEvents = async () => {
       setError(null)
       try {
-        const url = filter === 'all' 
+        const url = filter === 'all'
           ? '/api/my-events'
           : `/api/my-events?type=${filter}`
         const res = await fetch(url)
@@ -116,31 +118,28 @@ export default function MyEventsPage() {
         <div className="flex items-center gap-2 mb-8 border-b border-neutral-200">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              filter === 'all'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
-            }`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${filter === 'all'
+              ? 'border-primary-600 text-primary-600'
+              : 'border-transparent text-neutral-600 hover:text-neutral-900'
+              }`}
           >
             All ({events.length})
           </button>
           <button
             onClick={() => setFilter('saved')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              filter === 'saved'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
-            }`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${filter === 'saved'
+              ? 'border-primary-600 text-primary-600'
+              : 'border-transparent text-neutral-600 hover:text-neutral-900'
+              }`}
           >
             Saved ({savedEvents.length})
           </button>
           <button
             onClick={() => setFilter('planning_to_attend')}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              filter === 'planning_to_attend'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-neutral-600 hover:text-neutral-900'
-            }`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${filter === 'planning_to_attend'
+              ? 'border-primary-600 text-primary-600'
+              : 'border-transparent text-neutral-600 hover:text-neutral-900'
+              }`}
           >
             Planning to Attend ({attendingEvents.length})
           </button>
@@ -165,28 +164,19 @@ export default function MyEventsPage() {
             </button>
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200">
-            <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <h2 className="text-2xl font-bold text-neutral-900 mb-3">No Events Yet</h2>
-            <p className="text-neutral-600 mb-6">
-              {filter === 'all' 
-                ? "Save events or mark them as 'Planning to attend' to see them here."
-                : filter === 'saved'
-                ? "Save events to see them here."
-                : "Mark events as 'Planning to attend' to see them here."}
-            </p>
-            <Link
-              href="/markets/market-days"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors"
-            >
-              Browse Events
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Calendar className="w-8 h-8 text-neutral-400" />}
+            title="No Events Yet"
+            description={filter === 'all'
+              ? "Keep track of your weekend. Save events you love and they'll appear here."
+              : filter === 'saved'
+                ? "You haven't saved any events yet."
+                : "You aren't planning to attend any events yet."}
+            action={{
+              label: "Browse Events",
+              href: "/markets/market-days"
+            }}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (

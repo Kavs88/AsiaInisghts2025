@@ -107,6 +107,22 @@ export async function signUpVendor(data: {
     }
   }
 
+  // Provision a new agency for this vendor and make them the owner.
+  // Uses a SECURITY DEFINER RPC to bypass the RLS chicken-and-egg:
+  // a user cannot INSERT into agencies/agency_members until they are
+  // already an owner, but they can't become an owner without those rows.
+  const { data: agencyId, error: agencyError } = await supabase
+    .rpc('provision_vendor_agency', {
+      p_user_id: authData.user.id,
+      p_vendor_name: data.name,
+    } as any)
+
+  if (agencyError || !agencyId) {
+    throw new Error(
+      `Failed to set up vendor agency: ${agencyError?.message || 'Unknown error'}`
+    )
+  }
+
   // Generate slug from vendor name
   const baseSlug = data.name
     .toLowerCase()
@@ -148,6 +164,7 @@ export async function signUpVendor(data: {
       contact_email: data.email,
       is_active: true,
       user_id: authData.user.id,
+      agency_id: agencyId,
     })
     .select('id, slug')
     .single()

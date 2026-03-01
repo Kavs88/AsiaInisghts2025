@@ -1,242 +1,154 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
-import { isAdminOrSuperUser } from '@/lib/auth/admin'
 import Link from 'next/link'
+import Image from 'next/image'
 
-export default function AdminOrderDetailsPageClient() {
-  const router = useRouter()
-  const params = useParams()
-  const { user, loading: authLoading } = useAuth()
-  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
-  const [order, setOrder] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
+interface Product {
+  id: string
+  name: string
+  slug: string
+  image_urls: string[] | null
+}
 
-  useEffect(() => {
-    const checkAdminAndLoad = async () => {
-      if (authLoading) return
+interface OrderItem {
+  id: string
+  quantity: number
+  price: number
+  products: Product | null
+}
 
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
+interface Vendor {
+  id: string
+  name: string
+  slug: string
+}
 
-      try {
-        const adminStatus = await isAdminOrSuperUser()
-        setIsAdminUser(adminStatus)
-        setIsChecking(false)
+interface Order {
+  id: string
+  order_number: string | null
+  status: string
+  total_amount: number
+  customer_name: string | null
+  customer_email: string | null
+  customer_phone: string | null
+  created_at: string
+  vendors: Vendor | null
+  order_items: OrderItem[]
+}
 
-        if (!adminStatus) {
-          return
-        }
+interface Props {
+  order: Order
+}
 
-        // Fetch order
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
+const STATUS_STYLES: Record<string, string> = {
+  completed: 'text-green-700',
+  pending:   'text-amber-700',
+  cancelled: 'text-red-700',
+}
 
-        const { data, error: orderError } = await supabase
-          .from('orders')
-          .select(`
-            *,
-            vendors (
-              id,
-              name,
-              slug
-            ),
-            order_items (
-              *,
-              products (
-                id,
-                name,
-                slug,
-                image_urls
-              )
-            )
-          `)
-          .eq('id', params.id as string)
-          .single()
-
-        if (orderError) {
-          setError(orderError.message)
-        } else {
-          setOrder(data)
-        }
-      } catch (err: any) {
-        console.error('[AdminOrderDetails] Error:', err)
-        setIsAdminUser(false)
-        setIsChecking(false)
-        setError(err.message)
-      }
-    }
-
-    checkAdminAndLoad()
-  }, [user, authLoading, router, params.id])
-
-  if (authLoading || isChecking) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Checking admin access...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return null // Will redirect
-  }
-
-  if (!isAdminUser) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
-            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
-            <Link href="/admin/orders" className="text-primary-600 hover:underline">
-              ← Back to Orders
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (error || !order) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Order Not Found</h2>
-            <p className="text-error-800 mb-4">{error || 'The order you are looking for does not exist.'}</p>
-            <Link href="/admin/orders" className="text-primary-600 hover:underline">
-              ← Back to Orders
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
+export default function AdminOrderDetailsPageClient({ order }: Props) {
   return (
-    <main className="min-h-screen bg-neutral-50">
-      <div className="container-custom py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <main className="min-h-screen bg-neutral-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-neutral-900 mb-2">Order Details</h1>
-            <p className="text-neutral-600">Order: {order.order_number || order.id.slice(0, 8)}</p>
+            <h1 className="text-3xl font-black text-neutral-900">Order Details</h1>
+            <p className="text-neutral-600">{order.order_number ?? order.id.slice(0, 8)}</p>
           </div>
           <Link
-            href="/admin/orders"
-            className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
+            href="/markets/admin/orders"
+            className="px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors text-sm font-medium"
           >
             ← Back to Orders
           </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Order Information */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-soft p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Order Items</h2>
-              {order.order_items && order.order_items.length > 0 ? (
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+              <h2 className="text-lg font-bold text-neutral-900 mb-4">Order Items</h2>
+              {order.order_items.length > 0 ? (
                 <div className="space-y-4">
-                  {order.order_items.map((item: any) => (
+                  {order.order_items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 p-4 bg-neutral-50 rounded-xl">
-                      {item.products?.image_urls?.[0] && (
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0">
-                          <img
-                            src={item.products.image_urls[0]}
-                            alt={item.products.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                      {item.products?.image_urls?.[0] ? (
+                        <Image
+                          src={item.products.image_urls[0]}
+                          alt={item.products.name}
+                          width={64}
+                          height={64}
+                          className="rounded-lg object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg bg-neutral-200 flex-shrink-0" />
                       )}
                       <div className="flex-1">
-                        <div className="font-semibold text-neutral-900">{item.products?.name || 'Unknown Product'}</div>
+                        <div className="font-semibold text-neutral-900">
+                          {item.products?.name ?? 'Unknown Product'}
+                        </div>
                         <div className="text-sm text-neutral-600">
-                          Quantity: {item.quantity} × ${parseFloat(item.price || 0).toFixed(2)}
+                          {item.quantity} × ${(item.price ?? 0).toFixed(2)}
                         </div>
                       </div>
                       <div className="font-semibold text-neutral-900">
-                        ${(parseFloat(item.price || 0) * item.quantity).toFixed(2)}
+                        ${((item.price ?? 0) * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-neutral-500">No items found</p>
+                <p className="text-neutral-500 text-sm">No items found.</p>
               )}
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-soft p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Order Summary</h2>
-              <div className="space-y-3">
+            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+              <h2 className="text-lg font-bold text-neutral-900 mb-4">Summary</h2>
+              <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-neutral-600">Status</span>
-                  <span className={`font-semibold ${
-                    order.status === 'completed' ? 'text-success-700' :
-                    order.status === 'pending' ? 'text-warning-700' :
-                    order.status === 'cancelled' ? 'text-error-700' :
-                    'text-neutral-700'
-                  }`}>
-                    {order.status || 'pending'}
-                  </span>
+                  <dt className="text-neutral-500">Status</dt>
+                  <dd className={`font-semibold ${STATUS_STYLES[order.status] ?? 'text-neutral-700'}`}>
+                    {order.status ?? 'pending'}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-600">Vendor</span>
-                  {order.vendors ? (
-                    <Link href={`/vendors/${order.vendors.slug}`} className="text-primary-600 hover:underline">
-                      {order.vendors.name}
-                    </Link>
-                  ) : (
-                    <span className="text-neutral-500">Unknown</span>
-                  )}
+                  <dt className="text-neutral-500">Vendor</dt>
+                  <dd>
+                    {order.vendors ? (
+                      <Link href={`/vendors/${order.vendors.slug}`} className="text-primary-600 hover:underline">
+                        {order.vendors.name}
+                      </Link>
+                    ) : '—'}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-600">Total</span>
-                  <span className="font-bold text-neutral-900">
-                    ${parseFloat(order.total_amount || 0).toFixed(2)}
-                  </span>
+                  <dt className="text-neutral-500">Total</dt>
+                  <dd className="font-bold text-neutral-900">${(order.total_amount ?? 0).toFixed(2)}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-600">Date</span>
-                  <span className="text-neutral-900">
-                    {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
-                  </span>
+                  <dt className="text-neutral-500">Date</dt>
+                  <dd className="text-neutral-700">{new Date(order.created_at).toLocaleDateString()}</dd>
                 </div>
-              </div>
+              </dl>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-soft p-6">
-              <h2 className="text-xl font-bold text-neutral-900 mb-4">Customer Information</h2>
-              <div className="space-y-2">
+            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+              <h2 className="text-lg font-bold text-neutral-900 mb-4">Customer</h2>
+              <dl className="space-y-2 text-sm">
                 <div>
-                  <span className="text-sm text-neutral-600">Name</span>
-                  <div className="text-neutral-900">{order.customer_name || 'N/A'}</div>
+                  <dt className="text-neutral-500">Name</dt>
+                  <dd className="text-neutral-900">{order.customer_name ?? '—'}</dd>
                 </div>
                 <div>
-                  <span className="text-sm text-neutral-600">Email</span>
-                  <div className="text-neutral-900">{order.customer_email || 'N/A'}</div>
+                  <dt className="text-neutral-500">Email</dt>
+                  <dd className="text-neutral-900">{order.customer_email ?? '—'}</dd>
                 </div>
                 {order.customer_phone && (
                   <div>
-                    <span className="text-sm text-neutral-600">Phone</span>
-                    <div className="text-neutral-900">{order.customer_phone}</div>
+                    <dt className="text-neutral-500">Phone</dt>
+                    <dd className="text-neutral-900">{order.customer_phone}</dd>
                   </div>
                 )}
-              </div>
+              </dl>
             </div>
           </div>
         </div>
@@ -244,7 +156,3 @@ export default function AdminOrderDetailsPageClient() {
     </main>
   )
 }
-
-
-
-

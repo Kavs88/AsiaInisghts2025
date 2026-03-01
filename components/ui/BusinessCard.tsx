@@ -3,9 +3,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Phone, ArrowRight, Building2 } from 'lucide-react'
+import { MapPin, Phone, ArrowRight, Building2, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Badge from './Badge'
+import { SaveButton } from './SoftActionButtons'
 
 interface BusinessCardProps {
     business: {
@@ -26,7 +27,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
     return (
         <article
             className={cn(
-                "group bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
+                "group bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col relative",
                 className
             )}
         >
@@ -62,6 +63,16 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
                         {business.category}
                     </Badge>
                 </div>
+
+                {/* Save Button - Top Right */}
+                <div className="absolute top-4 right-4 z-20">
+                    <SaveButton
+                        itemType="entity"
+                        itemId={business.id}
+                        minimal
+                        className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
+                    />
+                </div>
             </div>
 
             {/* Content Stage - p-6 Uniform */}
@@ -72,6 +83,11 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
                             {business.name}
                         </h3>
                     </div>
+                    {business.is_verified && (
+                        <div className="flex-shrink-0 w-6 h-6 text-green-500" title="Verified by Asia Insights">
+                            <ShieldCheck className="w-full h-full" strokeWidth={1.5} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Description - Body text */}
@@ -82,7 +98,7 @@ export default function BusinessCard({ business, className }: BusinessCardProps)
                 )}
 
                 {/* Footer - Optional meta */}
-                <div className="mt-auto pt-4 border-t border-neutral-100/50 flex flex-col gap-3">
+                <div className="mt-auto pt-4 border-t border-neutral-100 flex flex-col gap-3">
                     {business.address && (
                         <div className="flex items-start gap-2 text-sm font-medium text-neutral-500 line-clamp-1">
                             <MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" strokeWidth={1.5} />

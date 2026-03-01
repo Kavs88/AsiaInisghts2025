@@ -16,10 +16,11 @@ interface CreateVendorRequest {
   password: string
   fullName: string
   phone?: string
-  
+
   // Vendor info
   vendorName: string
   slug?: string // Optional, will be generated if not provided
+  agencyId?: string // UUID of an existing agency; auto-provisioned when omitted
   tagline?: string
   bio?: string
   category?: string
@@ -84,7 +85,7 @@ serve(async (req) => {
       .eq('id', requestingUser.id)
       .single()
 
-    const isAdmin = userRecord?.role === 'admin' || userRecord?.role === 'super_user'
+    const isAdmin = userRecord?.role === 'admin'
     const isSelfCreation = requestingUser.email === body.email
 
     // Only allow admin to create accounts for others, or users to create their own
@@ -100,7 +101,7 @@ serve(async (req) => {
     if (isSelfCreation) {
       // User is creating their own vendor account
       userId = requestingUser.id
-      
+
       // Update user role to vendor
       const { error: roleError } = await supabase
         .from('users')
@@ -228,13 +229,55 @@ serve(async (req) => {
       }
     }
 
-    // Step 3: Create vendor record
+    // Step 3: Resolve agency_id — use the provided one, or auto-provision.
+    // The Edge Function uses the service role key, so it bypasses RLS and
+    // can insert into agencies / agency_members directly.
+    let finalAgencyId = body.agencyId || null
+
+    if (!finalAgencyId) {
+      // Derive a unique agency slug from the vendor slug
+      let agencySlug = finalSlug
+      let agencySuffix = 0
+
+      while (true) {
+        const { data: existing } = await supabase
+          .from('agencies')
+          .select('id')
+          .eq('slug', agencySlug)
+          .maybeSingle()
+        if (!existing) break
+        agencySuffix += 1
+        agencySlug = `${finalSlug}-${agencySuffix}`
+      }
+
+      const { data: newAgency, error: agencyInsertError } = await supabase
+        .from('agencies')
+        .insert({ name: body.vendorName, slug: agencySlug, created_by: userId })
+        .select('id')
+        .single()
+
+      if (agencyInsertError || !newAgency) {
+        return new Response(
+          JSON.stringify({ error: `Failed to create agency: ${agencyInsertError?.message || 'Unknown error'}` }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      await supabase
+        .from('agency_members')
+        .insert({ agency_id: newAgency.id, user_id: userId, role: 'owner' })
+
+      finalAgencyId = newAgency.id
+    }
+
+    // Step 4: Create vendor record
     const { data: vendorData, error: vendorError } = await supabase
       .from('vendors')
       .insert({
         user_id: userId,
         name: body.vendorName,
         slug: finalSlug,
+        agency_id: finalAgencyId,
         tagline: body.tagline || null,
         bio: body.bio || null,
         category: body.category || null,
@@ -253,8 +296,8 @@ serve(async (req) => {
 
     if (vendorError || !vendorData) {
       return new Response(
-        JSON.stringify({ 
-          error: `Failed to create vendor profile: ${vendorError?.message || 'Unknown error'}` 
+        JSON.stringify({
+          error: `Failed to create vendor profile: ${vendorError?.message || 'Unknown error'}`
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
@@ -269,9 +312,9 @@ serve(async (req) => {
         vendorSlug: vendorData.slug,
         vendorName: vendorData.name,
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     )
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import EventCard from '@/components/ui/EventCard'
 import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
@@ -81,8 +81,13 @@ export default function DiscoveryPage() {
     }
   }, [user, filter])
 
-  // Load events
+  // Load events — AbortController cancels in-flight requests when filter/category/page
+  // changes before the previous fetch resolves. Prevents stale responses from racing
+  // and overwriting the result of a newer request.
+  const loadingRef = useRef(false)
   useEffect(() => {
+    const controller = new AbortController()
+
     const loadEvents = async () => {
       setLoading(true)
       try {
@@ -92,21 +97,29 @@ export default function DiscoveryPage() {
         params.set('page', page.toString())
         params.set('limit', '50')
 
-        const res = await fetch(`/api/discovery?${params.toString()}`)
+        const res = await fetch(`/api/discovery?${params.toString()}`, { signal: controller.signal })
         if (res.ok) {
           const data: DiscoveryResponse = await res.json()
           setThisWeekEvents(data.thisWeek.events)
           setNextWeekEvents(data.nextWeek.events)
           setHasMore(data.thisWeek.hasMore || data.nextWeek.hasMore)
         }
-      } catch (error) {
-        console.error('Error loading events:', error)
+      } catch (error: any) {
+        // AbortError is expected on cleanup — do not log it as a real error
+        if (error?.name !== 'AbortError') {
+          console.error('Error loading events:', error)
+        }
       } finally {
-        setLoading(false)
+        // Only clear loading if this effect's fetch was not aborted
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     loadEvents()
+
+    return () => controller.abort()
   }, [filter, category, page])
 
   // Load upcoming markets for the footer context
@@ -148,7 +161,7 @@ export default function DiscoveryPage() {
         subtitle={user
           ? "The community is active. Here's what's happening based on your interests."
           : "From artisan workshops to community meetups, find something extraordinary happening near you."}
-        imageUrl="/images/events-hero.png"
+        imageUrl="/images/events-hero.jpg"
         variant="events"
         className="min-h-fit"
         contentClassName="py-12 lg:py-16"
@@ -188,7 +201,7 @@ export default function DiscoveryPage() {
 
       {/* Filters */}
       <section className="bg-white border-b border-neutral-200 py-4 sticky top-16 lg:top-20 z-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             {/* Intent Filter */}
             {user && (
@@ -196,7 +209,7 @@ export default function DiscoveryPage() {
                 <span className="text-sm font-medium text-neutral-700 mr-2">Show:</span>
                 <button
                   onClick={() => setFilter('all')}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${filter === 'all'
+                  className={`px-4 py-3 text-sm font-medium rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 ${filter === 'all'
                     ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                     }`}
@@ -205,7 +218,7 @@ export default function DiscoveryPage() {
                 </button>
                 <button
                   onClick={() => setFilter('favourite')}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${filter === 'favourite'
+                  className={`px-4 py-3 text-sm font-medium rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 ${filter === 'favourite'
                     ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                     }`}
@@ -214,7 +227,7 @@ export default function DiscoveryPage() {
                 </button>
                 <button
                   onClick={() => setFilter('planning_to_attend')}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${filter === 'planning_to_attend'
+                  className={`px-4 py-3 text-sm font-medium rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 ${filter === 'planning_to_attend'
                     ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                     }`}
@@ -233,7 +246,7 @@ export default function DiscoveryPage() {
                   setCategory(e.target.value)
                   setPage(1)
                 }}
-                className="px-4 py-2 text-sm border border-neutral-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="px-4 py-3 text-sm border border-neutral-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 {categories.map((cat) => (
                   <option key={cat.value} value={cat.value}>
@@ -247,7 +260,7 @@ export default function DiscoveryPage() {
       </section>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
         {loading ? (
           <div className="space-y-8">
             <div className="h-8 bg-neutral-200 animate-pulse rounded w-1/4 mb-6"></div>
@@ -260,7 +273,7 @@ export default function DiscoveryPage() {
               <section className="mb-12">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 mb-2">This Week</h2>
+                    <h2 className="text-2xl lg:text-3xl font-black text-neutral-900 mb-2">This Week</h2>
                     <p className="text-neutral-600">
                       {filter === 'planning_to_attend'
                         ? "Events you're planning to attend"
@@ -288,7 +301,7 @@ export default function DiscoveryPage() {
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 mb-2">Upcoming</h2>
+                    <h2 className="text-2xl lg:text-3xl font-black text-neutral-900 mb-2">Upcoming</h2>
                     <p className="text-neutral-600">Events coming up soon</p>
                   </div>
                   {nextWeekEvents.length > 6 && (
@@ -307,18 +320,20 @@ export default function DiscoveryPage() {
 
             {/* Empty State */}
             {thisWeekEvents.length === 0 && nextWeekEvents.length === 0 && (
-              <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200">
-                <svg className="w-20 h-20 mx-auto text-neutral-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <h2 className="text-2xl font-bold text-neutral-900 mb-3">No Events Found</h2>
+              <div className="bg-white rounded-2xl p-12 text-center border border-neutral-200/60 shadow-sm">
+                <div className="w-20 h-20 rounded-2xl bg-primary-50 flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-black text-neutral-900 mb-3">No Events Found</h2>
                 <p className="text-neutral-600 mb-6">
                   Love discovering local creators? Check back later for more events.
                 </p>
                 {filter !== 'all' && (
                   <button
                     onClick={() => setFilter('all')}
-                    className="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors"
+                    className="h-12 px-6 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all duration-300 flex items-center mx-auto"
                   >
                     Show All Events
                   </button>
@@ -331,7 +346,7 @@ export default function DiscoveryPage() {
               <div className="mt-8 text-center">
                 <button
                   onClick={() => setPage(page + 1)}
-                  className="px-6 py-3 bg-white border border-neutral-200 text-neutral-700 font-semibold rounded-xl hover:bg-neutral-50 transition-colors"
+                  className="px-6 py-3 bg-white border border-neutral-200 text-neutral-700 font-semibold rounded-2xl hover:bg-neutral-50 transition-all duration-300"
                 >
                   Load More Events
                 </button>
@@ -344,17 +359,17 @@ export default function DiscoveryPage() {
       {/* Explore Local Markets - Supportive footer context */}
       {upcomingMarkets.length > 0 && (
         <section className="py-12 bg-white border-t border-neutral-200">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
               <div className="max-w-2xl">
-                <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">Explore Local Markets</h2>
+                <h2 className="text-3xl lg:text-4xl font-black text-neutral-900 mb-4">Explore Local Markets</h2>
                 <p className="text-lg text-neutral-600">
                   Love discovering local creators? Don't miss our weekly artisan market days happening nearby.
                 </p>
               </div>
               <Link
                 href="/markets/market-days"
-                className="inline-flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-bold text-lg hover:bg-primary-50 rounded-xl transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-bold text-lg hover:bg-primary-50 rounded-2xl transition-all duration-300"
               >
                 View Full Market Schedule
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,7 +383,7 @@ export default function DiscoveryPage() {
                 <Link
                   key={market.id}
                   href={`/markets/market-days/${market.id}`}
-                  className="group bg-neutral-50 rounded-2xl p-6 border border-neutral-100 hover:border-primary-200 hover:bg-white hover:shadow-soft transition-all"
+                  className="group bg-neutral-50 rounded-2xl p-6 border border-neutral-100 hover:border-primary-200 hover:bg-white hover:shadow-xl transition-all"
                 >
                   <div className="text-primary-600 font-bold text-sm mb-2">
                     {new Date(market.market_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}

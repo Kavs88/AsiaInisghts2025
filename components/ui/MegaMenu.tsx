@@ -73,11 +73,11 @@ export default function MegaMenu({
 
   // Memoize default categories to prevent recreation on every render
   const defaultCategories: Category[] = useMemo(() => [
-    { id: '1', name: 'Food & Beverages', href: '/products?category=food', count: 24 },
-    { id: '2', name: 'Arts & Crafts', href: '/products?category=arts', count: 18 },
-    { id: '3', name: 'Clothing & Accessories', href: '/products?category=clothing', count: 15 },
-    { id: '4', name: 'Home & Living', href: '/products?category=home', count: 12 },
-    { id: '5', name: 'Wellness & Beauty', href: '/products?category=wellness', count: 9 },
+    { id: '1', name: 'Food & Beverages', href: '/products?category=food' },
+    { id: '2', name: 'Arts & Crafts', href: '/products?category=arts' },
+    { id: '3', name: 'Clothing & Accessories', href: '/products?category=clothing' },
+    { id: '4', name: 'Home & Living', href: '/products?category=home' },
+    { id: '5', name: 'Wellness & Beauty', href: '/products?category=wellness' },
   ], [])
 
   const displayCategories = useMemo(() =>

@@ -1,167 +1,136 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
 import Link from 'next/link'
 
-export default function AdminEventsPageClient() {
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
-  const [events, setEvents] = useState<any[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+interface Event {
+  id: string
+  title: string
+  event_type: string
+  status: string
+  start_at: string
+  end_at: string | null
+  location: string | null
+  image_url: string | null
+  created_at: string
+}
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      if (authLoading) return
+interface Props {
+  events: Event[]
+  page: number
+  totalPages: number
+  total: number
+  error: string | null
+}
 
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
+const STATUS_STYLES: Record<string, string> = {
+  published: 'bg-green-100 text-green-700',
+  draft:     'bg-neutral-100 text-neutral-600',
+  cancelled: 'bg-red-100 text-red-700',
+  archived:  'bg-amber-100 text-amber-700',
+}
 
-      try {
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
 
-        const { data, error: eventsError } = await supabase
-          .from('events')
-          .select('*, users:organizer_id(full_name, email)')
-          .order('event_date', { ascending: false })
-          .order('start_time', { ascending: false })
-          .limit(100)
-
-        if (eventsError) {
-          setError(eventsError.message)
-        } else {
-          setEvents(data || [])
-        }
-      } catch (err: any) {
-        console.error('[AdminEvents] Error:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadEvents()
-  }, [user, authLoading, router])
-
-  if (authLoading || loading) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading events...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <p className="text-error-700 font-medium">Error: {error}</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  }
-
-  const formatTime = (timeString: string) => {
-    return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    })
-  }
-
+export default function AdminEventsPageClient({ events, page, totalPages, total, error }: Props) {
   return (
-    <main className="min-h-screen bg-neutral-50">
-      <div className="container-custom py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <main className="min-h-screen bg-neutral-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-black text-neutral-900 mb-2">Events</h1>
-            <p className="text-neutral-600">Shape the community calendar</p>
+            <h1 className="text-3xl font-black text-neutral-900">Community Calendar</h1>
+            <p className="text-neutral-600">Shape gatherings and welcome new events</p>
           </div>
           <Link
             href="/markets/admin/events/create"
-            className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-semibold"
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
           >
-            + Add Event
+            + Create Event
           </Link>
         </div>
 
-        {events.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-soft p-12 text-center">
-            <p className="text-neutral-600">No events found.</p>
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-700 text-sm font-medium">Failed to load events.</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {events.map((event) => (
-              <div key={event.id} className="bg-white rounded-2xl shadow-soft p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold text-neutral-900">{event.title}</h3>
-                      {event.is_published ? (
-                        <span className="px-2 py-1 bg-success-100 text-success-700 rounded text-xs font-semibold">
-                          Published
-                        </span>
-                      ) : (
-                        <span className="px-2 py-1 bg-neutral-100 text-neutral-700 rounded text-xs font-semibold">
-                          Draft
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-neutral-600 mb-3">{event.description || 'No description'}</p>
-                    <div className="flex flex-wrap gap-4 text-sm text-neutral-600">
-                      <span>📅 {formatDate(event.event_date)}</span>
-                      <span>🕐 {formatTime(event.start_time)}</span>
-                      {event.end_time && <span>→ {formatTime(event.end_time)}</span>}
-                      <span>📍 {event.location}</span>
-                      {event.ticket_price && <span>💰 ${event.ticket_price}</span>}
-                    </div>
-                    {event.users && (
-                      <p className="text-sm text-neutral-600 mt-2">
-                        Organizer: {event.users.full_name || event.users.email}
-                      </p>
-                    )}
-                  </div>
-                  <Link
-                    href={`/markets/admin/events/${event.id}/edit`}
-                    className="px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors text-sm font-semibold"
-                  >
-                    Edit
-                  </Link>
-                </div>
-              </div>
-            ))}
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-neutral-200">
+            <p className="text-sm text-neutral-500">{total} event{total !== 1 ? 's' : ''}</p>
+          </div>
+          <table className="w-full text-left">
+            <thead className="bg-neutral-50 border-b border-neutral-200">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Event</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {events.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
+                    No events found.
+                  </td>
+                </tr>
+              ) : (
+                events.map((event) => (
+                  <tr key={event.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-neutral-900">{event.title}</td>
+                    <td className="px-6 py-4 text-sm text-neutral-600 capitalize">{event.event_type}</td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">{formatDate(event.start_at)}</td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">{event.location ?? '—'}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${STATUS_STYLES[event.status] ?? 'bg-neutral-100 text-neutral-600'}`}>
+                        {event.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link
+                        href={`/markets/admin/events/${event.id}/edit`}
+                        className="text-sm font-semibold text-primary-600 hover:text-primary-700"
+                      >
+                        Edit
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-neutral-500">Page {page} of {totalPages}</p>
+            <div className="flex gap-2">
+              {page > 1 && (
+                <Link
+                  href={`?page=${page - 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Previous
+                </Link>
+              )}
+              {page < totalPages && (
+                <Link
+                  href={`?page=${page + 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Next
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </div>
     </main>
   )
 }
-
-
-
-
-
-

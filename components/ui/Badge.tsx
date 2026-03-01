@@ -16,7 +16,7 @@ export default function Badge({
         primary: 'bg-primary-50 text-primary-700 border border-primary-200/50',
         success: 'bg-success-50 text-success-700 border border-success-200/50',
         warning: 'bg-amber-50 text-amber-700 border border-amber-200/50',
-        neutral: 'bg-neutral-50 text-neutral-600 border border-neutral-200/50',
+        neutral: 'bg-neutral-50 text-neutral-600 border border-neutral-200/60',
         outline: 'bg-transparent text-neutral-500 border border-neutral-200'
     }
 

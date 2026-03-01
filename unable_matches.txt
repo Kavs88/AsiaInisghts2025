@@ -1,0 +1,12 @@
+.claude\worktrees\friendly-mcnulty\app\markets\my-events\page.tsx
+.claude\worktrees\friendly-mcnulty\hostinger-deploy\app\markets\my-events\page.tsx
+.claude\worktrees\hungry-feistel\app\markets\my-events\page.tsx
+.claude\worktrees\hungry-feistel\hostinger-deploy\app\markets\my-events\page.tsx
+.claude\worktrees\nervous-lalande\app\markets\my-events\page.tsx
+.claude\worktrees\nervous-lalande\hostinger-deploy\app\markets\my-events\page.tsx
+.claude\worktrees\pedantic-tereshkova\app\markets\my-events\page.tsx
+.claude\worktrees\pedantic-tereshkova\hostinger-deploy\app\markets\my-events\page.tsx
+.claude\worktrees\vigilant-yonath\app\markets\my-events\page.tsx
+.claude\worktrees\vigilant-yonath\hostinger-deploy\app\markets\my-events\page.tsx
+app\markets\my-events\page.tsx
+hostinger-deploy\app\markets\my-events\page.tsx

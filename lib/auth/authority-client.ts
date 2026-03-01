@@ -7,8 +7,15 @@
 
 import { createClient } from '@/lib/supabase/client'
 
-export type UserRole = 'customer' | 'vendor' | 'admin' | 'super_user'
+export type UserRole = 'customer' | 'vendor' | 'admin' | 'super_user' | 'superadmin' | 'founder' | 'landlord'
 export type EffectiveRole = 'super_user' | 'admin' | 'vendor' | 'customer' | 'visitor'
+
+export type AgencyMembership = {
+  id: string
+  name: string
+  slug: string
+  role: string
+}
 
 export interface UserAuthority {
   isSuperUser: boolean
@@ -17,6 +24,7 @@ export interface UserAuthority {
   effectiveRole: EffectiveRole
   hasVendorRecord: boolean
   vendorSlug: string | null
+  agencies: AgencyMembership[]
 }
 
 /**
@@ -26,7 +34,7 @@ export interface UserAuthority {
 export async function getUserAuthority(): Promise<UserAuthority> {
   try {
     const supabase = createClient()
-    
+
     if (!supabase || !supabase.auth) {
       return getDefaultAuthority()
     }
@@ -38,14 +46,8 @@ export async function getUserAuthority(): Promise<UserAuthority> {
       return getDefaultAuthority()
     }
 
-    // Check super_users table first (highest authority)
-    const { data: superUserData } = await supabase
-      .from('super_users')
-      .select('uid')
-      .eq('uid', user.id)
-      .maybeSingle()
-
-    const isSuperUser = !!superUserData
+    // super_users table was dropped — role-based checks handle authority
+    const isSuperUser = false
 
     // Get user role from users table
     const { data: userRecord } = await supabase
@@ -66,9 +68,22 @@ export async function getUserAuthority(): Promise<UserAuthority> {
     const hasVendorRecord = !!vendorRecord
     const vendorSlug = vendorRecord ? ((vendorRecord as any).slug as string) : null
 
+    // Get all agency memberships for this user
+    const { data: agencyMemberships } = await supabase
+      .from('agency_members')
+      .select('role, agencies(id, name, slug)')
+      .eq('user_id', user.id)
+
+    const agencies: AgencyMembership[] = (agencyMemberships ?? []).map((m: any) => ({
+      id: m.agencies.id,
+      name: m.agencies.name,
+      slug: m.agencies.slug,
+      role: m.role,
+    }))
+
     // Determine effective role (precedence: super_user > admin > vendor > customer)
     let effectiveRole: EffectiveRole = 'visitor'
-    if (isSuperUser || role === 'super_user') {
+    if (isSuperUser || role === 'super_user' || role === 'superadmin' || role === 'founder') {
       effectiveRole = 'super_user'
     } else if (role === 'admin') {
       effectiveRole = 'admin'
@@ -78,8 +93,8 @@ export async function getUserAuthority(): Promise<UserAuthority> {
       effectiveRole = 'customer'
     }
 
-    // Admin check: super user OR admin role OR super_user role
-    const isAdmin = isSuperUser || role === 'admin' || role === 'super_user'
+    // Admin check: super user OR admin role OR super_user/superadmin/founder roles
+    const isAdmin = isSuperUser || role === 'admin' || role === 'super_user' || role === 'superadmin' || role === 'founder'
 
     return {
       isSuperUser,
@@ -88,6 +103,7 @@ export async function getUserAuthority(): Promise<UserAuthority> {
       effectiveRole,
       hasVendorRecord,
       vendorSlug,
+      agencies,
     }
   } catch (error) {
     console.error('[getUserAuthority] Error:', error)
@@ -106,6 +122,7 @@ function getDefaultAuthority(): UserAuthority {
     effectiveRole: 'visitor',
     hasVendorRecord: false,
     vendorSlug: null,
+    agencies: [],
   }
 }
 

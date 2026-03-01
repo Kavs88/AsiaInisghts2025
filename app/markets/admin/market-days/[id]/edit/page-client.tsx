@@ -1,104 +1,44 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
-import { isAdminOrSuperUser } from '@/lib/auth/admin'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-export default function EditMarketDayPageClient() {
+interface Props {
+  marketDay: any
+  marketDayId: string
+  hosts: any[]
+  eventSpaceProperties: any[]
+}
+
+// Format date for input (YYYY-MM-DD)
+function formatDateForInput(dateStr: string): string {
+  const date = new Date(dateStr)
+  return date.toISOString().split('T')[0]
+}
+
+// Format time for input (HH:MM)
+function formatTimeForInput(timeStr: string | null): string {
+  if (!timeStr) return ''
+  return timeStr.substring(0, 5)
+}
+
+export default function EditMarketDayPageClient({ marketDay, marketDayId, hosts, eventSpaceProperties }: Props) {
   const router = useRouter()
-  const params = useParams()
-  const { user, loading: authLoading } = useAuth()
-  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
-  const [marketDay, setMarketDay] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
   const [formData, setFormData] = useState({
-    market_date: '',
-    location_name: '',
-    location_address: '',
-    start_time: '',
-    end_time: '',
-    is_published: false,
-    host_id: '',
+    market_date: formatDateForInput(marketDay.market_date),
+    location_name: marketDay.location_name || '',
+    location_address: marketDay.location_address || '',
+    start_time: formatTimeForInput(marketDay.start_time),
+    end_time: formatTimeForInput(marketDay.end_time),
+    is_published: marketDay.is_published || false,
+    host_id: marketDay.host_id || '',
+    property_id: marketDay.property_id || '',
   })
-
-  const [hosts, setHosts] = useState<any[]>([])
-  const [loadingHosts, setLoadingHosts] = useState(false)
-
-  useEffect(() => {
-    const checkAdminAndLoad = async () => {
-      if (authLoading) return
-
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
-
-      try {
-        const adminStatus = await isAdminOrSuperUser()
-        setIsAdminUser(adminStatus)
-        setIsChecking(false)
-
-        if (!adminStatus) {
-          return
-        }
-
-        // Fetch hosts and market day
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
-
-        // Load hosts
-        setLoadingHosts(true)
-        const { getAllHosts } = await import('@/lib/supabase/queries')
-        const hostsList = await getAllHosts()
-        setHosts(hostsList)
-        setLoadingHosts(false)
-
-        const { data, error: marketDayError } = await supabase
-          .from('market_days')
-          .select('*')
-          .eq('id', params.id as string)
-          .single()
-
-        if (marketDayError) {
-          setError(marketDayError.message)
-        } else if (data) {
-          setMarketDay(data as any)
-          // Format date for input (YYYY-MM-DD)
-          const date = new Date((data as any).market_date)
-          const formattedDate = date.toISOString().split('T')[0]
-
-          // Format time for input (HH:MM)
-          const formatTimeForInput = (timeStr: string | null) => {
-            if (!timeStr) return ''
-            return timeStr.substring(0, 5) // Extract HH:MM from HH:MM:SS
-          }
-
-          setFormData({
-            market_date: formattedDate,
-            location_name: (data as any).location_name || '',
-            location_address: (data as any).location_address || '',
-            start_time: formatTimeForInput((data as any).start_time),
-            end_time: formatTimeForInput((data as any).end_time),
-            is_published: (data as any).is_published || false,
-            host_id: (data as any).host_id || '',
-          })
-        }
-      } catch (err: any) {
-        console.error('[EditMarketDay] Error:', err)
-        setIsAdminUser(false)
-        setIsChecking(false)
-        setError(err.message)
-      }
-    }
-
-    checkAdminAndLoad()
-  }, [user, authLoading, router, params.id])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -127,16 +67,17 @@ export default function EditMarketDayPageClient() {
           end_time: formData.end_time || null,
           is_published: formData.is_published,
           host_id: formData.host_id || null,
+          property_id: formData.property_id || null,
           updated_at: new Date().toISOString(),
         } as any)
-        .eq('id', params.id as string)
+        .eq('id', marketDayId)
 
       if (updateError) {
         setError(updateError.message)
       } else {
         setSuccess(true)
         setTimeout(() => {
-          router.push('/admin/market-days')
+          router.push('/markets/admin/market-days')
         }, 2000)
       }
     } catch (err: any) {
@@ -147,53 +88,6 @@ export default function EditMarketDayPageClient() {
     }
   }
 
-
-  if (authLoading || isChecking) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (!user || !isAdminUser) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
-            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
-            <Link href="/admin/market-days" className="text-primary-600 hover:underline">
-              ← Back to Market Days
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (error && !marketDay) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Error</h2>
-            <p className="text-error-800 mb-4">{error}</p>
-            <Link href="/admin/market-days" className="text-primary-600 hover:underline">
-              ← Back to Market Days
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
 
   if (success) {
     return (
@@ -219,21 +113,6 @@ export default function EditMarketDayPageClient() {
     )
   }
 
-  if (!marketDay) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading market day...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
   return (
     <main className="min-h-screen bg-neutral-50">
       <div className="container-custom py-8">
@@ -244,7 +123,7 @@ export default function EditMarketDayPageClient() {
               <p className="text-neutral-600">Update market day and venue information</p>
             </div>
             <Link
-              href="/admin/market-days"
+              href="/markets/admin/market-days"
               className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
             >
               ← Back to Market Days
@@ -330,10 +209,7 @@ export default function EditMarketDayPageClient() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-neutral-900 mb-2">Host / Venue</label>
-                    {loadingHosts ? (
-                      <div className="px-4 py-2 text-sm text-neutral-500">Loading hosts...</div>
-                    ) : (
-                      <select
+                    <select
                         value={formData.host_id}
                         onChange={(e) => setFormData({ ...formData, host_id: e.target.value })}
                         className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -345,9 +221,26 @@ export default function EditMarketDayPageClient() {
                           </option>
                         ))}
                       </select>
-                    )}
                     <p className="text-xs text-neutral-500 mt-1">
                       Select a host/venue for this market day. Create hosts in the admin dashboard first.
+                    </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-neutral-900 mb-2">Venue Property</label>
+                    <select
+                        value={formData.property_id}
+                        onChange={(e) => setFormData({ ...formData, property_id: e.target.value })}
+                        className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      >
+                        <option value="">No venue property (optional)</option>
+                        {eventSpaceProperties.map((prop) => (
+                          <option key={prop.id} value={prop.id}>
+                            {prop.address}{prop.capacity ? ` (cap. ${prop.capacity})` : ''}
+                          </option>
+                        ))}
+                      </select>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Link to an event space property. When set, the event will appear on the property's page and the trigger will auto-create an events record on publish.
                     </p>
                   </div>
                 </div>
@@ -362,7 +255,7 @@ export default function EditMarketDayPageClient() {
                   {loading ? 'Updating...' : 'Update Market Day'}
                 </button>
                 <Link
-                  href="/admin/market-days"
+                  href="/markets/admin/market-days"
                   className="px-6 py-3 bg-neutral-100 text-neutral-900 font-medium rounded-xl hover:bg-neutral-200 transition-colors"
                 >
                   Cancel

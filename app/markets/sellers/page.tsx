@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import VendorCard from '@/components/ui/VendorCard'
+import { Users } from 'lucide-react'
 import { getVendors, getVendorsAttendanceStatus } from '@/lib/supabase/queries'
 
 export const metadata = {
-  title: 'Makers - Sunday Market',
+  title: 'Makers — Asia Insights',
   description: 'Browse all our artisan makers and verified members',
 }
 
@@ -61,109 +62,56 @@ export default async function SellersPage() {
     <main id="main-content" className="min-h-screen bg-white">
       {/* Page Header - Premium spacing and typography */}
       <section className="bg-white border-b border-neutral-100">
-        <div className="container-custom">
-          <div className="py-12">
-            <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-4 tracking-tight">
-                Our Community
-              </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-neutral-600 max-w-3xl leading-relaxed">
-                Meet the makers, artisans, and verified members behind the Sunday Market.
-              </p>
-            </div>
-          </div>
+        <div className="container-custom py-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-4 tracking-tight">
+            Our Community
+          </h1>
+          <p className="text-lg sm:text-xl lg:text-2xl text-neutral-600 max-w-3xl leading-relaxed">
+            Meet the makers, artisans, and verified members behind the Sunday Market.
+          </p>
         </div>
       </section>
 
-      {/* Filters Section - Clean, minimal */}
-      <section className="sticky top-[64px] lg:top-[80px] z-40 bg-white border-b border-neutral-100">
-        <div className="container-custom">
-          <div className="py-4 sm:py-5">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              {/* Category Filters */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    disabled
-                    className="px-4 py-2 text-sm font-medium text-neutral-400 bg-neutral-50 border border-neutral-100 rounded-lg cursor-not-allowed transition-all duration-200"
-                    aria-pressed={category === 'All'}
-                    title="Filtering coming soon"
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-
-              {/* Additional Filters */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6 opacity-50 grayscale select-none pointer-events-none" title="Filters coming soon">
-                <label className="flex items-center gap-2 text-sm text-neutral-400 cursor-not-allowed">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="w-4 h-4 text-neutral-300 border-neutral-200 rounded focus:ring-0 cursor-not-allowed"
-                  />
-                  <span>Attending Next Market</span>
-                </label>
-                <label className="flex items-center gap-2 text-sm text-neutral-400 cursor-not-allowed">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="w-4 h-4 text-neutral-300 border-neutral-200 rounded focus:ring-0 cursor-not-allowed"
-                  />
-                  <span>Delivery Available</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Sellers Grid - Premium spacing and layout */}
       <section className="bg-neutral-50">
-        <div className="container-custom">
-          <div className="py-12">
-            {/* Results Count - Subtle, not prominent */}
-            <div className="mb-8 sm:mb-10 lg:mb-12">
-              <p className="text-sm sm:text-base text-neutral-500">
-                {mappedSellers.length} member{mappedSellers.length !== 1 ? 's' : ''} found
-              </p>
-            </div>
+        <div className="container-custom py-12">
+          {/* Results Count - Subtle, not prominent */}
+          <p className="text-sm sm:text-base text-neutral-500 mb-10">
+            {mappedSellers.length} member{mappedSellers.length !== 1 ? 's' : ''} found
+          </p>
 
-            {/* Grid - Consistent gaps, equal height cards */}
-            {mappedSellers.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {mappedSellers.map((seller) => (
-                  <VendorCard key={seller.id} {...seller} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="max-w-md mx-auto">
-                  <svg
-                    className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-neutral-300 mb-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-3">
-                    No members found
+          {/* Grid - Consistent gaps, equal height cards */}
+          {mappedSellers.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {mappedSellers.map((seller) => (
+                <VendorCard key={seller.id} {...seller} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-neutral-200/60 shadow-sm p-10 md:p-14 text-center">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-20 h-20 rounded-2xl bg-primary-50 flex items-center justify-center">
+                  <Users className="w-10 h-10 text-primary-400" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-neutral-900 mb-2">
+                    Be the first to showcase your craft
                   </h2>
-                  <p className="text-base text-neutral-600">
-                    Check back soon for new Makers!
+                  <p className="text-neutral-600 max-w-md mx-auto">
+                    Our seller community is growing. Apply to list your stall and start building
+                    your presence with local customers.
                   </p>
                 </div>
+                <Link
+                  href="/markets/vendor/apply"
+                  className="h-12 px-6 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl transition-all duration-300 shadow-sm flex items-center"
+                >
+                  Apply for a Stall
+                </Link>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 

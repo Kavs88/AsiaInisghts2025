@@ -2,13 +2,15 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET /api/events/[id]/rsvp - Get RSVP status and counts for an event
+export const dynamic = 'force-dynamic'
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
-    const eventId = params.id
+    const resolvedParams = await params
+    const eventId = resolvedParams.id
     const { searchParams } = new URL(request.url)
     const marketDayId = searchParams.get('market_day_id')
 
@@ -21,7 +23,7 @@ export async function GET(
 
     // Get event counts (public data) - standardized on market_day_id
     const marketDayIdForQuery = marketDayId || eventId // Use market_day_id if provided, otherwise use eventId as market_day_id
-    
+
     const { data: countsData } = await (supabase
       .from('event_counts') as any)
       .select('going_count, interested_count, total_attendees')

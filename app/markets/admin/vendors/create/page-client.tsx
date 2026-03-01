@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
-import { isAdminOrSuperUser } from '@/lib/auth/admin'
 import { createVendorAccount, CreateVendorAccountData } from '@/lib/auth/admin-vendor-creation'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
+interface Agency {
+  id: string
+  name: string
+  slug: string
+}
+
 export default function CreateVendorPageClient() {
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
-  const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null)
-  const [isChecking, setIsChecking] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -21,6 +21,18 @@ export default function CreateVendorPageClient() {
     vendorSlug: string
     email: string
   } | null>(null)
+  const [agencies, setAgencies] = useState<Agency[]>([])
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('agencies')
+      .select('id, name, slug')
+      .order('name')
+      .then(({ data }) => {
+        if (data) setAgencies(data)
+      })
+  }, [])
 
   const [formData, setFormData] = useState<CreateVendorAccountData>({
     email: '',
@@ -28,6 +40,7 @@ export default function CreateVendorPageClient() {
     fullName: '',
     phone: '',
     vendorName: '',
+    agencyId: '',
     tagline: '',
     bio: '',
     contactEmail: '',
@@ -39,34 +52,6 @@ export default function CreateVendorPageClient() {
     deliveryAvailable: false,
     pickupAvailable: true,
   })
-
-  // Check admin status
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (authLoading) return
-
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
-
-      try {
-        const adminStatus = await isAdminOrSuperUser()
-        setIsAdminUser(adminStatus)
-        setIsChecking(false)
-
-        if (!adminStatus) {
-          router.push('/admin')
-        }
-      } catch (error: any) {
-        console.error('[CreateVendor] Error:', error)
-        setIsAdminUser(false)
-        setIsChecking(false)
-      }
-    }
-
-    checkAdmin()
-  }, [user, authLoading, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -127,6 +112,7 @@ export default function CreateVendorPageClient() {
           fullName: '',
           phone: '',
           vendorName: '',
+          agencyId: '',
           tagline: '',
           bio: '',
           contactEmail: '',
@@ -147,37 +133,6 @@ export default function CreateVendorPageClient() {
     } finally {
       setLoading(false)
     }
-  }
-
-  if (authLoading || isChecking) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Checking admin access...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (!user || !isAdminUser) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-error-900 mb-2">Access Denied</h2>
-            <p className="text-error-800 mb-4">You do not have admin privileges.</p>
-            <Link href="/admin/vendors" className="text-primary-600 hover:underline">
-              ← Back to Vendors
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
   }
 
   if (success && createdAccount) {
@@ -218,7 +173,7 @@ export default function CreateVendorPageClient() {
 
               <div className="flex gap-4">
                 <Link
-                  href="/admin/vendors"
+                  href="/markets/admin/vendors"
                   className="px-6 py-3 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors"
                 >
                   View All Vendors
@@ -250,7 +205,7 @@ export default function CreateVendorPageClient() {
               <p className="text-neutral-600">Create a new vendor account with user login credentials</p>
             </div>
             <Link
-              href="/admin/vendors"
+              href="/markets/admin/vendors"
               className="px-4 py-2 bg-neutral-100 text-neutral-900 rounded-xl hover:bg-neutral-200 transition-colors"
             >
               ← Back to Vendors
@@ -348,6 +303,28 @@ export default function CreateVendorPageClient() {
                       className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Greenway Bakery"
                     />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label htmlFor="agencyId" className="block text-sm font-medium text-neutral-700 mb-2">
+                      Agency
+                    </label>
+                    <select
+                      id="agencyId"
+                      value={formData.agencyId}
+                      onChange={(e) => setFormData({ ...formData, agencyId: e.target.value })}
+                      className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+                    >
+                      <option value="">— Auto-create new agency for this vendor —</option>
+                      {agencies.map((agency) => (
+                        <option key={agency.id} value={agency.id}>
+                          {agency.name} ({agency.slug})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Leave as "Auto-create" to provision a new agency owned by this vendor.
+                    </p>
                   </div>
 
                   <div className="md:col-span-2">
@@ -500,7 +477,7 @@ export default function CreateVendorPageClient() {
                   {loading ? 'Creating Account...' : 'Create Vendor Account'}
                 </button>
                 <Link
-                  href="/admin/vendors"
+                  href="/markets/admin/vendors"
                   className="px-6 py-3 text-neutral-700 font-medium border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                 >
                   Cancel

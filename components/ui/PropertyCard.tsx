@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Bed, Bath, Users, ArrowRight, Building2, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Badge from './Badge'
+import { SaveButton } from './SoftActionButtons'
 
 interface PropertyCardProps {
     id: string
@@ -57,7 +58,7 @@ export default function PropertyCard({
     return (
         <article
             className={cn(
-                "group relative bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col",
+                "group relative bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col",
                 className
             )}
         >
@@ -105,6 +106,18 @@ export default function PropertyCard({
                         )}
                     </div>
                 )}
+
+                {/* Save Button — Top Right (visible when no status badges) */}
+                {!isNew && !isFeatured && (
+                    <div className="absolute top-4 right-4 z-20">
+                        <SaveButton
+                            itemType="property"
+                            itemId={id}
+                            minimal
+                            className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Content Stage - p-6 Uniform */}
@@ -130,7 +143,7 @@ export default function PropertyCard({
                 </div>
 
                 {/* Footer / Meta */}
-                <div className="mt-auto pt-4 border-t border-neutral-100/50 flex flex-col gap-4">
+                <div className="mt-auto pt-4 border-t border-neutral-100 flex flex-col gap-4">
 
                     {/* Price - Prominent */}
                     {displayPrice && (

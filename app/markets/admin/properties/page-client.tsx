@@ -1,158 +1,135 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/contexts/AuthContext'
 import Link from 'next/link'
-import Image from 'next/image'
 
-export default function AdminPropertiesPageClient() {
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
-  const [properties, setProperties] = useState<any[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+interface Property {
+  id: string
+  address: string
+  type: string
+  availability: string
+  price: number
+  bedrooms: number | null
+  bathrooms: number | null
+  square_meters: number | null
+  created_at: string
+}
 
-  useEffect(() => {
-    const loadProperties = async () => {
-      if (authLoading) return
+interface Props {
+  properties: Property[]
+  page: number
+  totalPages: number
+  total: number
+  error: string | null
+}
 
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
+const AVAILABILITY_STYLES: Record<string, string> = {
+  available: 'bg-green-100 text-green-700',
+  rented:    'bg-amber-100 text-amber-700',
+  sold:      'bg-neutral-100 text-neutral-600',
+}
 
-      try {
-        const { createClient } = await import('@/lib/supabase/client')
-        const supabase = createClient()
-
-        const { data, error: propertiesError } = await supabase
-          .from('properties')
-          .select('*, users:owner_id(full_name, email)')
-          .order('created_at', { ascending: false })
-          .limit(100)
-
-        if (propertiesError) {
-          setError(propertiesError.message)
-        } else {
-          setProperties(data || [])
-        }
-      } catch (err: any) {
-        console.error('[AdminProperties] Error:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadProperties()
-  }, [user, authLoading, router])
-
-  if (authLoading || loading) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading properties...</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-neutral-50">
-        <div className="container-custom py-8">
-          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
-            <p className="text-error-700 font-medium">Error: {error}</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
+export default function AdminPropertiesPageClient({ properties, page, totalPages, total, error }: Props) {
   return (
-    <main className="min-h-screen bg-neutral-50">
-      <div className="container-custom py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <main className="min-h-screen bg-neutral-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Properties</h1>
-            <p className="text-neutral-600">Curate venue listings</p>
+            <h1 className="text-3xl font-black text-neutral-900">Property Directory</h1>
+            <p className="text-neutral-600">Curate venue and property listings</p>
           </div>
           <Link
             href="/markets/admin/properties/create"
-            className="px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors font-semibold"
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
           >
             + Add Property
           </Link>
         </div>
 
-        {properties.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-soft p-12 text-center">
-            <p className="text-neutral-600">No properties found.</p>
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-700 text-sm font-medium">Failed to load properties.</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((property) => (
-              <div key={property.id} className="bg-white rounded-2xl shadow-soft overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-neutral-900 mb-1">{property.address}</h3>
-                      <p className="text-sm text-neutral-600 capitalize">{property.type}</p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${property.availability === 'available' ? 'bg-success-100 text-success-700' :
-                        property.availability === 'rented' ? 'bg-warning-100 text-warning-700' :
-                          property.availability === 'sold' ? 'bg-neutral-100 text-neutral-700' :
-                            'bg-error-100 text-error-700'
-                      }`}>
-                      {property.availability}
-                    </span>
-                  </div>
+        )}
 
-                  <div className="space-y-2 mb-4">
-                    <p className="text-2xl font-bold text-primary-600">
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-neutral-200">
+            <p className="text-sm text-neutral-500">{total} propert{total !== 1 ? 'ies' : 'y'}</p>
+          </div>
+          <table className="w-full text-left">
+            <thead className="bg-neutral-50 border-b border-neutral-200">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Address</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Specs</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {properties.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
+                    No properties found.
+                  </td>
+                </tr>
+              ) : (
+                properties.map((property) => (
+                  <tr key={property.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-neutral-900">{property.address}</td>
+                    <td className="px-6 py-4 text-sm text-neutral-600 capitalize">{property.type}</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-primary-600">
                       ${property.price.toLocaleString()}
-                    </p>
-                    {property.bedrooms && (
-                      <p className="text-sm text-neutral-600">
-                        {property.bedrooms} bed{property.bedrooms !== 1 ? 's' : ''}
-                        {property.bathrooms && ` • ${property.bathrooms} bath${property.bathrooms !== 1 ? 's' : ''}`}
-                        {property.square_meters && ` • ${property.square_meters}m²`}
-                      </p>
-                    )}
-                  </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-neutral-600">
+                      {[
+                        property.bedrooms != null && `${property.bedrooms}bd`,
+                        property.bathrooms != null && `${property.bathrooms}ba`,
+                        property.square_meters != null && `${property.square_meters}m²`,
+                      ].filter(Boolean).join(' · ') || '—'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${AVAILABILITY_STYLES[property.availability] ?? 'bg-red-100 text-red-700'}`}>
+                        {property.availability}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link
+                        href={`/markets/admin/properties/${property.id}/edit`}
+                        className="text-sm font-semibold text-primary-600 hover:text-primary-700"
+                      >
+                        Edit
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-                  {property.users && (
-                    <p className="text-sm text-neutral-600 mb-4">
-                      Owner: {property.users.full_name || property.users.email}
-                    </p>
-                  )}
-
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/markets/admin/properties/${property.id}/edit`}
-                      className="flex-1 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors text-center text-sm font-semibold"
-                    >
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-neutral-500">Page {page} of {totalPages}</p>
+            <div className="flex gap-2">
+              {page > 1 && (
+                <Link
+                  href={`?page=${page - 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Previous
+                </Link>
+              )}
+              {page < totalPages && (
+                <Link
+                  href={`?page=${page + 1}`}
+                  className="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Next
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </div>
     </main>
   )
 }
-
-
-
-
-
-

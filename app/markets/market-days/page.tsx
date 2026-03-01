@@ -188,7 +188,7 @@ export default async function MarketDaysPage() {
       {/* Upcoming Market Details */}
       <section className="py-12 bg-white">
         <div className="container-custom">
-          <div className="bg-primary-50 rounded-2xl p-8 lg:p-12 border border-primary-200 mb-12 relative">
+          <div className="bg-primary-50 rounded-2xl p-6 lg:p-8 border border-primary-200 mb-12 relative">
             {/* Host Logo - Bottom Right */}
             {nextMarket.hosts && nextMarket.hosts.logo_url && (
               <div className="absolute bottom-4 right-4 w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-lg p-2 shadow-sm border border-neutral-200">
@@ -202,7 +202,7 @@ export default async function MarketDaysPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h2 className="text-3xl font-bold text-neutral-900">
+                  <h2 className="text-3xl font-black text-neutral-900">
                     Next Market: {formatMarketDate(nextMarket.market_date)}
                   </h2>
                   <EventIntentButtons eventId={nextMarket.id} className="flex-shrink-0" />
@@ -313,7 +313,7 @@ export default async function MarketDaysPage() {
         <section className="py-12 bg-neutral-50">
           <div className="container-custom">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-neutral-900 mb-2">Interactive Stall Map</h2>
+              <h2 className="text-3xl font-black text-neutral-900 mb-2">Interactive Stall Map</h2>
               <p className="text-neutral-600">
                 Hover over stalls to see business information
               </p>
@@ -327,7 +327,7 @@ export default async function MarketDaysPage() {
       {eventOffers.length > 0 && (
         <section className="py-12 bg-neutral-50">
           <div className="container-custom">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-8">Event Offers</h2>
+            <h2 className="text-3xl font-black text-neutral-900 mb-8">Event Offers</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {eventOffers.map((offer: any) => (
                 <div key={offer.id} className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
@@ -361,11 +361,11 @@ export default async function MarketDaysPage() {
       )}
 
       {/* Attending Businesses */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white border-t border-neutral-200/60">
         <div className="container-custom">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-neutral-900 mb-2">
+              <h2 className="text-3xl font-black text-neutral-900 mb-2">
                 Attending Businesses
               </h2>
               <p className="text-neutral-600">
@@ -380,8 +380,8 @@ export default async function MarketDaysPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-neutral-600">
-              <p>No businesses registered for this market yet.</p>
+            <div className="bg-white rounded-2xl border border-neutral-200/60 shadow-sm p-10 text-center">
+              <p className="text-neutral-500 font-medium">No businesses registered for this market yet.</p>
             </div>
           )}
         </div>
@@ -432,16 +432,17 @@ export default async function MarketDaysPage() {
 
       {/* Future Market Days */}
       {upcomingMarkets.length > 1 && (
-        <section className="py-12 bg-neutral-50">
+        <section className="py-12 bg-neutral-50 border-t border-neutral-200/60">
           <div className="container-custom">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-8">Upcoming Markets</h2>
+            <h2 className="text-3xl font-black text-neutral-900 mb-8">Upcoming Markets</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingMarkets.slice(1).map((market: any) => (
-                <div
+                <Link
                   key={market.id}
-                  className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-200"
+                  href={`/markets/market-days/${market.id}`}
+                  className="group bg-white rounded-2xl p-6 shadow-soft border border-neutral-200/60 hover:border-primary-200 hover:shadow-xl transition-all duration-200 block"
                 >
-                  <h3 className="text-xl font-bold text-neutral-900 mb-2">
+                  <h3 className="text-xl font-bold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">
                     {formatMarketDate(market.market_date)}
                   </h3>
                   <p className="text-neutral-600 mb-2">{market.location_name}</p>
@@ -456,7 +457,7 @@ export default async function MarketDaysPage() {
                     </svg>
                     <span className="font-medium text-neutral-700">{market.vendorCount || 0} businesses</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

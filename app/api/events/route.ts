@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET /api/events - Public events listing (published only)
+export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
     try {
         const supabase = await createClient()

@@ -27,6 +27,7 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
   })
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Check authentication
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
     }
   }, [eventId, marketDayId])
 
-  const handleRSVPSuccess = () => {
+  const handleRSVPSuccess = (message = 'RSVP confirmed!') => {
     // Reload RSVP data
     const loadRSVP = async () => {
       const res = await fetch(`/api/events/${eventId}/rsvp?market_day_id=${marketDayId || ''}`)
@@ -80,6 +81,9 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
       }
     }
     loadRSVP()
+    // Show inline confirmation — clears after 3s
+    setSuccessMessage(message)
+    setTimeout(() => setSuccessMessage(null), 3000)
   }
 
   const handleCancelRSVP = async () => {
@@ -96,12 +100,22 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
       })
 
       if (res.ok) {
-        handleRSVPSuccess()
+        handleRSVPSuccess('RSVP removed')
       }
     } catch (error) {
       console.error('Error canceling RSVP:', error)
     }
   }
+
+  // Inline success confirmation strip
+  const SuccessBanner = successMessage ? (
+    <div className="mb-3 px-4 py-2.5 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2 text-sm font-semibold text-green-800 animate-fade-up">
+      <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+      </svg>
+      {successMessage}
+    </div>
+  ) : null
 
   // Guest State (Not Logged In)
   if (!user) {
@@ -137,6 +151,7 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
     return (
       <>
         <div className={`bg-white rounded-2xl border border-neutral-200 p-6 ${className}`}>
+          {SuccessBanner}
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,6 +204,7 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
     return (
       <>
         <div className={`bg-white rounded-2xl border border-neutral-200 p-6 ${className}`}>
+          {SuccessBanner}
           <div className="mb-4">
             <p className="text-sm text-neutral-600 mb-2">You're interested in this event</p>
             <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
@@ -231,6 +247,7 @@ export default function RSVPAction({ eventId, marketDayId, className = '' }: RSV
   return (
     <>
       <div className={`bg-white rounded-2xl border border-neutral-200 p-6 ${className}`}>
+        {SuccessBanner}
         <div className="mb-4">
           {rsvpData.goingCount > 0 && (
             <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200 mb-4">

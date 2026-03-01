@@ -12,9 +12,19 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  // Scope test discovery to the project root — excludes worktrees, hostinger-deploy, etc.
+  roots: ['<rootDir>/app', '<rootDir>/components', '<rootDir>/lib'],
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '/.claude/',
+    '/hostinger-deploy/',
+    '/hostinger-test-minimal/',
+    '/archive/',
   ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',

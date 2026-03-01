@@ -49,36 +49,36 @@ export default function ConciergeHomePage() {
             */}
           </div>
           {/* Visual Elevation: Increased card padding, stronger shadows for Markets-level confidence */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 max-w-7xl mx-auto w-full">
             {/* For Expats */}
-            <div className="bg-white rounded-2xl p-6 xl:p-8 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full h-full flex flex-col">
-              <div className="flex items-start gap-3 mb-6">
-                <svg className="w-6 h-6 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-5 lg:p-6 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="flex items-start gap-3 mb-5">
+                <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <h3 className="text-xl font-bold text-neutral-900">For Expats</h3>
+                <h3 className="text-base font-bold text-neutral-900 leading-tight">For Expats</h3>
               </div>
-              <ul className="space-y-3 text-neutral-600">
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <ul className="space-y-2.5 text-neutral-600 text-sm">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Visa and work permit assistance</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Housing search and relocation support</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>School enrollment and education guidance</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Banking and financial setup</span>
@@ -87,34 +87,34 @@ export default function ConciergeHomePage() {
             </div>
 
             {/* For Retirees */}
-            <div className="bg-white rounded-2xl p-6 xl:p-8 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full h-full flex flex-col">
-              <div className="flex items-start gap-3 mb-6">
-                <svg className="w-6 h-6 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-5 lg:p-6 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="flex items-start gap-3 mb-5">
+                <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                <h3 className="text-xl font-bold text-neutral-900">For Retirees</h3>
+                <h3 className="text-base font-bold text-neutral-900 leading-tight">For Retirees</h3>
               </div>
-              <ul className="space-y-3 text-neutral-600">
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <ul className="space-y-2.5 text-neutral-600 text-sm">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Retirement visa and long-term stay support</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Healthcare and medical facility connections</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Property search and purchase assistance</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Community integration and social connections</span>
@@ -123,34 +123,34 @@ export default function ConciergeHomePage() {
             </div>
 
             {/* For Digital Nomads */}
-            <div className="bg-white rounded-2xl p-6 xl:p-8 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full h-full flex flex-col">
-              <div className="flex items-start gap-3 mb-6">
-                <svg className="w-6 h-6 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-5 lg:p-6 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="flex items-start gap-3 mb-5">
+                <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <h3 className="text-xl font-bold text-neutral-900">For Digital Nomads</h3>
+                <h3 className="text-base font-bold text-neutral-900 leading-tight">For Digital Nomads</h3>
               </div>
-              <ul className="space-y-3 text-neutral-600">
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <ul className="space-y-2.5 text-neutral-600 text-sm">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Co-working space recommendations</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Short-term accommodation solutions</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Internet and connectivity setup</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Local networking and community access</span>
@@ -159,34 +159,34 @@ export default function ConciergeHomePage() {
             </div>
 
             {/* For Entrepreneurs */}
-            <div className="bg-white rounded-2xl p-6 xl:p-8 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full h-full flex flex-col">
-              <div className="flex items-start gap-3 mb-6">
-                <svg className="w-6 h-6 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white rounded-2xl p-5 lg:p-6 border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="flex items-start gap-3 mb-5">
+                <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                <h3 className="text-xl font-bold text-neutral-900">For Entrepreneurs</h3>
+                <h3 className="text-base font-bold text-neutral-900 leading-tight">For Entrepreneurs</h3>
               </div>
-              <ul className="space-y-3 text-neutral-600">
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <ul className="space-y-2.5 text-neutral-600 text-sm">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Business registration and legal setup</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Local partnership and networking introductions</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Office space and commercial property search</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <svg className="w-4 h-4 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li className="flex items-start gap-2.5">
+                  <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>Market research and entry strategy support</span>
@@ -387,7 +387,7 @@ export default function ConciergeHomePage() {
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-200 flex-shrink-0">
                     <Image
-                      src="/images/testimonials/cherlyprofile-150x150.png"
+                      src="/images/testimonials/cherlyprofile-150x150.jpg"
                       alt="Cheryl T."
                       width={64}
                       height={64}

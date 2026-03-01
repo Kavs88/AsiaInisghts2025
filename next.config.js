@@ -2,9 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    optimizePackageImports: ['@/components/ui', 'lucide-react'],
-    // Enable partial prerendering for better performance
-    ppr: false, // Can enable when stable
+    // Tree-shake icon/animation libraries so only used exports ship
+    // NOTE: supabase packages omitted — they have complex side-effect exports
+    // that break under barrel optimisation
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+    ],
   },
   images: {
     remotePatterns: [
@@ -17,26 +21,45 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-    // Enable image optimization for better performance
+    // Serve WebP/AVIF automatically (massive size savings vs JPEG)
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Cache optimised images for 7 days in production
-    minimumCacheTTL: 604800,
+    // Cache optimised images for 30 days
+    minimumCacheTTL: 2592000,
     dangerouslyAllowSVG: false,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Optimize compilation
-  swcMinify: true,
-  // Enable compression
+  // Gzip/Brotli all text responses
   compress: true,
-  // Production optimizations
   poweredByHeader: false,
-  // Optimize output
-  output: 'standalone', // Enabled for optimized deployment (Hostinger compatible)
-  // Disable prefetching to prevent navigation issues
-  // Links will still work, just won't prefetch in background
+  // output: 'standalone',
+
+  // Aggressive long-term caching for immutable static assets
+  async headers() {
+    return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, stale-while-revalidate=86400',
+          },
+        ],
+      },
+    ]
+  },
+
   async redirects() {
     return [
       {

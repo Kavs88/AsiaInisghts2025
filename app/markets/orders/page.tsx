@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getCustomerOrderIntents } from '@/lib/supabase/queries'
+import EmptyState from '@/components/ui/EmptyState'
+import { ShoppingBag } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import Toast, { ToastType } from '@/components/ui/Toast'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/components/contexts/AuthContext'
 
 interface OrderIntent {
   id: string
@@ -42,7 +45,8 @@ interface OrderIntent {
 export default function OrdersPage() {
   const searchParams = useSearchParams()
   const emailParam = searchParams.get('email')
-  
+  const { user } = useAuth()
+
   const [email, setEmail] = useState(emailParam || '')
   const [orderIntents, setOrderIntents] = useState<OrderIntent[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -51,6 +55,16 @@ export default function OrdersPage() {
     type: 'info',
     visible: false,
   })
+
+  // Pre-populate email from auth session, then auto-fetch
+  useEffect(() => {
+    const sessionEmail = user?.email
+    if (sessionEmail && !emailParam && !email) {
+      setEmail(sessionEmail)
+      fetchOrderIntents(sessionEmail)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   const fetchOrderIntents = async (customerEmail: string) => {
     if (!customerEmail || !customerEmail.includes('@')) {
@@ -64,10 +78,25 @@ export default function OrdersPage() {
 
     setIsLoading(true)
     try {
-      const intents = await getCustomerOrderIntents(customerEmail)
-      setOrderIntents(intents || [])
-      
-      if (intents && intents.length === 0) {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('order_intents')
+        .select(`
+          *,
+          products(*, vendors(name, slug, logo_url)),
+          vendors(id, name, slug),
+          market_days(id, market_date, location_name)
+        `)
+        .eq('customer_email', customerEmail)
+        .order('created_at', { ascending: false })
+        .limit(100)
+
+      if (error) throw error
+
+      const intents = data || []
+      setOrderIntents(intents as OrderIntent[]) // Cast to OrderIntent[]
+
+      if (intents.length === 0) {
         setToast({
           message: 'No orders found for this email address',
           type: 'info',
@@ -92,12 +121,14 @@ export default function OrdersPage() {
     }
   }, [emailParam])
 
-  // Auto-refresh every 30 seconds if email is set
+  // Auto-refresh every 30 seconds if email is set, but only if tab is visible
   useEffect(() => {
     if (!email) return
 
     const interval = setInterval(() => {
-      fetchOrderIntents(email)
+      if (document.visibilityState === 'visible') {
+        fetchOrderIntents(email)
+      }
     }, 30000) // 30 seconds
 
     return () => clearInterval(interval)
@@ -109,11 +140,11 @@ export default function OrdersPage() {
   }
 
   const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
-    declined: 'bg-red-100 text-red-800 border-red-200',
-    fulfilled: 'bg-green-100 text-green-800 border-green-200',
-    cancelled: 'bg-neutral-100 text-neutral-800 border-neutral-200',
+    pending: 'bg-secondary-50 text-secondary-700 border-secondary-100',
+    confirmed: 'bg-brand-50 text-brand-700 border-brand-100',
+    declined: 'bg-error-50 text-error-600 border-error-100',
+    fulfilled: 'bg-success-50 text-success-700 border-success-100',
+    cancelled: 'bg-neutral-100 text-neutral-600 border-neutral-200',
   }
 
   return (
@@ -254,16 +285,19 @@ export default function OrdersPage() {
               ))}
             </div>
           ) : email ? (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-soft">
-              <p className="text-neutral-600">No orders found for this email address.</p>
-              <p className="text-sm text-neutral-500 mt-2">
-                Make sure you're using the same email you used when placing the order.
-              </p>
-            </div>
+            <EmptyState
+              icon={<ShoppingBag className="w-8 h-8 text-neutral-400" />}
+              title="You haven't placed any orders yet"
+              description="If you recently purchased an item, ensure you're using the correct email address."
+              className="my-12 shadow-soft bg-white"
+            />
           ) : (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-soft">
-              <p className="text-neutral-600">Enter your email address above to view your orders.</p>
-            </div>
+            <EmptyState
+              icon={<ShoppingBag className="w-8 h-8 text-neutral-400" />}
+              title="View Your Orders"
+              description="Enter your email address above to securely check your order history."
+              className="my-12 shadow-soft bg-white"
+            />
           )}
         </div>
       </section>
