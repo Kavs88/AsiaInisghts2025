@@ -41,10 +41,10 @@ export default async function StoriesPage() {
       </section>
 
       {/* Stories grid */}
-      <section className="py-16 px-4">
+      <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           {stories.length === 0 ? (
-            <div className="text-center py-24">
+            <div className="text-center py-20">
               <BookOpen className="w-12 h-12 text-neutral-300 mx-auto mb-4" strokeWidth={1} />
               <p className="text-xl font-bold text-neutral-400">No stories published yet.</p>
               <p className="text-neutral-400 mt-2">Check back soon.</p>
@@ -88,7 +88,7 @@ export default async function StoriesPage() {
                         {formatDate(story.published_at)}
                       </p>
                     )}
-                    <h2 className="text-xl font-black text-neutral-900 mb-3 line-clamp-2 leading-snug group-hover:text-primary-600 transition-colors">
+                    <h2 className="text-xl font-bold text-neutral-900 mb-3 line-clamp-2 leading-snug group-hover:text-primary-600 transition-colors">
                       {story.title}
                     </h2>
                     {story.excerpt && (

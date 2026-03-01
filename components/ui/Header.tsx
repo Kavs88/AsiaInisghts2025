@@ -382,7 +382,7 @@ function Header({ className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'sticky top-0 left-0 right-0 z-header w-full bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm transition-all duration-300 supports-[backdrop-filter]:bg-white/60',
+          'sticky top-0 left-0 right-0 z-header w-full bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm transition-[background-color,box-shadow,backdrop-filter] duration-300 supports-[backdrop-filter]:bg-white/60',
           isScrolled && 'shadow-md bg-white/95 backdrop-blur-md',
           className
         )}
@@ -398,7 +398,7 @@ function Header({ className }: HeaderProps) {
             <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0 min-w-0">
               <Link
                 href="/"
-                className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg flex-shrink-0"
+                className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-2xl flex-shrink-0"
                 aria-label="Asia Insights Home"
               >
                 <Image
@@ -423,7 +423,7 @@ function Header({ className }: HeaderProps) {
                         <button
                           onClick={(e) => handleMenuToggle(item.label, e)}
                           className={cn(
-                            "px-2.5 xl:px-3 py-2 text-sm xl:text-base font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap flex items-center gap-1",
+                            "px-2.5 xl:px-3 py-2 text-sm xl:text-base font-medium rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap flex items-center gap-1",
                             isOpen
                               ? "text-primary-600 bg-primary-50"
                               : "text-neutral-700 hover:text-primary-600 hover:bg-primary-50"
@@ -491,7 +491,7 @@ function Header({ className }: HeaderProps) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="px-2.5 xl:px-3 py-2 text-sm xl:text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap"
+                      className="px-2.5 xl:px-3 py-2 text-sm xl:text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-primary-50 rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 whitespace-nowrap"
                     >
                       {item.label}
                     </Link>
@@ -508,7 +508,7 @@ function Header({ className }: HeaderProps) {
               {/* Cart Icon - Primary interaction, larger size for clarity and confidence */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="relative p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 aria-label="Shopping cart"
               >
                 <svg
@@ -542,7 +542,7 @@ function Header({ className }: HeaderProps) {
                   <button
                     ref={accountButtonRef}
                     onClick={handleAccountMenuToggle}
-                    className="p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    className="p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                     aria-label="Account menu"
                     aria-expanded={isAccountMenuOpen}
                   >
@@ -743,7 +743,7 @@ function Header({ className }: HeaderProps) {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  className="p-2.5 w-11 h-11 flex items-center justify-center text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                   aria-label="Sign in"
                   title="Sign In"
                 >
@@ -769,7 +769,7 @@ function Header({ className }: HeaderProps) {
                 <Link
                   href="/markets/market-days"
                   className={cn(
-                    'hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-all duration-200 group h-9'
+                    'hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-2xl transition-all duration-200 group h-9'
                   )}
                 >
                   <svg className="w-3.5 h-3.5 text-primary-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -788,7 +788,7 @@ function Header({ className }: HeaderProps) {
 
               {/* Mobile Menu Button */}
               <button
-                className="lg:hidden p-2.5 w-11 h-11 text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center justify-center"
+                className="lg:hidden p-2.5 w-11 h-11 text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center justify-center"
                 aria-label="Toggle menu"
                 aria-expanded={isMobileMenuOpen}
                 onClick={handleMobileMenuToggle}
@@ -837,7 +837,7 @@ function Header({ className }: HeaderProps) {
                     <div key={item.href}>
                       <Link
                         href={item.href}
-                        className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center"
+                        className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         {item.label}
@@ -846,7 +846,7 @@ function Header({ className }: HeaderProps) {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className="block px-8 py-2 text-sm font-medium text-neutral-600 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center"
+                          className="block px-8 py-2 text-sm font-medium text-neutral-600 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {subItem.label}
@@ -860,7 +860,7 @@ function Header({ className }: HeaderProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center"
+                    className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.label}
@@ -873,7 +873,7 @@ function Header({ className }: HeaderProps) {
                     <>
                       <Link
                         href={`/markets/sellers/${vendor.slug}`}
-                        className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center gap-3"
+                        className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center gap-3"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -883,7 +883,7 @@ function Header({ className }: HeaderProps) {
                       </Link>
                       <Link
                         href="/markets/vendor/profile/edit"
-                        className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center gap-3"
+                        className="block px-4 py-3 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center gap-3"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -897,7 +897,7 @@ function Header({ className }: HeaderProps) {
                   {/* My Orders - Available for all logged-in users */}
                   <Link
                     href="/markets/orders"
-                    className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center gap-3"
+                    className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center gap-3"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -911,7 +911,7 @@ function Header({ className }: HeaderProps) {
                       await handleSignOut()
                       setIsMobileMenuOpen(false)
                     }}
-                    className="w-full text-left px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center gap-3"
+                    className="w-full text-left px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center gap-3"
                   >
                     <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -922,7 +922,7 @@ function Header({ className }: HeaderProps) {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors min-h-[44px] flex items-center"
+                  className="block px-4 py-3 mt-2 text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 rounded-2xl transition-colors min-h-[44px] flex items-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign In

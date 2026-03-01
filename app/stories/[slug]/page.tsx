@@ -36,10 +36,10 @@ export default async function StoryDetailPage({ params }: { params: { slug: stri
   return (
     <main id="main-content" className="min-h-screen bg-white">
       {/* Back link */}
-      <div className="max-w-4xl mx-auto px-4 pt-8">
+      <div className="max-w-4xl mx-auto px-6 lg:px-8 pt-8">
         <Link
           href="/stories"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-primary-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-2xl"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={2} />
           Local Legends
@@ -141,7 +141,7 @@ export default async function StoryDetailPage({ params }: { params: { slug: stri
         <div className="mt-16 pt-8 border-t border-neutral-100">
           <Link
             href="/stories"
-            className="inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg"
+            className="inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-2xl"
           >
             <ArrowLeft className="w-4 h-4" strokeWidth={2} />
             Back to Local Legends
