@@ -143,7 +143,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
         <main className="min-h-screen bg-neutral-50 pb-20">
             {/* Breadcrumb Navigation */}
             <div className="bg-white border-b border-neutral-100">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+                <div className="container mx-auto px-6 lg:px-8 max-w-7xl">
                     <Breadcrumbs items={[
                         { label: 'Markets', href: '/markets' },
                         { label: item.title, href: '' }
@@ -153,7 +153,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
             {/* Header Section */}
             <div className="bg-white border-b border-neutral-200 sticky top-0 z-40">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl h-16 flex items-center justify-between">
+                <div className="container mx-auto px-6 lg:px-8 max-w-7xl h-16 flex items-center justify-between">
                     <Link href="/markets/discovery" className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 font-medium transition-colors">
                         <ChevronLeft className="w-5 h-5" />
                         <span>Back to Discovery</span>
@@ -167,7 +167,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
             </div>
 
             {/* Content Section */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 max-w-5xl">
+            <div className="container mx-auto px-6 lg:px-8 py-8 lg:py-12 max-w-5xl">
                 <div className="bg-white rounded-3xl shadow-sm border border-neutral-200 overflow-hidden">
                     {/* Hero Image */}
                     <EventHeroImage
@@ -179,7 +179,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
                     <div className="p-6 sm:p-10 lg:p-12">
                         <div className="max-w-3xl">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-900 mb-8 leading-tight">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 mb-8 leading-tight">
                                 {item.title}
                             </h1>
 
@@ -246,7 +246,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
                                     <div className="flex items-center gap-4">
                                         {item.host.logo_url ? (
                                             <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-neutral-200">
-                                                <Image src={item.host.logo_url} alt={item.host.name} fill className="object-cover" />
+                                                <Image src={item.host.logo_url} alt={item.host.name} fill sizes="56px" className="object-cover" />
                                             </div>
                                         ) : (
                                             <div className="w-14 h-14 bg-white rounded-xl border border-neutral-200 flex items-center justify-center">
@@ -279,7 +279,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
                                             >
                                                 <div className="w-10 h-10 rounded-full bg-neutral-100 overflow-hidden relative border border-neutral-100">
                                                     {participant.logo_url ? (
-                                                        <Image src={participant.logo_url} alt={participant.name} fill className="object-cover" />
+                                                        <Image src={participant.logo_url} alt={participant.name} fill sizes="40px" className="object-cover" />
                                                     ) : (
                                                         <div className="absolute inset-0 flex items-center justify-center font-bold text-neutral-300">
                                                             {participant.name.charAt(0)}

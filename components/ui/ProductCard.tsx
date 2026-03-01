@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useCallback, memo, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -46,33 +45,17 @@ function ProductCard({
   initialIsSaved,
   className,
 }: ProductCardProps) {
-  const router = useRouter()
-  const [isHovered, setIsHovered] = useState(false)
-
-  // Memoize expensive calculations
-  const isLowStock = useMemo(() => stockQuantity > 0 && stockQuantity < 10, [stockQuantity])
-  const isOutOfStock = useMemo(() => stockQuantity === 0 && !requiresPreorder, [stockQuantity, requiresPreorder])
-  const discountPercentage = useMemo(() => {
-    if (!compareAtPrice || compareAtPrice <= price) return null
-    return Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
-  }, [compareAtPrice, price])
+  const isLowStock = stockQuantity > 0 && stockQuantity < 10
+  const isOutOfStock = stockQuantity === 0 && !requiresPreorder
+  const discountPercentage = !compareAtPrice || compareAtPrice <= price
+    ? null
+    : Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
 
   const handleQuickAdd = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     // TODO: Add to cart logic
   }, [name])
-
-  const handleVendorClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (vendorSlug) {
-      router.push(`/sellers/${vendorSlug}`)
-    }
-  }, [vendorSlug, router])
-
-  const handleMouseEnter = useCallback(() => setIsHovered(true), [])
-  const handleMouseLeave = useCallback(() => setIsHovered(false), [])
 
   return (
     <article className={cn(
@@ -87,11 +70,7 @@ function ProductCard({
       />
 
       {/* Image Container - 4:3 Standard for Products */}
-      <div
-        className="relative aspect-[4/3] bg-neutral-100 overflow-hidden"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden">
         {(imageUrl && typeof imageUrl === 'string') ? (
           <Image
             src={imageUrl}
@@ -144,7 +123,7 @@ function ProductCard({
         {/* Out of Stock Overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-10 pointer-events-none">
-            <span className="px-4 py-2 bg-neutral-900 text-white text-sm font-bold rounded-lg shadow-lg">Out of Stock</span>
+            <span className="px-4 py-2 bg-neutral-900 text-white text-sm font-bold rounded-2xl shadow-lg">Out of Stock</span>
           </div>
         )}
       </div>
@@ -163,7 +142,7 @@ function ProductCard({
         {/* Price - Prominent */}
         <div className="mt-auto pt-2">
           <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-2xl font-black text-neutral-900 tracking-tight">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">
               {formatCurrency(price)}
             </span>
             {compareAtPrice && compareAtPrice > price && (

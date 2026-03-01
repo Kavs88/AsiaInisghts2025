@@ -1,6 +1,8 @@
 import { getProducts } from '@/lib/supabase/queries'
 import ProductsPageClient from './page-client'
 
+export const revalidate = 1800
+
 export const metadata = {
   title: 'Products | AI Markets',
   description: 'Browse all products from our artisan sellers',
@@ -49,10 +51,10 @@ export default async function ProductsPage() {
   return (
     <main id="main-content" className="min-h-screen">
       {/* Page Header */}
-      <section className="bg-neutral-900 text-white py-16 lg:py-24">
+      <section className="bg-neutral-900 text-white py-20 lg:py-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div>
-            <h1 className="text-4xl lg:text-5xl font-black mb-4 lg:mb-6 leading-tight">All Products</h1>
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 lg:mb-6 leading-tight">All Products</h1>
             <p className="text-lg lg:text-xl text-neutral-300 max-w-3xl font-medium">
               Discover handcrafted products from local artisans and makers
             </p>
