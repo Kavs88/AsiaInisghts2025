@@ -58,7 +58,7 @@ export default function PropertyCard({
     return (
         <article
             className={cn(
-                "group relative bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col",
+                "group relative bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-xl hover:-translate-y-1 block h-full flex flex-col",
                 className
             )}
         >
@@ -84,40 +84,24 @@ export default function PropertyCard({
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
-                {/* Type Badge — Top Left */}
-                <div className="absolute top-4 left-4 z-20 pointer-events-none">
-                    <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-900 font-bold border-none shadow-md text-xs uppercase tracking-wider">
-                        {type}
-                    </Badge>
+                {/* Status Badge — Top Left (Max 1) */}
+                {(isFeatured || isNew) && (
+                    <div className="absolute top-4 left-4 z-20 pointer-events-none">
+                        <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-900 font-bold border-none shadow-sm text-xs uppercase tracking-wider">
+                            {isFeatured ? 'Featured' : 'New'}
+                        </Badge>
+                    </div>
+                )}
+
+                {/* Save Button — Top Right (Always visible) */}
+                <div className="absolute top-4 right-4 z-20">
+                    <SaveButton
+                        itemType="property"
+                        itemId={id}
+                        minimal
+                        className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
+                    />
                 </div>
-
-                {/* Status Badges — Top Right */}
-                {(isNew || isFeatured) && (
-                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 pointer-events-none">
-                        {isFeatured && (
-                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm text-xs uppercase tracking-wider">
-                                Featured
-                            </Badge>
-                        )}
-                        {isNew && (
-                            <Badge variant="glass" className="backdrop-blur-md bg-white/90 text-neutral-600 font-bold border-none shadow-sm text-xs uppercase tracking-wider">
-                                New
-                            </Badge>
-                        )}
-                    </div>
-                )}
-
-                {/* Save Button — Top Right (visible when no status badges) */}
-                {!isNew && !isFeatured && (
-                    <div className="absolute top-4 right-4 z-20">
-                        <SaveButton
-                            itemType="property"
-                            itemId={id}
-                            minimal
-                            className="bg-white/90 backdrop-blur-md shadow-md border-transparent hover:bg-white"
-                        />
-                    </div>
-                )}
             </div>
 
             {/* Content Stage - p-6 Uniform */}
@@ -143,62 +127,57 @@ export default function PropertyCard({
                 </div>
 
                 {/* Footer / Meta */}
-                <div className="mt-auto pt-4 border-t border-neutral-100 flex flex-col gap-4">
+                <div className="mt-auto pt-4 border-t border-neutral-100 flex flex-col gap-3">
 
-                    {/* Price - Prominent */}
-                    {displayPrice && (
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-black text-neutral-900 tracking-tight leading-none">
-                                {displayPrice}
-                            </span>
-                            {property_type === 'rental' && (
-                                <span className="text-sm font-bold text-neutral-500">/mo</span>
-                            )}
-                        </div>
-                    )}
+                    {/* Price & Specs Row */}
+                    <div className="flex items-center justify-between gap-2 pointer-events-auto">
+                        {displayPrice ? (
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-bold text-neutral-900 tracking-tight leading-none">
+                                    {displayPrice}
+                                </span>
+                                {property_type === 'rental' && (
+                                    <span className="text-sm font-bold text-neutral-500">/mo</span>
+                                )}
+                            </div>
+                        ) : <div />}
 
-                    {/* Specs — only when data exists */}
-                    {hasSpecs ? (
-                        <div className="flex items-center gap-4 text-neutral-600 flex-wrap pointer-events-auto">
-                            {property_type === 'rental' ? (
-                                <>
-                                    {bedrooms && (
-                                        <div className="flex items-center gap-1.5 shrink-0">
-                                            <Bed className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                            <span className="text-sm font-bold">
-                                                {bedrooms} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Beds</span>
-                                            </span>
+                        {hasSpecs && (
+                            <div className="flex items-center gap-3 text-neutral-600 text-sm font-bold">
+                                {property_type === 'rental' ? (
+                                    <>
+                                        {bedrooms != null && (
+                                            <div className="flex items-center gap-1">
+                                                <Bed className="w-4 h-4 text-neutral-400" strokeWidth={2} />
+                                                <span>{bedrooms}</span>
+                                            </div>
+                                        )}
+                                        {bathrooms != null && (
+                                            <div className="flex items-center gap-1">
+                                                <Bath className="w-4 h-4 text-neutral-400" strokeWidth={2} />
+                                                <span>{bathrooms}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    capacity != null && (
+                                        <div className="flex items-center gap-1">
+                                            <Users className="w-4 h-4 text-neutral-400" strokeWidth={2} />
+                                            <span>{capacity}</span>
                                         </div>
-                                    )}
-                                    {bathrooms && (
-                                        <div className="flex items-center gap-1.5 shrink-0">
-                                            <Bath className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                            <span className="text-sm font-bold">
-                                                {bathrooms} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Baths</span>
-                                            </span>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                capacity && (
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                        <Users className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
-                                        <span className="text-sm font-bold">
-                                            Up to {capacity} <span className="text-neutral-400 font-medium text-xs uppercase ml-0.5">Guests</span>
-                                        </span>
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    ) : null}
+                                    )
+                                )}
+                            </div>
+                        )}
+                    </div>
 
                     {/* CTA row like BusinessCard and ProductCard standard */}
-                    <div className="flex items-center justify-between pt-2 mt-auto">
+                    <div className="flex items-center justify-between pt-1 mt-auto">
                         <span className="text-sm font-bold text-neutral-500 group-hover:text-primary-600 transition-colors pointer-events-none uppercase tracking-wide">
                             View Property
                         </span>
-                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 pointer-events-none">
-                            <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
+                        <div className="w-8 h-8 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-[background-color,color] duration-300 pointer-events-none">
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" strokeWidth={2} />
                         </div>
                     </div>
 

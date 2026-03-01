@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { GridSkeleton } from '@/components/ui/LoadingSkeleton'
 
+export const revalidate = 1800
+
 interface PropertiesPageProps {
     searchParams: {
         type?: string
@@ -66,7 +68,7 @@ async function PropertiesGrid({
                         </Link>
                         <Link
                             href="/markets/vendor/apply"
-                            className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary-200 hover:shadow-primary-300"
+                            className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:"
                         >
                             List Your Property
                         </Link>
@@ -117,7 +119,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
                                 key={cat.id}
                                 href={href}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-semibold transition-all shadow-sm ${isActive
-                                    ? 'bg-primary-600 text-white shadow-primary-200'
+                                    ? 'bg-neutral-900 text-white'
                                     : 'bg-white/80 backdrop-blur-md text-neutral-900 hover:bg-white border border-white/20'
                                     }`}
                             >
@@ -134,7 +136,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-8">
                         {/* Stewardship Voice: Curated vs Recommended */}
-                        <h2 className="text-2xl font-black text-neutral-900">
+                        <h2 className="text-2xl font-bold text-neutral-900">
                             {propertyType === 'event_space' ? 'Exceptional Event Venues' : 'Curated Stays & Venues'}
                         </h2>
                     </div>

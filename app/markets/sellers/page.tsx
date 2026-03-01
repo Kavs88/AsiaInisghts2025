@@ -3,6 +3,8 @@ import VendorCard from '@/components/ui/VendorCard'
 import { Users } from 'lucide-react'
 import { getVendors, getVendorsAttendanceStatus } from '@/lib/supabase/queries'
 
+export const revalidate = 1800
+
 export const metadata = {
   title: 'Makers — Asia Insights',
   description: 'Browse all our artisan makers and verified members',
@@ -63,7 +65,7 @@ export default async function SellersPage() {
       {/* Page Header - Premium spacing and typography */}
       <section className="bg-white border-b border-neutral-100">
         <div className="container-custom py-12">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-4 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4 tracking-tight">
             Our Community
           </h1>
           <p className="text-lg sm:text-xl lg:text-2xl text-neutral-600 max-w-3xl leading-relaxed">
@@ -95,7 +97,7 @@ export default async function SellersPage() {
                   <Users className="w-10 h-10 text-primary-400" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-neutral-900 mb-2">
+                  <h2 className="text-2xl font-bold text-neutral-900 mb-2">
                     Be the first to showcase your craft
                   </h2>
                   <p className="text-neutral-600 max-w-md mx-auto">
@@ -118,7 +120,7 @@ export default async function SellersPage() {
       {/* CTA Section */}
       <section className="py-12 bg-neutral-900 text-white">
         <div className="container-custom text-center">
-          <h2 className="text-3xl lg:text-4xl font-black mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
             Are you a business or service provider?
           </h2>
           <p className="text-xl lg:text-2xl text-neutral-300 mb-10 max-w-2xl mx-auto font-medium">

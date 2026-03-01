@@ -5,6 +5,8 @@ import EmptyState from '@/components/ui/EmptyState'
 import { getBusinesses } from '@/lib/actions/businesses'
 import HubHero from '@/components/ui/HubHero'
 
+export const revalidate = 1800
+
 const CATEGORIES = [
   { id: 'setup', label: 'Setup Stack', isIntent: true },
   { id: 'all', label: 'All Businesses' },

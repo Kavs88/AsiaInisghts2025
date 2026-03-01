@@ -71,7 +71,7 @@ export default function EventCard({
         onClick={() => setIsModalOpen(true)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsModalOpen(true) } }}
         aria-label={`View event details: ${title}`}
-        className={`group cursor-pointer bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 select-none flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${className}`}
+        className={`group cursor-pointer bg-white rounded-2xl shadow-sm border border-neutral-200/60 overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-md hover:-translate-y-1 select-none flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${className}`}
       >
         {/* Hero Image - 4:3 Aspect Ratio Standard */}
         <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden shrink-0">
@@ -115,8 +115,8 @@ export default function EventCard({
 
           {/* Date Pill - Bottom Left */}
           <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-white/50">
-            <div className="text-xs font-black text-primary-600 uppercase tracking-widest leading-none mb-0.5">{month}</div>
-            <div className="text-2xl font-black text-neutral-900 leading-none">{day}</div>
+            <div className="text-xs font-bold text-primary-600 uppercase tracking-widest leading-none mb-0.5">{month}</div>
+            <div className="text-2xl font-bold text-neutral-900 leading-none">{day}</div>
           </div>
         </div>
 
@@ -146,7 +146,7 @@ export default function EventCard({
             <div className="flex items-center gap-2 min-w-0">
               {hosting_business ? (
                 <>
-                  <div className="w-7 h-7 rounded-lg bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
+                  <div className="w-7 h-7 rounded-2xl bg-neutral-100 border border-neutral-100 overflow-hidden flex-shrink-0">
                     {hosting_business.logo_url ? (
                       <img src={hosting_business.logo_url} alt={hosting_business.name} className="w-full h-full object-cover" />
                     ) : (
@@ -163,14 +163,14 @@ export default function EventCard({
                 <span className="text-xs font-bold text-neutral-400">Asia Insights</span>
               )}
             </div>
-            <div className="w-7 h-7 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-400 group-hover:bg-primary-600 group-hover:text-white transition-[background-color,color] duration-300 flex-shrink-0">
               <ArrowRight className="w-3.5 h-3.5 group-hover:-rotate-45 transition-transform duration-300" strokeWidth={1.5} />
             </div>
           </div>
 
           {/* Offers Strip */}
           {offers.length > 0 && (
-            <div className="mt-3 py-1.5 px-3 bg-amber-50/50 border border-amber-100/50 rounded-lg flex items-center gap-2">
+            <div className="mt-3 py-1.5 px-3 bg-amber-50/50 border border-amber-100/50 rounded-2xl flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span className="text-xs font-bold text-amber-900/70 truncate">
                 {offers[0].title}
