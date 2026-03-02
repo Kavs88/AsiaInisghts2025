@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { getPublicEventDetail, getPublicMarketDayForEvent, getEventReviewSummary } from '@/lib/actions/event-detail'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -12,14 +13,13 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import { SaveButton } from '@/components/ui/SoftActionButtons'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const supabase = await createClient()
-    if (!supabase) return { title: 'Event Details | AI Markets' }
+    const supabase = createPublicClient()
 
     const { data: event } = await (supabase
         .from('events') as any)
         .select('title, description')
         .eq('id', params.id)
-        .single() as any
+        .single()
 
     if (!event) return { title: 'Event Not Found | AI Markets' }
 
@@ -30,63 +30,19 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function EventDetailPage({ params }: { params: { id: string } }) {
-    const supabase = await createClient()
-    if (!supabase) return notFound()
-
     // 1. Try to fetch from 'events' table
-    const { data: event, error: eventError } = await (supabase
-        .from('events') as any)
-        .select(`
-            *,
-                id,
-                name,
-                slug,
-                logo_url,
-                is_verified
-            ),
-            participating_entities (
-                role,
-                entity:entity_id (
-                    id,
-                    name,
-                    slug,
-                    logo_url,
-                    trust_badges,
-                    confidence_score
-                )
-            )
-        `)
-        .eq('id', params.id)
-        .single() as any
+    const event = await getPublicEventDetail(params.id)
 
     // 2. If not found, try 'market_days'
     let marketDay = null
-    if (eventError || !event) {
-        const { data: md } = await (supabase
-            .from('market_days') as any)
-            .select(`
-                *,
-                hosts:hosts (
-                    id,
-                    name,
-                    slug,
-                    logo_url
-                )
-            `)
-            .eq('id', params.id)
-            .single() as any
-        marketDay = md
+    if (!event) {
+        marketDay = await getPublicMarketDayForEvent(params.id)
     }
 
     if (!event && !marketDay) notFound()
 
-    // Phase 2: Check saved status
-    const { getSavedStatus } = await import('@/lib/actions/social')
-    const savedStatus = await getSavedStatus('event', params.id)
-
     const item = event ? {
         ...event,
-        // Helper to get participants cleanly
         participants: event.participating_entities?.map((p: any) => ({
             ...p.entity,
             role: p.role
@@ -99,7 +55,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
         location: marketDay.location_name,
         host: marketDay.hosts,
         isMarketDay: true,
-        participants: [] // Market days have vendors in separate table, future sync loop needed if we want to show here
+        participants: []
     }
 
     const startDate = new Date(item.start_at)
@@ -108,35 +64,10 @@ export default async function EventDetailPage({ params }: { params: { id: string
     // Fetch review summary for market days only
     let reviewSummary = null
     if (item.isMarketDay && item.id) {
-        try {
-            const supabase = await createClient()
-            if (supabase) {
-                const { data } = await (supabase
-                    .from('review_summaries') as any)
-                    .select('*')
-                    .eq('subject_id', item.id)
-                    .eq('subject_type', 'market_day')
-                    .maybeSingle() as any
-
-                if (data) {
-                    reviewSummary = {
-                        averageRating: parseFloat(data.average_rating || '0'),
-                        totalReviews: data.total_reviews || 0
-                    }
-                } else {
-                    reviewSummary = {
-                        averageRating: 0,
-                        totalReviews: 0
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching review summary:', error)
-            reviewSummary = {
-                averageRating: 0,
-                totalReviews: 0
-            }
-        }
+        reviewSummary = await getEventReviewSummary(item.id, 'market_day').catch(() => ({
+            averageRating: 0,
+            totalReviews: 0,
+        }))
     }
 
     return (
@@ -160,7 +91,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
                     </Link>
                     <div className="flex items-center gap-3">
                         {/* Phase 2: Save Button */}
-                        <SaveButton itemType="event" itemId={item.id} initialIsSaved={savedStatus} />
+                        <SaveButton itemType="event" itemId={item.id} />
                         <EventIntentButtons eventId={item.id} />
                     </div>
                 </div>

@@ -78,49 +78,82 @@ export async function getProperties(options: {
   return _fetchProperties(property_type, type, limit, vettedOnly, featuredOnly)
 }
 
-export async function getPropertyById(id: string) {
-  const supabase = await createClient()
+const _fetchPropertyById = unstable_cache(
+  async (id: string) => {
+    const supabase = createPublicClient()
+    const { data, error } = await supabase
+      .from('properties')
+      .select(`
+        id,
+        address,
+        type,
+        property_type,
+        price,
+        bedrooms,
+        bathrooms,
+        capacity,
+        images,
+        location_coords,
+        description,
+        hourly_rate,
+        daily_rate,
+        contact_phone,
+        contact_email,
+        business_id,
+        created_at,
+        businesses (
+          id,
+          name,
+          slug,
+          description,
+          logo_url,
+          is_verified,
+          address,
+          contact_phone
+        )
+      `)
+      .eq('id', id)
+      .single()
+    if (error) {
+      console.error('Error fetching property by id:', error)
+      return null
+    }
+    return data
+  },
+  ['property-by-id'],
+  { revalidate: 1800, tags: ['properties'] }
+)
 
+export async function getPropertyById(id: string) {
+  return _fetchPropertyById(id)
+}
+
+export async function getPropertiesNearBusiness(businessAddress: string, limit: number = 4) {
+  if (!businessAddress) return []
+  const supabase = createPublicClient()
+  const addressParts = businessAddress.split(',').map((s: string) => s.trim())
+  const locationName = addressParts[addressParts.length - 1] || businessAddress
   const { data, error } = await supabase
     .from('properties')
     .select(`
-      id,
-      address,
-      type,
-      property_type,
-      price,
-      bedrooms,
-      bathrooms,
-      capacity,
-      images,
-      location_coords,
-      description,
-      hourly_rate,
-      daily_rate,
-      contact_phone,
-      contact_email,
-      business_id,
-      created_at,
-      businesses (
+      *,
+      businesses:business_id (
         id,
         name,
         slug,
-        description,
-        logo_url,
-        is_verified,
-        address,
-        contact_phone
+        logo_url
       )
     `)
-    .eq('id', id)
-    .single()
-
+    .eq('is_active', true)
+    .eq('availability', 'available')
+    .ilike('address', `%${locationName}%`)
+    .order('created_at', { ascending: false })
+    .limit(limit)
   if (error) {
-    console.error('Error fetching property by id:', error)
-    return null
+    console.error('[getPropertiesNearBusiness] Error:', error)
+    return []
   }
-
-  return data
+  return data || []
 }
 
 export async function getUpcomingEventsForProperty(propertyId: string) {

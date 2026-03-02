@@ -4,8 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Globe, Phone, Mail, Clock, CheckCircle, Calendar, ShoppingBag, Star } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
-import { getPropertiesNearBusiness } from '@/lib/supabase/queries'
-import { createClient } from '@/lib/supabase/server'
+import { getPropertiesNearBusiness } from '@/lib/actions/properties'
+import { getBusinessReviewSummary, getBusinessRecommendCount } from '@/lib/actions/businesses'
 import BusinessProfileClient from './page-client'
 import ReviewSummary from '@/components/ui/ReviewSummary'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
@@ -27,7 +27,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs'
  * - UI labels (tabs/filters): text-sm font-medium
  * 
  * CONTAINERS:
- * - Default: container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl
+ * - Default: container mx-auto px-6 lg:px-8 max-w-7xl
  */
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
@@ -79,57 +79,11 @@ export default async function BusinessProfilePage({
     // Fetch nearby properties
     const nearbyProperties = biz.address ? await getPropertiesNearBusiness(biz.address, 4).catch(() => []) : []
 
-    // Fetch review summary
-    let reviewSummary = null
-    try {
-        const supabase = await createClient()
-        if (supabase) {
-            const { data } = await (supabase
-                .from('review_summaries') as any)
-                .select('*')
-                .eq('subject_id', biz.id)
-                .eq('subject_type', 'business')
-                .maybeSingle() as any
-
-            if (data) {
-                reviewSummary = {
-                    averageRating: parseFloat(data.average_rating || '0'),
-                    totalReviews: data.total_reviews || 0
-                }
-            } else {
-                reviewSummary = {
-                    averageRating: 0,
-                    totalReviews: 0
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching review summary:', error)
-        reviewSummary = {
-            averageRating: 0,
-            totalReviews: 0
-        }
-    }
-
-    // Fetch recommend count for this business (via entity)
-    let recommendCount = 0
-    try {
-        const supabase2 = await createClient()
-        // Match entity via slug (entities are linked to businesses via slug)
-        const { data: entityRow } = await (supabase2
-            .from('entities') as any)
-            .select('id')
-            .eq('slug', resolvedParams.slug)
-            .maybeSingle()
-        if (entityRow?.id) {
-            const { count } = await supabase2
-                .from('user_entity_signals')
-                .select('id', { count: 'exact', head: true })
-                .eq('entity_id', entityRow.id)
-                .eq('signal_type', 'recommend')
-            recommendCount = count || 0
-        }
-    } catch (_) { }
+    // Fetch review summary and recommend count in parallel
+    const [reviewSummary, recommendCount] = await Promise.all([
+        getBusinessReviewSummary(biz.id).catch(() => ({ averageRating: 0, totalReviews: 0 })),
+        getBusinessRecommendCount(resolvedParams.slug).catch(() => 0),
+    ])
 
     return (
         <main id="main-content" className="min-h-screen bg-white">
@@ -165,7 +119,7 @@ export default async function BusinessProfilePage({
 
                 {/* Layered Branding Overlay - Subtle Watermark */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-                    <span className="text-[15vw] font-black text-white/5 uppercase tracking-tighter select-none truncate w-full text-center transform -rotate-12 translate-y-1/4 scale-150 blur-sm">
+                    <span className="text-[15vw] font-bold text-white/5 uppercase tracking-tighter select-none truncate w-full text-center transform -rotate-12 translate-y-1/4 scale-150 blur-sm">
                         {biz.name}
                     </span>
                 </div>
@@ -188,7 +142,7 @@ export default async function BusinessProfilePage({
                             ) : (
                                 <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 bg-white rounded-2xl p-2 shadow-xl border border-white/20">
                                     <div className="w-full h-full bg-gradient-to-br from-primary-50 to-neutral-50 rounded-xl flex items-center justify-center border border-neutral-100">
-                                        <span className="text-4xl sm:text-5xl lg:text-6xl font-black text-primary-600">
+                                        <span className="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary-600">
                                             {biz.name.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
@@ -215,11 +169,11 @@ export default async function BusinessProfilePage({
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                         </div>
-                                        <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">Active recently</span>
+                                        <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Active recently</span>
                                     </div>
                                 )}
                             </div>
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tight leading-[0.9]">
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 tracking-tight leading-[0.9]">
                                 {biz.name}
                             </h1>
                         </div>
@@ -277,7 +231,7 @@ export default async function BusinessProfilePage({
                         {/* Left col: About description + delivery options */}
                         <div className="lg:col-span-2 space-y-6">
                             <div>
-                                <h2 className="text-2xl lg:text-3xl font-black text-neutral-900 mb-4 tracking-tight">
+                                <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 mb-4 tracking-tight">
                                     About {biz.name}
                                 </h2>
                                 <div className="text-base lg:text-lg text-neutral-700 leading-relaxed whitespace-pre-line">
@@ -312,7 +266,7 @@ export default async function BusinessProfilePage({
                         <div className="space-y-6 lg:sticky lg:top-32 h-fit">
                             {/* Contact Card */}
                             <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-md hover:shadow-xl transition-shadow duration-300">
-                                <h3 className="text-lg font-black text-neutral-900 mb-6 flex items-center gap-2">
+                                <h3 className="text-lg font-bold text-neutral-900 mb-6 flex items-center gap-2">
                                     <span className="w-8 h-1 bg-primary-600 rounded-full inline-block"></span>
                                     Connect
                                 </h3>
@@ -379,7 +333,7 @@ export default async function BusinessProfilePage({
                             {/* Events Preview */}
                             {events.length > 0 && (
                                 <div className="space-y-3">
-                                    <h3 className="text-base font-black text-neutral-900 px-1">Upcoming Events</h3>
+                                    <h3 className="text-base font-bold text-neutral-900 px-1">Upcoming Events</h3>
                                     {events.slice(0, 3).map((event: any) => (
                                         <Link key={event.id} href={`/markets/events/${event.id}`} className="block p-4 bg-white border border-neutral-200 rounded-2xl hover:border-primary-200 hover:shadow-xl transition-all group">
                                             <div className="flex gap-3">

@@ -1,10 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getVendorBySlug, getVendorProducts, getVendorPortfolio, getVendorNextMarketAttendance } from '@/lib/supabase/queries'
+import { getVendorBySlug, getVendorPortfolio, getVendorEvents, getVendorDeals, getVendorActivityStats } from '@/lib/actions/vendors'
+import { getVendorProducts, getVendorNextMarketAttendance } from '@/lib/actions/products'
 import { notFound } from 'next/navigation'
 import SellerProfileClient from './page-client'
 import ShareButton from '@/components/ui/ShareButton'
-import { createClient } from '@/lib/supabase/server'
+import VendorOwnershipIsland from '@/components/islands/VendorOwnershipIsland'
 import Badge from '@/components/ui/Badge'
 
 /**
@@ -84,56 +85,14 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
       notFound()
     }
 
-    // Get supabase client first
-    const supabase = await createClient()
-    if (!supabase) return notFound()
-
     // Fetch products, portfolio, market attendance, events, deals, and activity stats in parallel
     const [vendorProducts, portfolio, attendance, vendorEvents, vendorDeals, activityStats] = await Promise.all([
       getVendorProducts(vendor.id),
       getVendorPortfolio(vendor.id).catch(() => []),
       getVendorNextMarketAttendance(vendor.id).catch(() => null),
-      // Fetch published/upcoming events for this vendor
-      (supabase
-        .from('events') as any)
-        .select('*')
-        .or(`vendor_id.eq.${vendor.id},and(host_id.eq.${vendor.id},host_type.eq.vendor)`)
-        .eq('status', 'published')
-        .gte('end_at', new Date().toISOString())
-        .order('start_at', { ascending: true })
-        .then(({ data }: any) => data || [])
-        .catch(() => []),
-      // Fetch active deals for this vendor
-      (supabase
-        .from('deals') as any)
-        .select('*')
-        .eq('vendor_id', vendor.id)
-        .eq('status', 'active')
-        .gte('valid_to', new Date().toISOString())
-        .order('valid_to', { ascending: true })
-        .then(({ data }: any) => data || [])
-        .catch(() => []),
-      // Get activity stats for signals
-      (supabase
-        .from('market_stalls') as any)
-        .select('market_day_id, market_days!inner(market_date)', { count: 'exact', head: false })
-        .eq('vendor_id', vendor.id)
-        .then(async ({ data, count }: any) => {
-          const pastMarkets = data?.filter((stall: any) =>
-            new Date(stall.market_days.market_date) < new Date()
-          ).length || 0
-          const totalEvents = await (supabase
-            .from('events') as any)
-            .select('id', { count: 'exact', head: true })
-            .or(`vendor_id.eq.${vendor.id},and(host_id.eq.${vendor.id},host_type.eq.vendor)`)
-            .then(({ count }: any) => count || 0)
-          return {
-            pastMarkets,
-            totalEvents,
-            isActiveThisMonth: pastMarkets > 0 || totalEvents > 0
-          }
-        })
-        .catch(() => ({ pastMarkets: 0, totalEvents: 0, isActiveThisMonth: false })),
+      getVendorEvents(vendor.id).catch(() => []),
+      getVendorDeals(vendor.id).catch(() => []),
+      getVendorActivityStats(vendor.id).catch(() => ({ pastMarkets: 0, totalEvents: 0, isActiveThisMonth: false })),
     ])
 
     products = vendorProducts || []
@@ -205,21 +164,6 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
   const productCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
   const productTags = Array.from(new Set(products.flatMap(p => p.tags || []).filter(Boolean)))
 
-  // Check if current user owns this profile
-  let isOwnProfile = false
-  try {
-    const supabase = await createClient()
-    if (supabase) {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user && vendor.user_id === session.user.id) {
-        isOwnProfile = true
-      }
-    }
-  } catch (error) {
-    // Silently fail - user just won't see edit button
-    console.error('Error checking profile ownership:', error)
-  }
-
   return (
     <main id="main-content" className="min-h-screen bg-white">
       {/* Breadcrumb Navigation - Normalized spacing */}
@@ -262,7 +206,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
 
         {/* Layered Branding Overlay */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
-          <span className="text-[20vw] font-black text-white uppercase tracking-tighter select-none">
+          <span className="text-[20vw] font-bold text-white uppercase tracking-tighter select-none">
             {mappedVendor.name}
           </span>
         </div>
@@ -285,13 +229,13 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                         src={mappedVendor.logoUrl}
                         alt={`${mappedVendor.name} profile`}
                         fill
-                        className="object-cover rounded-lg"
+                        className="object-cover rounded-2xl"
                         sizes="(max-width: 640px) 80px, (max-width: 1024px) 96px, 112px"
                       />
                     </div>
                   ) : (
                     <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl flex items-center justify-center shadow-md border-2 border-neutral-200">
-                      <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-primary-600">
+                      <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-600">
                         {mappedVendor.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -300,7 +244,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
 
                 {/* Name + Verified Badge - Center-aligned with logo */}
                 <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-neutral-900 tracking-tight leading-tight truncate">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-neutral-900 tracking-tight leading-tight truncate">
                     {mappedVendor.name}
                   </h1>
                   {mappedVendor.isVerified && (
@@ -316,23 +260,12 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
           {/* GUARDRAIL: Action Buttons MUST be outside container-custom. Why: container-custom has overflow-x: hidden which clips buttons on mobile. DO NOT: Move buttons inside container-custom or remove overflow-x: hidden. Test: Verify buttons fully visible on 320px-375px mobile widths. */}
           <div className="px-6 lg:px-8 max-w-7xl mx-auto mb-6">
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto sm:justify-end">
-              {/* Edit Profile Button - Only visible to seller */}
-              {isOwnProfile && (
-                <Link
-                  href="/markets/vendor/profile/edit"
-                  className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-4 sm:py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg border border-neutral-200 transition-colors h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
-                  aria-label="Edit profile"
-                >
-                  <svg className="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  <span className="hidden sm:inline">Edit Profile</span>
-                </Link>
-              )}
+              {/* Edit Profile Button - Only visible to seller (client-side auth check) */}
+              <VendorOwnershipIsland vendorUserId={(vendor as any).user_id} />
               {mappedVendor.contactPhone && (
                 <a
                   href={`tel:${mappedVendor.contactPhone}`}
-                  className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm sm:text-base font-semibold rounded-xl transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
+                  className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm sm:text-base font-semibold rounded-2xl transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
                   aria-label="Call seller"
                 >
                   <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +277,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
               {mappedVendor.contactEmail && (
                 <a
                   href={`mailto:${mappedVendor.contactEmail}`}
-                  className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-white hover:bg-neutral-50 text-neutral-700 text-sm sm:text-base font-semibold rounded-xl border border-neutral-200 transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
+                  className="flex items-center justify-center gap-0 sm:gap-2 p-0 sm:px-5 sm:py-3 bg-white hover:bg-neutral-50 text-neutral-700 text-sm sm:text-base font-semibold rounded-2xl border border-neutral-200 transition-colors shadow-sm hover:shadow-md h-11 min-w-[44px] flex-1 sm:h-auto sm:w-auto sm:min-w-[auto] sm:flex-none whitespace-nowrap"
                   aria-label="Email seller"
                 >
                   <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -472,7 +405,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                 </div>
                 <div>
                   <div className="text-sm font-medium text-primary-600">Next Market</div>
-                  <div className="text-lg sm:text-xl font-black text-neutral-900">
+                  <div className="text-lg sm:text-xl font-bold text-neutral-900">
                     {new Date(mappedVendor.nextMarketDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     {mappedVendor.nextMarketStall && (
                       <span className="ml-2 text-sm font-normal text-neutral-600">• Stall {mappedVendor.nextMarketStall}</span>
@@ -515,7 +448,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
                         <div className="text-center p-8">
                           <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-full flex items-center justify-center">
-                            <span className="text-5xl font-black text-primary-600">
+                            <span className="text-5xl font-bold text-primary-600">
                               {mappedVendor.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
@@ -534,7 +467,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Delivery Options */}
                     <div className="bg-neutral-50 rounded-2xl p-6 border border-neutral-100">
-                      <h3 className="text-lg sm:text-xl font-black text-neutral-900 mb-4 flex items-center gap-3">
+                      <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                           <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -568,7 +501,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                     {/* Market Attendance */}
                     {mappedVendor.attendingStatus === 'attending' && mappedVendor.nextMarketDate && (
                       <div className="bg-primary-50 rounded-2xl p-6 border border-primary-100">
-                        <h3 className="text-lg sm:text-xl font-black text-neutral-900 mb-4 flex items-center gap-3">
+                        <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
                           <div className="w-10 h-10 bg-primary-200 rounded-xl flex items-center justify-center flex-shrink-0">
                             <svg className="w-6 h-6 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -577,7 +510,7 @@ export default async function SellerProfilePage({ params }: SellerProfilePagePro
                           Next Market
                         </h3>
                         <div className="space-y-2 text-neutral-700">
-                          <p className="font-black text-lg sm:text-xl">
+                          <p className="font-bold text-lg sm:text-xl">
                             {new Date(mappedVendor.nextMarketDate).toLocaleDateString('en-US', {
                               weekday: 'long',
                               month: 'long',

@@ -86,10 +86,10 @@ export async function getBusinesses(
 }
 
 export async function getBusinessBySlug(slug: string) {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
-    const { data: entity, error: entityError } = await supabase
-        .from('entities')
+    const { data: entity, error: entityError } = await (supabase
+        .from('entities') as any)
         .select('*, founder_tags(tag), founder_notes(note, visibility)')
         .eq('slug', slug)
         .maybeSingle()
@@ -120,24 +120,24 @@ export async function getBusinessBySlug(slug: string) {
 
         if (legacyBusinessId) {
             promises.push(
-                supabase
-                    .from('events')
+                (supabase
+                    .from('events') as any)
                     .select('*')
                     .eq('host_id', legacyBusinessId)
                     .eq('host_type', 'business')
                     .eq('status', 'published')
                     .gte('end_at', new Date().toISOString())
                     .order('start_at', { ascending: true })
-                    .then(({ data }) => ({ type: 'events', data: data || [] }))
+                    .then(({ data }: any) => ({ type: 'events', data: data || [] }))
             )
 
             promises.push(
-                supabase
-                    .from('events')
+                (supabase
+                    .from('events') as any)
                     .select('id', { count: 'exact', head: true })
                     .eq('host_id', legacyBusinessId)
                     .eq('host_type', 'business')
-                    .then(({ count }) => ({ type: 'activityStats', data: { hostedEventsCount: count || 0, isActiveThisMonth: (count || 0) > 0 } }))
+                    .then(({ count }: any) => ({ type: 'activityStats', data: { hostedEventsCount: count || 0, isActiveThisMonth: (count || 0) > 0 } }))
             )
 
             promises.push(
@@ -181,6 +181,47 @@ export async function getBusinessBySlug(slug: string) {
             properties: [],
             activityStats: { hostedEventsCount: 0, isActiveThisMonth: false },
         }
+    }
+}
+
+export async function getBusinessReviewSummary(businessId: string) {
+    const supabase = createPublicClient()
+    try {
+        const { data } = await (supabase
+            .from('review_summaries') as any)
+            .select('*')
+            .eq('subject_id', businessId)
+            .eq('subject_type', 'business')
+            .maybeSingle()
+        if (data) {
+            return {
+                averageRating: parseFloat(data.average_rating || '0'),
+                totalReviews: data.total_reviews || 0,
+            }
+        }
+        return { averageRating: 0, totalReviews: 0 }
+    } catch {
+        return { averageRating: 0, totalReviews: 0 }
+    }
+}
+
+export async function getBusinessRecommendCount(slug: string) {
+    const supabase = createPublicClient()
+    try {
+        const { data: entityRow } = await (supabase
+            .from('entities') as any)
+            .select('id')
+            .eq('slug', slug)
+            .maybeSingle()
+        if (!entityRow?.id) return 0
+        const { count } = await supabase
+            .from('user_entity_signals')
+            .select('id', { count: 'exact', head: true })
+            .eq('entity_id', entityRow.id)
+            .eq('signal_type', 'recommend')
+        return count || 0
+    } catch {
+        return 0
     }
 }
 

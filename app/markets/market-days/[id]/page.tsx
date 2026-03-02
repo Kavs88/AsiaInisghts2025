@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getMarketDayDetail, getMarketDayStalls, getMarketDayOffers } from '@/lib/actions/market-day-detail'
 import EventHero from '@/components/ui/EventHero'
 import EventUtilityBar from '@/components/ui/EventUtilityBar'
 import RSVPAction from '@/components/ui/RSVPAction'
@@ -15,44 +15,16 @@ export const metadata = {
 }
 
 export default async function MarketDayDetailPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient()
-  if (!supabase) {
+  const marketDay = await getMarketDayDetail(params.id)
+
+  if (!marketDay) {
     notFound()
   }
 
-  // Fetch market day
-  const { data: marketDay, error } = await (supabase
-    .from('market_days') as any)
-    .select(`
-      *,
-      hosts(id, name, slug, logo_url)
-    `)
-    .eq('id', params.id)
-    .eq('is_published', true)
-    .single() as any
-
-  if (error || !marketDay) {
-    notFound()
-  }
-
-  // Fetch attending vendors
-  const { data: stalls } = await (supabase
-    .from('market_stalls') as any)
-    .select(`
-      *,
-      vendors(id, name, slug, tagline, logo_url, hero_image_url, category, is_verified, delivery_available, pickup_available)
-    `)
-    .eq('market_day_id', params.id)
-    .eq('attending_physically', true) as any
-
-  // Fetch event offers
-  const { data: offers } = await (supabase
-    .from('deals') as any)
-    .select('*, vendors(name, slug)')
-    .or(`event_id.eq.${params.id},vendor_id.eq.${marketDay?.hosts?.id || ''}`)
-    .eq('status', 'active')
-    .gte('valid_to', new Date().toISOString())
-    .limit(6) as any
+  const [stalls, marketOffers] = await Promise.all([
+    getMarketDayStalls(params.id),
+    getMarketDayOffers(params.id, marketDay.hosts?.id || ''),
+  ])
 
   const attendingVendors = (stalls || []).map((stall: any) => {
     const vendor = stall.vendors || {}
@@ -188,14 +160,14 @@ export default async function MarketDayDetailPage({ params }: { params: { id: st
               )}
 
               {/* Event Offers */}
-              {offers && offers.length > 0 && (
+              {marketOffers && marketOffers.length > 0 && (
                 <div>
                   <h2 className="text-2xl font-bold text-neutral-900 mb-4">Event Offers</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {offers.map((offer: any) => (
+                    {marketOffers.map((offer: any) => (
                       <div key={offer.id} className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
                         <div className="flex items-start justify-between gap-2 mb-4">
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-success-50 text-success-700 rounded-lg font-semibold text-sm">
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-success-50 text-success-700 rounded-2xl font-semibold text-sm">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                             </svg>

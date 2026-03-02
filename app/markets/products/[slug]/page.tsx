@@ -3,7 +3,8 @@ import OrderIntentButton from '@/components/ui/OrderIntentButton'
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
-import { getProductBySlug, getVendorProducts, getVendorNextMarketAttendance, getUpcomingMarketDays } from '@/lib/supabase/queries'
+import { getProductBySlug, getVendorProducts, getVendorNextMarketAttendance } from '@/lib/actions/products'
+import { getUpcomingMarketDays } from '@/lib/supabase/queries'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -175,7 +176,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {thumbnailImages.map((url: string, index: number) => (
                   <div
                     key={index}
-                    className="relative aspect-square bg-neutral-200 rounded-lg overflow-hidden"
+                    className="relative aspect-square bg-neutral-200 rounded-2xl overflow-hidden"
                   >
                     <Image
                       src={url}
@@ -267,7 +268,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <h3 className="font-semibold text-neutral-900 mb-3">Delivery Options</h3>
               <div className="space-y-2">
                 {mappedProduct.pickupAvailable && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-2xl">
                     <svg className="w-5 h-5 text-success-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -287,7 +288,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </div>
                 )}
                 {mappedProduct.deliveryAvailable && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-2xl">
                     <svg className="w-5 h-5 text-success-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
