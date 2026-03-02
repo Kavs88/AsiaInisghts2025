@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 interface Deal {
@@ -18,8 +17,6 @@ export default function VendorDealsPage() {
     const [deals, setDeals] = useState<Deal[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const router = useRouter()
-
     useEffect(() => {
         fetchDeals()
     }, [])
@@ -61,7 +58,7 @@ export default function VendorDealsPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-neutral-50 py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="animate-pulse">
                         <div className="h-8 bg-neutral-200 rounded w-1/4 mb-4"></div>
                         <div className="h-4 bg-neutral-200 rounded w-1/3 mb-8"></div>
@@ -73,10 +70,10 @@ export default function VendorDealsPage() {
 
     return (
         <div className="min-h-screen bg-neutral-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-black text-neutral-900 mb-2">
+                        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
                             My Deals
                         </h1>
                         <p className="text-neutral-600">
@@ -96,19 +93,19 @@ export default function VendorDealsPage() {
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Active</div>
-                            <div className="text-2xl font-black text-success-600">
+                            <div className="text-2xl font-bold text-success-600">
                                 {deals.filter(d => d.status === 'active').length}
                             </div>
                         </div>
                         <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Drafts</div>
-                            <div className="text-2xl font-black text-warning-600">
+                            <div className="text-2xl font-bold text-warning-600">
                                 {deals.filter(d => d.status === 'draft').length}
                             </div>
                         </div>
                         <div className="bg-white rounded-2xl border border-neutral-200 p-4">
                             <div className="text-sm text-neutral-600 mb-1">Expired</div>
-                            <div className="text-2xl font-black text-neutral-400">
+                            <div className="text-2xl font-bold text-neutral-400">
                                 {deals.filter(d => d.status === 'expired').length}
                             </div>
                         </div>
@@ -147,7 +144,7 @@ export default function VendorDealsPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-black text-neutral-900 mb-2">
+                            <h2 className="text-2xl font-bold text-neutral-900 mb-2">
                                 Create Your First Deal
                             </h2>
                             <p className="text-neutral-600 mb-6">
@@ -214,13 +211,13 @@ export default function VendorDealsPage() {
                                     <div className="flex gap-2">
                                         <Link
                                             href={`/markets/vendor/dashboard/deals/${deal.id}/edit`}
-                                            className="flex-1 text-center px-4 py-2 bg-primary-50 text-primary-700 font-medium rounded-lg hover:bg-primary-100 transition-colors text-sm"
+                                            className="flex-1 text-center px-4 py-2 bg-primary-50 text-primary-700 font-medium rounded-2xl hover:bg-primary-100 transition-colors text-sm"
                                         >
                                             Edit
                                         </Link>
                                         <button
                                             onClick={() => handleArchive(deal.id)}
-                                            className="flex-1 px-4 py-2 bg-error-50 text-error-700 font-medium rounded-lg hover:bg-error-100 transition-colors text-sm"
+                                            className="flex-1 px-4 py-2 bg-error-50 text-error-700 font-medium rounded-2xl hover:bg-error-100 transition-colors text-sm"
                                         >
                                             Archive
                                         </button>

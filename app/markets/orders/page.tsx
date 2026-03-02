@@ -1,15 +1,10 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import EmptyState from '@/components/ui/EmptyState'
 import { ShoppingBag } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import Toast, { ToastType } from '@/components/ui/Toast'
 import { cn } from '@/lib/utils'
-import { useAuth } from '@/components/contexts/AuthContext'
+import OrdersAutoRefresh from './OrdersAutoRefresh'
 
 interface OrderIntent {
   id: string
@@ -42,101 +37,51 @@ interface OrderIntent {
   }
 }
 
-export default function OrdersPage() {
-  const searchParams = useSearchParams()
-  const emailParam = searchParams.get('email')
-  const { user } = useAuth()
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const email = typeof searchParams.email === 'string' ? searchParams.email : undefined
 
-  const [email, setEmail] = useState(emailParam || '')
-  const [orderIntents, setOrderIntents] = useState<OrderIntent[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: ToastType; visible: boolean }>({
-    message: '',
-    type: 'info',
-    visible: false,
-  })
-
-  // Pre-populate email from auth session, then auto-fetch
-  useEffect(() => {
-    const sessionEmail = user?.email
-    if (sessionEmail && !emailParam && !email) {
-      setEmail(sessionEmail)
-      fetchOrderIntents(sessionEmail)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
-
-  const fetchOrderIntents = async (customerEmail: string) => {
-    if (!customerEmail || !customerEmail.includes('@')) {
-      setToast({
-        message: 'Please enter a valid email address',
-        type: 'error',
-        visible: true,
-      })
-      return
-    }
-
-    setIsLoading(true)
+  // Pre-populate email from server-side auth session if not in URL
+  let userEmail: string | undefined
+  if (!email) {
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('order_intents')
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      userEmail = user?.email ?? undefined
+    } catch {
+      // Not authenticated — continue without pre-population
+    }
+  }
+
+  const defaultEmail = email ?? userEmail ?? ''
+
+  // Fetch orders server-side when email is provided
+  let orderIntents: OrderIntent[] = []
+  let fetchError: string | null = null
+
+  if (email) {
+    try {
+      const supabase = await createClient()
+      const { data, error } = await (supabase
+        .from('order_intents') as any)
         .select(`
           *,
           products(*, vendors(name, slug, logo_url)),
           vendors(id, name, slug),
           market_days(id, market_date, location_name)
         `)
-        .eq('customer_email', customerEmail)
+        .eq('customer_email', email)
         .order('created_at', { ascending: false })
         .limit(100)
 
       if (error) throw error
-
-      const intents = data || []
-      setOrderIntents(intents as OrderIntent[]) // Cast to OrderIntent[]
-
-      if (intents.length === 0) {
-        setToast({
-          message: 'No orders found for this email address',
-          type: 'info',
-          visible: true,
-        })
-      }
+      orderIntents = (data || []) as OrderIntent[]
     } catch (error: any) {
-      console.error('Error fetching order intents:', error)
-      setToast({
-        message: error.message || 'Failed to load orders. Please try again.',
-        type: 'error',
-        visible: true,
-      })
-    } finally {
-      setIsLoading(false)
+      fetchError = error.message || 'Failed to load orders. Please try again.'
     }
-  }
-
-  useEffect(() => {
-    if (emailParam) {
-      fetchOrderIntents(emailParam)
-    }
-  }, [emailParam])
-
-  // Auto-refresh every 30 seconds if email is set, but only if tab is visible
-  useEffect(() => {
-    if (!email) return
-
-    const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        fetchOrderIntents(email)
-      }
-    }, 30000) // 30 seconds
-
-    return () => clearInterval(interval)
-  }, [email])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    fetchOrderIntents(email)
   }
 
   const statusColors = {
@@ -149,46 +94,54 @@ export default function OrdersPage() {
 
   return (
     <main id="main-content" className="min-h-screen bg-neutral-50">
+      {/* Auto-refresh island — preserves 30s polling behaviour when email is active */}
+      {email && <OrdersAutoRefresh email={email} />}
+
       {/* Page Header */}
-      <section className="bg-neutral-900 text-white py-12 lg:py-16">
+      <section className="bg-neutral-900 text-white py-12 lg:py-20">
         <div className="container-custom">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">My Orders</h1>
           <p className="text-lg text-neutral-300">Track your order status</p>
         </div>
       </section>
 
-      {/* Search Form */}
+      {/* Search Form — native GET, no JS required */}
       <section className="py-8 bg-white border-b border-neutral-200">
         <div className="container-custom max-w-2xl">
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
+          <form method="GET" action="/markets/orders" className="flex flex-col sm:flex-row gap-4">
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              defaultValue={defaultEmail}
               placeholder="Enter your email address"
               className="flex-1 px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
               required
             />
             <button
               type="submit"
-              disabled={isLoading}
-              className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {isLoading ? 'Loading...' : 'View Orders'}
+              View Orders
             </button>
           </form>
         </div>
       </section>
 
+      {/* Fetch error */}
+      {fetchError && (
+        <section className="pt-6">
+          <div className="container-custom max-w-4xl">
+            <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl">
+              {fetchError}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Orders List */}
       <section className="py-12">
         <div className="container-custom max-w-4xl">
-          {isLoading && orderIntents.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="inline-block w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-              <p className="mt-4 text-neutral-600">Loading orders...</p>
-            </div>
-          ) : orderIntents.length > 0 ? (
+          {orderIntents.length > 0 ? (
             <div className="space-y-6">
               {orderIntents.map((intent) => (
                 <div
@@ -301,14 +254,6 @@ export default function OrdersPage() {
           )}
         </div>
       </section>
-
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.visible}
-        onClose={() => setToast({ ...toast, visible: false })}
-      />
     </main>
   )
 }
-
