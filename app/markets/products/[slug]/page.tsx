@@ -8,6 +8,8 @@ import { getUpcomingMarketDays } from '@/lib/supabase/queries'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
+export const revalidate = 1800
+
 interface ProductPageProps {
   params: Promise<{ slug: string }> | { slug: string }
 }

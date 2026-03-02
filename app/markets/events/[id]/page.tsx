@@ -12,6 +12,8 @@ import EventHeroImage from '@/components/ui/EventHeroImage'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import { SaveButton } from '@/components/ui/SoftActionButtons'
 
+export const revalidate = 1800
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
     const supabase = createPublicClient()
 

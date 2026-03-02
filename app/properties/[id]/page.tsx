@@ -13,6 +13,8 @@ import ShareButton from '@/components/ui/ShareButton'
 import MobileActionBar from '@/components/ui/MobileActionBar'
 import PropertyWatchlistButton from '@/components/ui/PropertyWatchlistButton'
 
+export const revalidate = 1800
+
 interface PropertyPageProps {
     params: Promise<{
         id: string

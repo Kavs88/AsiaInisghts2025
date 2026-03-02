@@ -8,6 +8,8 @@ import ShareButton from '@/components/ui/ShareButton'
 import VendorOwnershipIsland from '@/components/islands/VendorOwnershipIsland'
 import Badge from '@/components/ui/Badge'
 
+export const revalidate = 1800
+
 /**
  * SELLER PROFILE PAGE - DESIGN SYSTEM RULES
  * 

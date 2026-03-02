@@ -9,6 +9,8 @@ import VendorCard from '@/components/ui/VendorCard'
 import StallMap from '@/components/ui/StallMap'
 import Link from 'next/link'
 
+export const revalidate = 1800
+
 export const metadata = {
   title: 'Market Day Details - AI Markets',
   description: 'View market day details, RSVP, and attending businesses',

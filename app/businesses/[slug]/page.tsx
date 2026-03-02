@@ -10,6 +10,8 @@ import BusinessProfileClient from './page-client'
 import ReviewSummary from '@/components/ui/ReviewSummary'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 
+export const revalidate = 1800
+
 /**
  * BUSINESS PROFILE PAGE - DESIGN SYSTEM RULES
  * 
