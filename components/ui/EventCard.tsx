@@ -37,6 +37,7 @@ interface EventCardProps {
   }>
   intents?: string[]
   className?: string
+  priority?: boolean
 }
 
 export default function EventCard({
@@ -55,6 +56,7 @@ export default function EventCard({
   offers = [],
   intents = [],
   className = '',
+  priority = false,
 }: EventCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const startDate = new Date(start_at)
@@ -82,7 +84,8 @@ export default function EventCard({
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              loading="lazy"
+              priority={priority}
+              loading={priority ? undefined : 'lazy'}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
